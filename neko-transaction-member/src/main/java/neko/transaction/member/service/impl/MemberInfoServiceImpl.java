@@ -84,7 +84,7 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
                         true);
             }else{
                 resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR);
-                ////记录登录信息
+                //记录登录信息
                 memberLogInLogService.newLog(memberInfo.getUid(),
                         IPHandler.getIP(request),
                         false);

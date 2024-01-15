@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 用户信息vo
+ */
 @Data
 @Accessors(chain = true)
 public class MemberInfoVo implements Serializable {
