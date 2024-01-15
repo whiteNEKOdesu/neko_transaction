@@ -1,8 +1,10 @@
 package neko.transaction.member.config;
 
 import cn.dev33.satoken.stp.StpInterface;
+import neko.transaction.member.service.WeightRoleRelationService;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -10,20 +12,17 @@ import java.util.List;
  */
 @Component
 public class SAWeightConfig implements StpInterface {
-//    @Resource
-//    private WeightRoleRelationService weightRoleRelationService;
+    @Resource
+    private WeightRoleRelationService weightRoleRelationService;
 
     @Override
-    // TODO
     public List<String> getPermissionList(Object o, String s) {
-//        return weightRoleRelationService.getWeightTypesByUid(o.toString());
-        return null;
+        return weightRoleRelationService.getWeightTypesByUid(o.toString());
     }
 
     @Override
     // TODO
     public List<String> getRoleList(Object o, String s) {
-//        return weightRoleRelationService.getRoleTypesByUid(o.toString());
-        return null;
+        return weightRoleRelationService.getRoleTypesByUid(o.toString());
     }
 }

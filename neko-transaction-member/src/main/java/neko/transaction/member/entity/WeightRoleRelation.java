@@ -1,6 +1,7 @@
 package neko.transaction.member.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -35,10 +36,16 @@ public class WeightRoleRelation implements Serializable {
      */
     private Integer weightId;
 
+    @TableField(exist = false)
+    private String weightType;
+
     /**
      * 角色id，对应user_role表role_id
      */
     private Integer roleId;
+
+    @TableField(exist = false)
+    private String roleType;
 
     /**
      * 创建时间

@@ -1,13 +1,11 @@
 package neko.transaction.commonbase.utils.entity;
 
 public class Constant {
-    public static final String REDIS_PREFIX = "neko_movie:";
+    public static final String REDIS_PREFIX = "neko_transaction:";
 
     public static final String MEMBER_REDIS_PREFIX = REDIS_PREFIX + "member:";
 
-    public static final String VIDEO_REDIS_PREFIX = REDIS_PREFIX + "video:";
+    public static final String PRODUCT_REDIS_PREFIX = REDIS_PREFIX + "product:";
 
-    public static final String ELASTIC_SEARCH_INDEX = "neko_movie";
-
-    public static final int VIDEO_WATCH_HISTORY_SIZE = 15;
+    public static final String ELASTIC_SEARCH_INDEX = "neko_transaction_product";
 }

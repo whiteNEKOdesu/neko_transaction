@@ -4,6 +4,8 @@ import neko.transaction.member.entity.WeightRoleRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * <p>
  * 权限，角色关系表 Mapper 接口
@@ -14,5 +16,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface WeightRoleRelationMapper extends BaseMapper<WeightRoleRelation> {
+    List<WeightRoleRelation> getRelationsByRoleIds(List<Integer> roleIds);
 
+    List<WeightRoleRelation> getRelationSbyRoleId(Integer roleId);
 }
