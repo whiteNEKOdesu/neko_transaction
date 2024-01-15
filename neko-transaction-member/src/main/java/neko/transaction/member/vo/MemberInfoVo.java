@@ -1,34 +1,21 @@
-package neko.transaction.member.entity;
+package neko.transaction.member.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-/**
- * <p>
- * 学生信息表
- * </p>
- *
- * @author NEKO
- * @since 2024-01-15
- */
 @Data
 @Accessors(chain = true)
-@TableName("member_info")
-public class MemberInfo implements Serializable {
-
+public class MemberInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * 学号
      */
-    @TableId(type = IdType.ASSIGN_ID)
     private String uid;
 
     /**
@@ -42,19 +29,24 @@ public class MemberInfo implements Serializable {
     private String userName;
 
     /**
-     * 密码
-     */
-    private String userPassword;
-
-    /**
-     * 密码盐
-     */
-    private String salt;
-
-    /**
      * 用户头像
      */
     private String userImagePath;
+
+    /**
+     * 权限类型
+     */
+    private List<String> weightTypes;
+
+    /**
+     * 角色类型
+     */
+    private List<String> roleTypes;
+
+    /**
+     * 登录下发的 token
+     */
+    private String token;
 
     /**
      * 性别
@@ -80,16 +72,6 @@ public class MemberInfo implements Serializable {
      * 余额
      */
     private BigDecimal balance;
-
-    /**
-     * 是否封禁
-     */
-    private Boolean isBan;
-
-    /**
-     * 是否删除
-     */
-    private Byte isDelete;
 
     /**
      * 创建时间

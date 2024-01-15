@@ -43,7 +43,7 @@ public class MemberLogInLog implements Serializable {
     /**
      * 是否登录成功
      */
-    private Byte isLogIn;
+    private Boolean isLogIn;
 
     /**
      * 是否删除
