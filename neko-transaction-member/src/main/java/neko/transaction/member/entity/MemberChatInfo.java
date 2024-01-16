@@ -1,5 +1,7 @@
 package neko.transaction.member.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ public class MemberChatInfo implements Serializable {
     /**
      * 聊天id
      */
+    @TableId(type = IdType.ASSIGN_ID)
     private String chatId;
 
     /**
