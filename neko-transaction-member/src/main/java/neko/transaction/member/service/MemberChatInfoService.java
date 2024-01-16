@@ -1,6 +1,6 @@
 package neko.transaction.member.service;
 
-import neko.transaction.member.entity.MembetChatInfo;
+import neko.transaction.member.entity.MemberChatInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-15
+ * @since 2024-01-16
  */
-public interface MembetChatInfoService extends IService<MembetChatInfo> {
+public interface MemberChatInfoService extends IService<MemberChatInfo> {
 
 }

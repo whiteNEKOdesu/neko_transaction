@@ -1,6 +1,6 @@
 package neko.transaction.member.mapper;
 
-import neko.transaction.member.entity.MembetChatInfo;
+import neko.transaction.member.entity.MemberChatInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-15
+ * @since 2024-01-16
  */
 @Mapper
-public interface MembetChatInfoMapper extends BaseMapper<MembetChatInfo> {
+public interface MemberChatInfoMapper extends BaseMapper<MemberChatInfo> {
 
 }

@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-15
+ * @since 2024-01-16
  */
 @RestController
-@RequestMapping("/membetChatInfo")
-public class MembetChatInfoController {
+@RequestMapping("/memberChatInfo")
+public class MemberChatInfoController {
 
 }
