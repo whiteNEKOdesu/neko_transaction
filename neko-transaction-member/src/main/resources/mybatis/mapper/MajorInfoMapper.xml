@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.member.mapper.MajorInfoMapper">
-
+    <select id="pageQuery" resultType="neko.transaction.member.vo.MajorInfoVo">
+        select major_info.*, college_info.college_name from major_info
+        join college_info
+        on major_info.college_id = college_info.college_id
+        <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+            where major_info.major_name like concat('%',#{queryWords},'%')
+        </if>
+        order by major_info.major_id desc
+        limit #{start}, #{limited}
+    </select>
 </mapper>
