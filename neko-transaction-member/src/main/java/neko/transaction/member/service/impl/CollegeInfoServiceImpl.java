@@ -60,4 +60,13 @@ public class CollegeInfoServiceImpl extends ServiceImpl<CollegeInfoMapper, Colle
 
         return page;
     }
+
+    /**
+     * 根据 id 删除二级学院信息
+     * @param collegeId 二级学院id
+     */
+    @Override
+    public void deleteCollegeInfoById(Integer collegeId) {
+        this.baseMapper.deleteById(collegeId);
+    }
 }

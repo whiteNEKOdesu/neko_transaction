@@ -49,4 +49,17 @@ public class CollegeInfoController {
     public ResultObject<Page<CollegeInfo>> collegePageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(collegeInfoService.collegeInfoPageQuery(vo));
     }
+
+    /**
+     * 根据 id 删除二级学院信息
+     * @param collegeId 二级学院id
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @DeleteMapping("delete_by_id")
+    public ResultObject<Object> deleteById(@RequestParam Integer collegeId){
+        collegeInfoService.deleteCollegeInfoById(collegeId);
+
+        return ResultObject.ok();
+    }
 }

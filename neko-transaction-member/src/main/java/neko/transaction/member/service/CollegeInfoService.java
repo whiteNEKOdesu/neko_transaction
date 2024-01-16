@@ -26,4 +26,10 @@ public interface CollegeInfoService extends IService<CollegeInfo> {
      * @return 二级学院分页信息
      */
     Page<CollegeInfo> collegeInfoPageQuery(QueryVo vo);
+
+    /**
+     * 根据 id 删除二级学院信息
+     * @param collegeId 二级学院id
+     */
+    void deleteCollegeInfoById(Integer collegeId);
 }
