@@ -1,8 +1,11 @@
 package neko.transaction.member.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
+import neko.transaction.member.entity.MajorInfo;
 import neko.transaction.member.service.MajorInfoService;
 import neko.transaction.member.vo.NewMajorInfoVo;
 import org.springframework.validation.annotation.Validated;
@@ -38,5 +41,15 @@ public class MajorInfoController {
         majorInfoService.newMajorInfo(vo);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 分页查询专业信息
+     * @param vo 分页查询vo
+     * @return 分页查询结果
+     */
+    @PostMapping("major_info_page_query")
+    public ResultObject<Page<MajorInfo>> majorInfoPageQuery(@Validated @RequestBody QueryVo vo){
+        return ResultObject.ok(majorInfoService.majorInfoPageQuery(vo));
     }
 }

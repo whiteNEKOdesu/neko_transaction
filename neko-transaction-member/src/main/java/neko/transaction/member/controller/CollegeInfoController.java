@@ -44,7 +44,6 @@ public class CollegeInfoController {
      * @param vo 分页查询vo
      * @return 二级学院分页信息
      */
-    @SaCheckRole(RoleType.ADMIN)
     @PostMapping("college_info_page_query")
     public ResultObject<Page<CollegeInfo>> collegePageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(collegeInfoService.collegeInfoPageQuery(vo));
