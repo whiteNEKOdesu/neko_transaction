@@ -8,6 +8,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.entity.MemberInfo;
@@ -18,8 +20,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.member.service.MemberLogInLogService;
 import neko.transaction.member.service.UserRoleRelationService;
 import neko.transaction.member.service.WeightRoleRelationService;
+import neko.transaction.member.vo.ClassInfoVo;
 import neko.transaction.member.vo.LogInVo;
 import neko.transaction.member.vo.MemberInfoVo;
+import neko.transaction.member.vo.MemberWithSchoolInfoVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -92,5 +96,25 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         }
 
         return resultObject.compact();
+    }
+
+    /**
+     * 分页查询学生及所属二级学院，专业，班级信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<MemberWithSchoolInfoVo> memberWithSchoolInfoPageQuery(QueryVo vo) {
+        Page<MemberWithSchoolInfoVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        String classId = (String) vo.getObjectId();
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.memberWithSchoolInfoPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords(),
+                classId));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.memberWithSchoolInfoPageQueryNumber(vo.getQueryWords(), classId));
+
+        return page;
     }
 }

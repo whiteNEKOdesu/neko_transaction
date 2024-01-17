@@ -55,6 +55,7 @@ public class ClassInfoController {
      * @param classId 班级id
      * @return 响应结果
      */
+    @SaCheckRole(RoleType.ADMIN)
     @DeleteMapping("delete_by_id")
     public ResultObject<Object> deleteById(@RequestParam String classId){
         classInfoService.deleteById(classId);

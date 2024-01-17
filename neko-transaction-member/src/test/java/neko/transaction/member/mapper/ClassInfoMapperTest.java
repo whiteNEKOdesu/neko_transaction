@@ -12,7 +12,10 @@ public class ClassInfoMapperTest {
 
     @Test
     public void pageQuery(){
-        System.out.println(classInfoMapper.pageQuery(8, 0, "软件", 1));
+        System.out.println(classInfoMapper.pageQuery(8,
+                0,
+                "软件",
+                1));
     }
 
     @Test
