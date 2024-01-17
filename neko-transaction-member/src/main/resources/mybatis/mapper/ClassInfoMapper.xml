@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.member.mapper.ClassInfoMapper">
+    <select id="pageQuery" resultType="neko.transaction.member.vo.ClassInfoVo">
+        select class_info.*, major_info.major_name,
+               college_info.college_id, college_info.college_name from class_info
+        join major_info
+        on class_info.major_id = major_info.major_id
+        join college_info
+        on major_info.college_id = college_info.college_id
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                major_info.major_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(collegeId)">
+                and college_info.college_id = #{collegeId}
+            </if>
+        </where>
+        order by class_info.class_id
+        limit #{start}, #{limited}
+    </select>
 
+    <select id="pageQueryNumber" resultType="int">
+        select count(class_info.class_id) from class_info
+        join major_info
+        on class_info.major_id = major_info.major_id
+        join college_info
+        on major_info.college_id = college_info.college_id
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                major_info.major_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(collegeId)">
+                and college_info.college_id = #{collegeId}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -29,9 +29,7 @@ public interface MajorInfoMapper extends BaseMapper<MajorInfo> {
                                 String queryWords);
 
     /**
-     * 分页查询专业信息的页数
-     * @param limited 每页数量
-     * @param start 起始位置
+     * 获取分页查询专业信息的结果总页数
      * @param queryWords 查询条件
      * @return 查询结果页数
      */
