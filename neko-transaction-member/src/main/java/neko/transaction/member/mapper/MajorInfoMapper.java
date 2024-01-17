@@ -2,6 +2,7 @@ package neko.transaction.member.mapper;
 
 import neko.transaction.member.entity.MajorInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import neko.transaction.member.vo.FullMajorNameVo;
 import neko.transaction.member.vo.MajorInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -34,4 +35,10 @@ public interface MajorInfoMapper extends BaseMapper<MajorInfo> {
      * @return 查询结果页数
      */
     int pageQueryNumber(String queryWords);
+
+    /**
+     * 获取所有完整专业名信息
+     * @return 所有完整专业名信息
+     */
+    List<FullMajorNameVo> getAllFullMajorName();
 }

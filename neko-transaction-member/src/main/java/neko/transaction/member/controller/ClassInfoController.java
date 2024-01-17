@@ -1,8 +1,10 @@
 package neko.transaction.member.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.service.ClassInfoService;
 import neko.transaction.member.vo.ClassInfoVo;
 import neko.transaction.member.vo.NewClassInfoVo;
@@ -40,6 +42,7 @@ public class ClassInfoController {
      * @param vo 添加班级信息的vo
      * @return 响应结果
      */
+    @SaCheckRole(RoleType.ADMIN)
     @PutMapping("new_class_info")
     public ResultObject<Object> newClassInfo(@Validated @RequestBody NewClassInfoVo vo){
         classInfoService.newClassInfo(vo);

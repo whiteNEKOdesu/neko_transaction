@@ -7,9 +7,12 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.MajorInfo;
 import neko.transaction.member.mapper.MajorInfoMapper;
 import neko.transaction.member.service.MajorInfoService;
+import neko.transaction.member.vo.FullMajorNameVo;
 import neko.transaction.member.vo.MajorInfoVo;
 import neko.transaction.member.vo.NewMajorInfoVo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -60,5 +63,14 @@ public class MajorInfoServiceImpl extends ServiceImpl<MajorInfoMapper, MajorInfo
     @Override
     public void deleteById(Integer majorId) {
         this.baseMapper.deleteById(majorId);
+    }
+
+    /**
+     * 获取所有完整专业名信息
+     * @return 所有完整专业名信息
+     */
+    @Override
+    public List<FullMajorNameVo> getAllFullMajorName() {
+        return this.baseMapper.getAllFullMajorName();
     }
 }

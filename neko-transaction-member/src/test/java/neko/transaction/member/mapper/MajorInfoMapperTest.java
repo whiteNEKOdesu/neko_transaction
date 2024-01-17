@@ -19,4 +19,9 @@ public class MajorInfoMapperTest {
     public void pageQueryNumber(){
         System.out.println(majorInfoMapper.pageQueryNumber("软件"));
     }
+
+    @Test
+    public void getAllFullMajorName(){
+        System.out.println(majorInfoMapper.getAllFullMajorName());
+    }
 }

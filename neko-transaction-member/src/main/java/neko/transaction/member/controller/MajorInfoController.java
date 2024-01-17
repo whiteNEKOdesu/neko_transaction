@@ -7,12 +7,14 @@ import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.entity.MajorInfo;
 import neko.transaction.member.service.MajorInfoService;
+import neko.transaction.member.vo.FullMajorNameVo;
 import neko.transaction.member.vo.MajorInfoVo;
 import neko.transaction.member.vo.NewMajorInfoVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -62,5 +64,14 @@ public class MajorInfoController {
         majorInfoService.deleteById(majorId);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取所有完整专业名信息
+     * @return 所有完整专业名信息
+     */
+    @GetMapping("all_full_major_name")
+    public ResultObject<List<FullMajorNameVo>> allFullMajorName(){
+        return ResultObject.ok(majorInfoService.getAllFullMajorName());
     }
 }

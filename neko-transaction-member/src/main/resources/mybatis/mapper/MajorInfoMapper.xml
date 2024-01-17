@@ -20,4 +20,11 @@
             where major_info.major_name like concat(#{queryWords},'%')
         </if>
     </select>
+
+    <select id="getAllFullMajorName" resultType="neko.transaction.member.vo.FullMajorNameVo">
+        select major_info.major_id,
+               concat(college_info.college_name, '-', major_info.major_name) full_major_name from major_info
+        join college_info
+        on major_info.college_id = college_info.college_id
+    </select>
 </mapper>
