@@ -8,6 +8,7 @@ import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.vo.LogInVo;
 import neko.transaction.member.vo.MemberInfoVo;
 import neko.transaction.member.vo.MemberWithSchoolInfoVo;
+import neko.transaction.member.vo.NewMemberInfoVo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,4 +35,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @return 查询结果
      */
     Page<MemberWithSchoolInfoVo> memberWithSchoolInfoPageQuery(QueryVo vo);
+
+    /**
+     * 添加用户
+     * @param vo 添加用户vo
+     */
+    void newMemberInfo(NewMemberInfoVo vo);
 }

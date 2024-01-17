@@ -55,9 +55,9 @@ public class MemberWithSchoolInfoVo implements Serializable {
     private String userImagePath;
 
     /**
-     * 性别
+     * 性别，1->男，0->女
      */
-    private Byte gender;
+    private Boolean gender;
 
     /**
      * 真实姓名

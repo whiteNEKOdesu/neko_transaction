@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
@@ -20,15 +21,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.member.service.MemberLogInLogService;
 import neko.transaction.member.service.UserRoleRelationService;
 import neko.transaction.member.service.WeightRoleRelationService;
-import neko.transaction.member.vo.ClassInfoVo;
-import neko.transaction.member.vo.LogInVo;
-import neko.transaction.member.vo.MemberInfoVo;
-import neko.transaction.member.vo.MemberWithSchoolInfoVo;
+import neko.transaction.member.vo.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 
 /**
  * <p>
@@ -116,5 +115,28 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         page.setTotal(this.baseMapper.memberWithSchoolInfoPageQueryNumber(vo.getQueryWords(), classId));
 
         return page;
+    }
+
+    /**
+     * 添加用户
+     * @param vo 添加用户vo
+     */
+    @Override
+    public void newMemberInfo(NewMemberInfoVo vo) {
+        MemberInfo memberInfo = new MemberInfo();
+        BeanUtil.copyProperties(vo, memberInfo);
+
+        String idCardNumber = vo.getIdCardNumber();
+        int length = idCardNumber.length();
+        //默认密码为 学号 + 身份证后 4 位
+        String userPassword = vo.getUid() + idCardNumber.substring(length - 4, length);
+        //生成盐
+        String salt = Arrays.toString(RandomUtil.randomBytes(10));
+        //设置 MD5 hash 后的密码
+        memberInfo.setUserPassword(DigestUtils.md5DigestAsHex((userPassword + memberInfo.getSalt()).getBytes()))
+                .setSalt(salt);
+
+        //添加用户
+        this.baseMapper.insert(memberInfo);
     }
 }

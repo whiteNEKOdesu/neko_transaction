@@ -1,17 +1,17 @@
 package neko.transaction.member.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.service.MemberInfoService;
 import neko.transaction.member.vo.LogInVo;
 import neko.transaction.member.vo.MemberInfoVo;
 import neko.transaction.member.vo.MemberWithSchoolInfoVo;
+import neko.transaction.member.vo.NewMemberInfoVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -49,5 +49,18 @@ public class MemberInfoController {
     @PostMapping("member_with_school_info_page_query")
     public ResultObject<Page<MemberWithSchoolInfoVo>> memberWithSchoolInfoPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(memberInfoService.memberWithSchoolInfoPageQuery(vo));
+    }
+
+    /**
+     * 添加用户
+     * @param vo 添加用户vo
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PutMapping("new_member_info")
+    public ResultObject<Object> newMemberInfo(@Validated @RequestBody NewMemberInfoVo vo){
+        memberInfoService.newMemberInfo(vo);
+
+        return ResultObject.ok();
     }
 }

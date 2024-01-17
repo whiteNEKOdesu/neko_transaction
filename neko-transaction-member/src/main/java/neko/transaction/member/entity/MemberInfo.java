@@ -28,7 +28,7 @@ public class MemberInfo implements Serializable {
     /**
      * 学号
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.INPUT)
     private String uid;
 
     /**
@@ -57,9 +57,9 @@ public class MemberInfo implements Serializable {
     private String userImagePath;
 
     /**
-     * 性别
+     * 性别，1->男，0->女
      */
-    private Byte gender;
+    private Boolean gender;
 
     /**
      * 真实姓名
