@@ -139,4 +139,13 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         //添加用户
         this.baseMapper.insert(memberInfo);
     }
+
+    /**
+     * 根据学号删除用户
+     * @param uid 学号
+     */
+    @Override
+    public void deleteById(String uid) {
+        this.baseMapper.deleteById(uid);
+    }
 }

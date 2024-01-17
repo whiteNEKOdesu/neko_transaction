@@ -41,4 +41,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @param vo 添加用户vo
      */
     void newMemberInfo(NewMemberInfoVo vo);
+
+    /**
+     * 根据学号删除用户
+     * @param uid 学号
+     */
+    void deleteById(String uid);
 }

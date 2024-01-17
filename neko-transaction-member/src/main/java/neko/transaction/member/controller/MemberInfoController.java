@@ -63,4 +63,17 @@ public class MemberInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 管理员根据学号删除用户
+     * @param uid 学号
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ROOT)
+    @DeleteMapping("delete_by_id")
+    public ResultObject<Object> deleteById(@RequestParam String uid){
+        memberInfoService.deleteById(uid);
+
+        return ResultObject.ok();
+    }
 }
