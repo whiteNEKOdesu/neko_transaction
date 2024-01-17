@@ -28,4 +28,10 @@ public interface MajorInfoService extends IService<MajorInfo> {
      * @return 分页查询结果
      */
     Page<MajorInfoVo> majorInfoPageQuery(QueryVo vo);
+
+    /**
+     * 根据专业id删除专业信息
+     * @param majorId 专业id
+     */
+    void deleteById(Integer majorId);
 }

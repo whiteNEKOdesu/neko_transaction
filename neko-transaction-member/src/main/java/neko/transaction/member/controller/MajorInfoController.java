@@ -10,10 +10,7 @@ import neko.transaction.member.service.MajorInfoService;
 import neko.transaction.member.vo.MajorInfoVo;
 import neko.transaction.member.vo.NewMajorInfoVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -52,5 +49,18 @@ public class MajorInfoController {
     @PostMapping("major_info_page_query")
     public ResultObject<Page<MajorInfoVo>> majorInfoPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(majorInfoService.majorInfoPageQuery(vo));
+    }
+
+    /**
+     * 根据专业id删除专业信息
+     * @param majorId 专业id
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @DeleteMapping("delete_by_id")
+    public ResultObject<Object> deleteById(@RequestParam Integer majorId){
+        majorInfoService.deleteById(majorId);
+
+        return ResultObject.ok();
     }
 }

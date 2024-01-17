@@ -52,4 +52,13 @@ public class MajorInfoServiceImpl extends ServiceImpl<MajorInfoMapper, MajorInfo
 
         return page;
     }
+
+    /**
+     * 根据专业id删除专业信息
+     * @param majorId 专业id
+     */
+    @Override
+    public void deleteById(Integer majorId) {
+        this.baseMapper.deleteById(majorId);
+    }
 }
