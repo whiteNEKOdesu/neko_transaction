@@ -49,4 +49,16 @@ public class ClassInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 根据班级id删除班级信息
+     * @param classId 班级id
+     * @return 响应结果
+     */
+    @DeleteMapping("delete_by_id")
+    public ResultObject<Object> deleteById(@RequestParam String classId){
+        classInfoService.deleteById(classId);
+
+        return ResultObject.ok();
+    }
 }

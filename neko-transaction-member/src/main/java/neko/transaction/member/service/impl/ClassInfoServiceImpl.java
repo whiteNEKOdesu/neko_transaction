@@ -55,4 +55,13 @@ public class ClassInfoServiceImpl extends ServiceImpl<ClassInfoMapper, ClassInfo
         //添加班级信息
         this.baseMapper.insert(classInfo);
     }
+
+    /**
+     * 根据班级id删除班级信息
+     * @param classId 班级id
+     */
+    @Override
+    public void deleteById(String classId) {
+        this.baseMapper.deleteById(classId);
+    }
 }

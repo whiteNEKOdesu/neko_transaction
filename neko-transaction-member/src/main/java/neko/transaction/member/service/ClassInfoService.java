@@ -28,4 +28,10 @@ public interface ClassInfoService extends IService<ClassInfo> {
      * @param vo 添加班级信息的vo
      */
     void newClassInfo(NewClassInfoVo vo);
+
+    /**
+     * 根据班级id删除班级信息
+     * @param classId 班级id
+     */
+    void deleteById(String classId);
 }
