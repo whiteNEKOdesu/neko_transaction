@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -60,5 +61,14 @@ public class CollegeInfoController {
         collegeInfoService.deleteCollegeInfoById(collegeId);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取所有二级学院信息
+     * @return 所有二级学院信息
+     */
+    @GetMapping("all_college_info")
+    public ResultObject<List<CollegeInfo>> getAllCollegeInfo(){
+        return ResultObject.ok(collegeInfoService.getAllCollegeInfo());
     }
 }

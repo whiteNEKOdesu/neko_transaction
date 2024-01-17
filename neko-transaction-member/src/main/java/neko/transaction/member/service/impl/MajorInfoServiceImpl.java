@@ -1,17 +1,15 @@
 package neko.transaction.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.QueryVo;
-import neko.transaction.member.entity.CollegeInfo;
 import neko.transaction.member.entity.MajorInfo;
 import neko.transaction.member.mapper.MajorInfoMapper;
 import neko.transaction.member.service.MajorInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.member.vo.MajorInfoVo;
 import neko.transaction.member.vo.NewMajorInfoVo;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -43,17 +41,14 @@ public class MajorInfoServiceImpl extends ServiceImpl<MajorInfoMapper, MajorInfo
      * @return 分页查询结果
      */
     @Override
-    public Page<MajorInfo> majorInfoPageQuery(QueryVo vo) {
-        Page<MajorInfo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
-        QueryWrapper<MajorInfo> queryWrapper = new QueryWrapper<>();
-        if(StringUtils.hasText(vo.getQueryWords())){
-            //拼接查询条件
-            queryWrapper.lambda().like(MajorInfo::getMajorName, vo.getQueryWords());
-        }
-        queryWrapper.lambda().orderByDesc(MajorInfo::getMajorId);
-
-        //分页查询
-        this.baseMapper.selectPage(page, queryWrapper);
+    public Page<MajorInfoVo> majorInfoPageQuery(QueryVo vo) {
+        Page<MajorInfoVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.pageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords()));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.pageQueryNumber(vo.getQueryWords()));
 
         return page;
     }

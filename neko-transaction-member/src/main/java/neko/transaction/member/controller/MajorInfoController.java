@@ -7,6 +7,7 @@ import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.entity.MajorInfo;
 import neko.transaction.member.service.MajorInfoService;
+import neko.transaction.member.vo.MajorInfoVo;
 import neko.transaction.member.vo.NewMajorInfoVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,7 +50,7 @@ public class MajorInfoController {
      * @return 分页查询结果
      */
     @PostMapping("major_info_page_query")
-    public ResultObject<Page<MajorInfo>> majorInfoPageQuery(@Validated @RequestBody QueryVo vo){
+    public ResultObject<Page<MajorInfoVo>> majorInfoPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(majorInfoService.majorInfoPageQuery(vo));
     }
 }

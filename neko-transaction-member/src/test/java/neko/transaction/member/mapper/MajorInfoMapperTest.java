@@ -14,4 +14,9 @@ public class MajorInfoMapperTest {
     public void pageQuery(){
         System.out.println(majorInfoMapper.pageQuery(8, 0, "软件"));
     }
+
+    @Test
+    public void pageQueryNumber(){
+        System.out.println(majorInfoMapper.pageQueryNumber("软件"));
+    }
 }

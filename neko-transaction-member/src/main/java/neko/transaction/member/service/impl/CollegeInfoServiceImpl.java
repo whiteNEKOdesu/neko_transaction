@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * <p>
  * 二级学院信息表 服务实现类
@@ -68,5 +70,14 @@ public class CollegeInfoServiceImpl extends ServiceImpl<CollegeInfoMapper, Colle
     @Override
     public void deleteCollegeInfoById(Integer collegeId) {
         this.baseMapper.deleteById(collegeId);
+    }
+
+    /**
+     * 获取所有二级学院信息
+     * @return 所有二级学院信息
+     */
+    @Override
+    public List<CollegeInfo> getAllCollegeInfo() {
+        return this.baseMapper.selectList(null);
     }
 }

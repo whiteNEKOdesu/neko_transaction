@@ -11,4 +11,13 @@
         order by major_info.major_id desc
         limit #{start}, #{limited}
     </select>
+
+    <select id="pageQueryNumber" resultType="int">
+        select count(major_info.college_id) from major_info
+        join college_info
+        on major_info.college_id = college_info.college_id
+        <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+            where major_info.major_name like concat('%',#{queryWords},'%')
+        </if>
+    </select>
 </mapper>

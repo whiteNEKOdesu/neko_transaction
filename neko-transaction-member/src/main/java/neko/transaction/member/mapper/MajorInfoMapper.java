@@ -35,7 +35,5 @@ public interface MajorInfoMapper extends BaseMapper<MajorInfo> {
      * @param queryWords 查询条件
      * @return 查询结果页数
      */
-    int pageQueryNumber(Integer limited,
-                                Integer start,
-                                String queryWords);
+    int pageQueryNumber(String queryWords);
 }

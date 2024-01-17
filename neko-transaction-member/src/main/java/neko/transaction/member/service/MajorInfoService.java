@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.MajorInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.member.vo.MajorInfoVo;
 import neko.transaction.member.vo.NewMajorInfoVo;
 
 /**
@@ -26,5 +27,5 @@ public interface MajorInfoService extends IService<MajorInfo> {
      * @param vo 分页查询vo
      * @return 分页查询结果
      */
-    Page<MajorInfo> majorInfoPageQuery(QueryVo vo);
+    Page<MajorInfoVo> majorInfoPageQuery(QueryVo vo);
 }
