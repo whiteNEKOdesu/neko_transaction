@@ -5,11 +5,9 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.service.ClassInfoService;
 import neko.transaction.member.vo.ClassInfoVo;
+import neko.transaction.member.vo.NewClassInfoVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -35,5 +33,17 @@ public class ClassInfoController {
     @PostMapping("class_info_page_query")
     public ResultObject<Page<ClassInfoVo>> pageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(classInfoService.pageQuery(vo));
+    }
+
+    /**
+     * 添加班级信息
+     * @param vo 添加班级信息的vo
+     * @return 响应结果
+     */
+    @PutMapping("new_class_info")
+    public ResultObject<Object> newClassInfo(@Validated @RequestBody NewClassInfoVo vo){
+        classInfoService.newClassInfo(vo);
+
+        return ResultObject.ok();
     }
 }

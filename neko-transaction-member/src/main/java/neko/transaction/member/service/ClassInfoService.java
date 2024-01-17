@@ -5,6 +5,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.ClassInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.member.vo.ClassInfoVo;
+import neko.transaction.member.vo.NewClassInfoVo;
 
 /**
  * <p>
@@ -21,4 +22,10 @@ public interface ClassInfoService extends IService<ClassInfo> {
      * @return 查询结果
      */
     Page<ClassInfoVo> pageQuery(QueryVo vo);
+
+    /**
+     * 添加班级信息
+     * @param vo 添加班级信息的vo
+     */
+    void newClassInfo(NewClassInfoVo vo);
 }

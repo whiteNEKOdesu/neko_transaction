@@ -27,7 +27,7 @@ public class ClassInfo implements Serializable {
     /**
      * 班级id
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.INPUT)
     private String classId;
 
     /**

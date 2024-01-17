@@ -1,5 +1,6 @@
 package neko.transaction.member.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.ClassInfo;
@@ -8,6 +9,7 @@ import neko.transaction.member.service.ClassInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.member.vo.ClassInfoVo;
 import neko.transaction.member.vo.MajorInfoVo;
+import neko.transaction.member.vo.NewClassInfoVo;
 import org.springframework.stereotype.Service;
 
 /**
@@ -39,5 +41,18 @@ public class ClassInfoServiceImpl extends ServiceImpl<ClassInfoMapper, ClassInfo
         page.setTotal(this.baseMapper.pageQueryNumber(vo.getQueryWords(), collegeId));
 
         return page;
+    }
+
+    /**
+     * 添加班级信息
+     * @param vo 添加班级信息的vo
+     */
+    @Override
+    public void newClassInfo(NewClassInfoVo vo) {
+        ClassInfo classInfo = new ClassInfo();
+        BeanUtil.copyProperties(vo, classInfo);
+
+        //添加班级信息
+        this.baseMapper.insert(classInfo);
     }
 }
