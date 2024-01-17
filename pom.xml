@@ -13,6 +13,7 @@
         <module>neko-transaction-common-base</module>
         <module>neko-transaction-gateway</module>
         <module>neko-transaction-member</module>
+        <module>neko-transaction-product</module>
     </modules>
 
     <properties>
