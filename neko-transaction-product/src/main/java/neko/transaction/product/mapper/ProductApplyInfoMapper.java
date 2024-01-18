@@ -35,4 +35,11 @@ public interface ProductApplyInfoMapper extends BaseMapper<ProductApplyInfo> {
      * @return 查询结果的总结果数
      */
     int unhandledApplyPageQueryNumber(String queryWords);
+
+    /**
+     * 修改未处理的申请状态
+     * @param productApplyId 申请id
+     * @param status 新修改的状态值
+     */
+    int updateUnhandledApplyStatus(String productApplyId, Byte status);
 }

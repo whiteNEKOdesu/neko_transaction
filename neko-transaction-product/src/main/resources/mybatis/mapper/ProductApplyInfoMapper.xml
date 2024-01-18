@@ -15,4 +15,10 @@
             where product_name like concat(#{queryWords},'%')
         </if>
     </select>
+
+    <update id="updateUnhandledApplyStatus">
+        update product_apply_info
+        set status = #{status}
+        where product_apply_id = #{productApplyId} and status = ${@neko.transaction.commonbase.utils.entity.ProductApplyStatus@UNHANDLED}
+    </update>
 </mapper>

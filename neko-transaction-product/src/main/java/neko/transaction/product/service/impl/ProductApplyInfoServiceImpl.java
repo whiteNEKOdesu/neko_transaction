@@ -3,19 +3,26 @@ package neko.transaction.product.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.ProductApplyStatus;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
 import neko.transaction.product.entity.CategoryInfo;
 import neko.transaction.product.entity.ProductApplyInfo;
+import neko.transaction.product.entity.ProductImage;
+import neko.transaction.product.entity.ProductInfo;
 import neko.transaction.product.feign.thirdparty.OSSFeignService;
 import neko.transaction.product.mapper.ProductApplyInfoMapper;
 import neko.transaction.product.service.CategoryInfoService;
 import neko.transaction.product.service.ProductApplyInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.product.service.ProductImageService;
+import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.NewProductApplyInfoVo;
 import neko.transaction.product.vo.ProductApplyInfoVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -33,6 +40,12 @@ import java.math.BigDecimal;
 public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMapper, ProductApplyInfo> implements ProductApplyInfoService {
     @Resource
     private CategoryInfoService categoryInfoService;
+
+    @Resource
+    private ProductInfoService productInfoService;
+
+    @Resource
+    private ProductImageService productImageService;
 
     @Resource
     private OSSFeignService ossFeignService;
@@ -86,5 +99,51 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         page.setTotal(this.baseMapper.unhandledApplyPageQueryNumber(vo.getQueryWords()));
 
         return page;
+    }
+
+    /**
+     * 通过商品上架申请
+     * @param productApplyId 申请id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void passApply(String productApplyId) {
+        ProductApplyInfo productApplyInfo = this.baseMapper.selectById(productApplyId);
+        if(productApplyInfo == null){
+            throw new NoSuchResultException("无此申请信息");
+        }
+
+        //step1 -> 修改申请状态为通过
+        if(this.baseMapper.updateUnhandledApplyStatus(productApplyId, ProductApplyStatus.PASSED) != 1){
+            return;
+        }
+
+        //step2 -> 添加商品信息到商品信息表
+        ProductInfo productInfo = new ProductInfo();
+        BeanUtil.copyProperties(productApplyInfo, productInfo);
+        productInfoService.save(productInfo);
+
+        //step3 -> 添加商品图片信息到商品图片信息表
+        ProductImage productImage = new ProductImage();
+        //设置商品id
+        productImage.setProductId(productInfo.getProductId())
+                //设置商品图片url
+                .setProductImage(productApplyInfo.getApplyImage());
+        productImageService.save(productImage);
+    }
+
+    /**
+     * 拒绝商品上架申请
+     * @param productApplyId 申请id
+     */
+    @Override
+    public void rejectApply(String productApplyId) {
+        ProductApplyInfo productApplyInfo = this.baseMapper.selectById(productApplyId);
+        if(productApplyInfo == null){
+            throw new NoSuchResultException("无此申请信息");
+        }
+
+        //修改状态为未通过
+        this.baseMapper.updateUnhandledApplyStatus(productApplyId, ProductApplyStatus.REJECTED);
     }
 }

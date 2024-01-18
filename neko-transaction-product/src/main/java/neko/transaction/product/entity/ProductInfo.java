@@ -58,7 +58,7 @@ public class ProductInfo implements Serializable {
     private BigDecimal price;
 
     /**
-     * 是否被封禁
+     * 是否封禁
      */
     private Boolean isBan;
 

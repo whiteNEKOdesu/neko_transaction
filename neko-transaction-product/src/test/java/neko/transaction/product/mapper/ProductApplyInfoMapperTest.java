@@ -21,4 +21,9 @@ public class ProductApplyInfoMapperTest {
     public void unhandledApplyPageQueryNumber(){
         System.out.println(productApplyInfoMapper.unhandledApplyPageQueryNumber("NEKO"));
     }
+
+    @Test
+    public void updateUnhandledApplyStatus(){
+        System.out.println(productApplyInfoMapper.updateUnhandledApplyStatus("apply_1", Byte.valueOf("1")));
+    }
 }

@@ -28,4 +28,16 @@ public interface ProductApplyInfoService extends IService<ProductApplyInfo> {
      * @return 查询结果
      */
     Page<ProductApplyInfoVo> unhandledApplyPageQuery(QueryVo vo);
+
+    /**
+     * 通过商品上架申请
+     * @param productApplyId 申请id
+     */
+    void passApply(String productApplyId);
+
+    /**
+     * 拒绝商品上架申请
+     * @param productApplyId 申请id
+     */
+    void rejectApply(String productApplyId);
 }

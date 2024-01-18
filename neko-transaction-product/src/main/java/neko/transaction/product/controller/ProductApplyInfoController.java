@@ -10,10 +10,7 @@ import neko.transaction.product.service.ProductApplyInfoService;
 import neko.transaction.product.vo.NewProductApplyInfoVo;
 import neko.transaction.product.vo.ProductApplyInfoVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -52,5 +49,18 @@ public class ProductApplyInfoController {
     @PostMapping("unhandled_apply_page_query")
     public ResultObject<Page<ProductApplyInfoVo>> unhandledApplyPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(productApplyInfoService.unhandledApplyPageQuery(vo));
+    }
+
+    /**
+     * 管理员通过商品上架申请
+     * @param productApplyId 申请id
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PostMapping("pass_apply")
+    public ResultObject<Object> applyObject(@RequestParam String productApplyId){
+        productApplyInfoService.passApply(productApplyId);
+
+        return ResultObject.ok();
     }
 }
