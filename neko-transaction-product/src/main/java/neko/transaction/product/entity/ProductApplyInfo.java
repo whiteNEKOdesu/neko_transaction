@@ -43,6 +43,16 @@ public class ProductApplyInfo implements Serializable {
     private Integer categoryId;
 
     /**
+     * 全分类名
+     */
+    private String fullCategoryName;
+
+    /**
+     * 商品名
+     */
+    private String productName;
+
+    /**
      * 商品描述
      */
     private String description;

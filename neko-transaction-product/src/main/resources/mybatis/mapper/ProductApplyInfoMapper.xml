@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.product.mapper.ProductApplyInfoMapper">
+    <select id="unhandledApplyPageQuery" resultType="neko.transaction.product.vo.ProductApplyInfoVo">
+        select * from product_apply_info
+        <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+            where product_name like concat(#{queryWords},'%')
+        </if>
+        limit #{start}, #{limited}
+    </select>
 
+    <select id="unhandledApplyPageQueryNumber" resultType="int">
+        select count(product_apply_id) from product_apply_info
+        <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+            where product_name like concat(#{queryWords},'%')
+        </if>
+    </select>
 </mapper>

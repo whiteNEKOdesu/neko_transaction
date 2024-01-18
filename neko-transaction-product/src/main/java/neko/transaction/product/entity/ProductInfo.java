@@ -43,6 +43,11 @@ public class ProductInfo implements Serializable {
     private Integer categoryId;
 
     /**
+     * 商品名
+     */
+    private String productName;
+
+    /**
      * 商品描述
      */
     private String description;
@@ -51,6 +56,11 @@ public class ProductInfo implements Serializable {
      * 商品价格
      */
     private BigDecimal price;
+
+    /**
+     * 是否被封禁
+     */
+    private Boolean isBan;
 
     /**
      * 0->下架，1->上架，2->删除

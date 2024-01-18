@@ -19,4 +19,11 @@ public interface CategoryInfoMapper extends BaseMapper<CategoryInfo> {
      * @param categoryId 分类id
      */
     void deleteLeafCategoryInfo(Integer categoryId);
+
+    /**
+     * 根据 categoryId 获取全分类名
+     * @param categoryId 分类id
+     * @return 全分类名
+     */
+    String getFullCategoryName(Integer categoryId);
 }

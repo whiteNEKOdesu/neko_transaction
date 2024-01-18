@@ -10,4 +10,11 @@
             ) child_count
         )
     </delete>
+
+    <select id="getFullCategoryName" resultType="String">
+        select concat_ws('-', second_lawyer.category_name, first_lawyer.category_name) from category_info first_lawyer
+        join category_info second_lawyer
+        on first_lawyer.parent_id = second_lawyer.category_id
+        where first_lawyer.category_id = #{categoryId} and first_lawyer.level = 1
+    </select>
 </mapper>

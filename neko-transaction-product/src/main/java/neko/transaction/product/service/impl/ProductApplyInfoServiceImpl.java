@@ -1,6 +1,9 @@
 package neko.transaction.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
 import neko.transaction.product.entity.CategoryInfo;
@@ -11,7 +14,9 @@ import neko.transaction.product.service.CategoryInfoService;
 import neko.transaction.product.service.ProductApplyInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.vo.NewProductApplyInfoVo;
+import neko.transaction.product.vo.ProductApplyInfoVo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -52,13 +57,34 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
 
         ProductApplyInfo productApplyInfo = new ProductApplyInfo();
         BeanUtil.copyProperties(vo, productApplyInfo);
+        //获取全分类名
+        String fullCategoryName = categoryInfoService.getFullCategoryName(vo.getCategoryId());
         //设置上传的图片url
         productApplyInfo.setApplyImage(r.getResult())
+                .setFullCategoryName(fullCategoryName)
                 //设置价格精度
                 .setPrice(productApplyInfo.getPrice()
                         .setScale(2, BigDecimal.ROUND_DOWN));
 
         //添加商品上架申请信息
         this.baseMapper.insert(productApplyInfo);
+    }
+
+    /**
+     * 分页查询未处理的商品上架请求
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<ProductApplyInfoVo> unhandledApplyPageQuery(QueryVo vo) {
+        Page<ProductApplyInfoVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.unhandledApplyPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords()));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.unhandledApplyPageQueryNumber(vo.getQueryWords()));
+
+        return page;
     }
 }

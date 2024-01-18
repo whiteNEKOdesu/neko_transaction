@@ -101,6 +101,16 @@ public class CategoryInfoServiceImpl extends ServiceImpl<CategoryInfoMapper, Cat
     }
 
     /**
+     * 根据 categoryId 获取全分类名
+     * @param categoryId 分类id
+     * @return 全分类名
+     */
+    @Override
+    public String getFullCategoryName(Integer categoryId) {
+        return this.baseMapper.getFullCategoryName(categoryId);
+    }
+
+    /**
      * 递归设置子分类信息
      * @param root 父分类
      * @param all 所有分类信息

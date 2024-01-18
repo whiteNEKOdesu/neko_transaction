@@ -1,8 +1,11 @@
 package neko.transaction.product.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.ProductApplyInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.NewProductApplyInfoVo;
+import neko.transaction.product.vo.ProductApplyInfoVo;
 
 /**
  * <p>
@@ -18,4 +21,11 @@ public interface ProductApplyInfoService extends IService<ProductApplyInfo> {
      * @param vo 商品上架申请信息的vo
      */
     void newProductApplyInfo(NewProductApplyInfoVo vo);
+
+    /**
+     * 分页查询未处理的商品上架请求
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    Page<ProductApplyInfoVo> unhandledApplyPageQuery(QueryVo vo);
 }

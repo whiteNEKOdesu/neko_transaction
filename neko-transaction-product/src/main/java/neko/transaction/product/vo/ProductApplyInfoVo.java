@@ -2,53 +2,55 @@ package neko.transaction.product.vo;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 添加上架商品申请vo
+ * 商品上架申请信息vo
  */
 @Data
 @Accessors(chain = true)
-public class NewProductApplyInfoVo implements Serializable {
+public class ProductApplyInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请用户的学号
+     * 商品上架申请id
      */
-    @NotBlank
+    private String productApplyId;
+
+    /**
+     * 申请用户id
+     */
     private String uid;
 
     /**
-     * 商品所属的分类id
+     * 分类id
      */
-    @NotNull
     private Integer categoryId;
+
+    /**
+     * 全分类名
+     */
+    private String fullCategoryName;
 
     /**
      * 商品名
      */
-    @NotBlank
     private String productName;
 
     /**
      * 商品描述
      */
-    @NotBlank
     private String description;
+
+    /**
+     * 申请商品图片
+     */
+    private String applyImage;
 
     /**
      * 商品价格
      */
     private BigDecimal price;
-
-    /**
-     * 申请商品图片
-     */
-    @NotNull
-    private MultipartFile applyImage;
 }
