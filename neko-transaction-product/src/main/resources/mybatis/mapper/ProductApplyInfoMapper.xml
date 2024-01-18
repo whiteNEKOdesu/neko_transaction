@@ -3,17 +3,23 @@
 <mapper namespace="neko.transaction.product.mapper.ProductApplyInfoMapper">
     <select id="unhandledApplyPageQuery" resultType="neko.transaction.product.vo.ProductApplyInfoVo">
         select * from product_apply_info
-        <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
-            where product_name like concat(#{queryWords},'%')
-        </if>
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                product_name like concat(#{queryWords},'%') and
+            </if>
+            status = ${@neko.transaction.commonbase.utils.entity.ProductApplyStatus@UNHANDLED}
+        </where>
         limit #{start}, #{limited}
     </select>
 
     <select id="unhandledApplyPageQueryNumber" resultType="int">
         select count(product_apply_id) from product_apply_info
-        <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
-            where product_name like concat(#{queryWords},'%')
-        </if>
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                product_name like concat(#{queryWords},'%') and
+            </if>
+            status = ${@neko.transaction.commonbase.utils.entity.ProductApplyStatus@UNHANDLED}
+        </where>
     </select>
 
     <update id="updateUnhandledApplyStatus">

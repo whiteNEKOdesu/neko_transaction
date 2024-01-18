@@ -18,12 +18,6 @@ public class NewProductApplyInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请用户的学号
-     */
-    @NotBlank
-    private String uid;
-
-    /**
      * 商品所属的分类id
      */
     @NotNull

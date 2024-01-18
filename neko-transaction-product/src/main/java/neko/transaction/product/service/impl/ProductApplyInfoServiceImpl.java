@@ -1,5 +1,6 @@
 package neko.transaction.product.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -61,13 +62,14 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
             throw new IllegalArgumentException("分类id不存在或不为叶节点");
         }
 
-        //上传图片到oss
+        //step1 -> 上传图片到oss
         ResultObject<String> r = ossFeignService.uploadImage(vo.getApplyImage());
         if(!r.getResponseCode().equals(200)){
             throw new ThirdPartyServiceException("thirdparty微服务远程调用异常");
         }
 
 
+        //step2 -> 添加商品上架申请信息
         ProductApplyInfo productApplyInfo = new ProductApplyInfo();
         BeanUtil.copyProperties(vo, productApplyInfo);
         //获取全分类名
@@ -75,11 +77,13 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         //设置上传的图片url
         productApplyInfo.setApplyImage(r.getResult())
                 .setFullCategoryName(fullCategoryName)
+                //设置学号
+                .setUid((String) StpUtil.getLoginId())
                 //设置价格精度
                 .setPrice(productApplyInfo.getPrice()
                         .setScale(2, BigDecimal.ROUND_DOWN));
 
-        //添加商品上架申请信息
+        //添加商品上架申请信息到商品上架申请信息表
         this.baseMapper.insert(productApplyInfo);
     }
 
