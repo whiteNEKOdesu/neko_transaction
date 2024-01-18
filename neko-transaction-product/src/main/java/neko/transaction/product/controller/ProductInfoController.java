@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-17
+ * @since 2024-01-18
  */
 @RestController
 @RequestMapping("/productInfo")

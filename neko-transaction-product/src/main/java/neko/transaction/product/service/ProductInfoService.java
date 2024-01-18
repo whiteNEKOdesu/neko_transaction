@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-17
+ * @since 2024-01-18
  */
 public interface ProductInfoService extends IService<ProductInfo> {
 

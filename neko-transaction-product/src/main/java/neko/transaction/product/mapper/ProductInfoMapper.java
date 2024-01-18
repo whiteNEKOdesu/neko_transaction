@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-17
+ * @since 2024-01-18
  */
 @Mapper
 public interface ProductInfoMapper extends BaseMapper<ProductInfo> {

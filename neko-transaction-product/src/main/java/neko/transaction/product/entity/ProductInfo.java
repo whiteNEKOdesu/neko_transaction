@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author NEKO
- * @since 2024-01-17
+ * @since 2024-01-18
  */
 @Getter
 @Setter
@@ -61,6 +61,11 @@ public class ProductInfo implements Serializable {
      * 上架时间
      */
     private LocalDateTime upTime;
+
+    /**
+     * 商品上架申请id
+     */
+    private String productApplyId;
 
     /**
      * 创建时间
