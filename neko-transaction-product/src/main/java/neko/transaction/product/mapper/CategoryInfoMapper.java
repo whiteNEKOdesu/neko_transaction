@@ -14,5 +14,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CategoryInfoMapper extends BaseMapper<CategoryInfo> {
-
+    /**
+     * 根据 categoryId 删除叶节点
+     * @param categoryId 分类id
+     */
+    void deleteLeafCategoryInfo(Integer categoryId);
 }

@@ -1,10 +1,13 @@
 package neko.transaction.product.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -39,7 +42,7 @@ public class CategoryInfo implements Serializable {
     /**
      * 分类层级，0-1
      */
-    private Byte level;
+    private Integer level;
 
     /**
      * 分类名
@@ -55,4 +58,10 @@ public class CategoryInfo implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 子分类
+     */
+    @TableField(exist = false)
+    private List<CategoryInfo> child;
 }
