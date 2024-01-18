@@ -63,4 +63,16 @@ public class ProductApplyInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 管理员拒绝商品上架申请
+     * @param productApplyId 申请id
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PostMapping("reject_apply")
+    public ResultObject<Object> rejectApply(@RequestParam String productApplyId){
+        productApplyInfoService.rejectApply(productApplyId);
+
+        return ResultObject.ok();
+    }
 }
