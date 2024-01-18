@@ -14,6 +14,7 @@
         <module>neko-transaction-gateway</module>
         <module>neko-transaction-member</module>
         <module>neko-transaction-product</module>
+        <module>neko-transaction-third-party</module>
     </modules>
 
     <properties>
