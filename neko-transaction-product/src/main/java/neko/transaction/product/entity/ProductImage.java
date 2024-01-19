@@ -27,9 +27,14 @@ public class ProductImage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 商品id
+     * 商品图片id
      */
     @TableId(type = IdType.ASSIGN_ID)
+    private String productImageId;
+
+    /**
+     * 商品id
+     */
     private String productId;
 
     /**
