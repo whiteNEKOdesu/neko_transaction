@@ -129,14 +129,6 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         //设置商品展示图片
         productInfo.setDisplayImage(applyImage);
         productInfoService.save(productInfo);
-
-        //step3 -> 添加商品图片信息到商品图片信息表
-        ProductImage productImage = new ProductImage();
-        //设置商品id
-        productImage.setProductId(productInfo.getProductId())
-                //设置商品图片url
-                .setProductImage(applyImage);
-        productImageService.save(productImage);
     }
 
     /**

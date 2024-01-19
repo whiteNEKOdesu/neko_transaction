@@ -5,6 +5,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.ProductInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.ProductInfoVo;
+import neko.transaction.product.vo.UpdateProductInfoVo;
 
 /**
  * <p>
@@ -28,4 +29,10 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @return 查询结果
      */
     ProductInfoVo getUserSelfProductInfoById(String productId);
+
+    /**
+     * 修改商品信息
+     * @param vo 修改商品信息vo
+     */
+    void updateProductInfo(UpdateProductInfoVo vo);
 }

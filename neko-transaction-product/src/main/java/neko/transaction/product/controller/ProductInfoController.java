@@ -6,6 +6,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.ProductInfoVo;
+import neko.transaction.product.vo.UpdateProductInfoVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +46,18 @@ public class ProductInfoController {
     @GetMapping("user_self_product_by_id")
     public ResultObject<ProductInfoVo> userSelfProductById(@RequestParam String productId){
         return ResultObject.ok(productInfoService.getUserSelfProductInfoById(productId));
+    }
+
+    /**
+     * 修改商品信息
+     * @param vo 修改商品信息vo
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("update_product_info")
+    public ResultObject<Object> updateProductInfo(@Validated UpdateProductInfoVo vo){
+        productInfoService.updateProductInfo(vo);
+
+        return ResultObject.ok();
     }
 }
