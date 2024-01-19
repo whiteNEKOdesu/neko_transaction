@@ -27,4 +27,32 @@
         set status = #{status}
         where product_apply_id = #{productApplyId} and status = ${@neko.transaction.commonbase.utils.entity.ProductApplyStatus@UNHANDLED}
     </update>
+
+    <select id="userSelfApplyPageQuery" resultType="neko.transaction.product.vo.ProductApplyInfoVo">
+        select * from product_apply_info
+        <where>
+            uid = #{uid}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and status = #{status}
+            </if>
+        </where>
+        order by product_apply_id desc
+        limit #{start}, #{limited}
+    </select>
+
+    <select id="userSelfApplyPageQueryNumber" resultType="int">
+        select count(product_apply_id) from product_apply_info
+        <where>
+            uid = #{uid}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>

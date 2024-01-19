@@ -40,4 +40,11 @@ public interface ProductApplyInfoService extends IService<ProductApplyInfo> {
      * @param productApplyId 申请id
      */
     void rejectApply(String productApplyId);
+
+    /**
+     * 分页查询学生自身的商品上架请求
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    Page<ProductApplyInfoVo> userSelfApplyPageQuery(QueryVo vo);
 }

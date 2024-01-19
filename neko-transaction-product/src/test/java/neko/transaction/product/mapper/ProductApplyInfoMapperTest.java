@@ -26,4 +26,20 @@ public class ProductApplyInfoMapperTest {
     public void updateUnhandledApplyStatus(){
         System.out.println(productApplyInfoMapper.updateUnhandledApplyStatus("apply_1", Byte.valueOf("1")));
     }
+
+    @Test
+    public void userSelfApplyPageQuery(){
+        System.out.println(productApplyInfoMapper.userSelfApplyPageQuery(8,
+                0,
+                "NEKO",
+                "1642067605873348610",
+                Byte.valueOf("0")));
+    }
+
+    @Test
+    public void userSelfApplyPageQueryNumber(){
+        System.out.println(productApplyInfoMapper.userSelfApplyPageQueryNumber("NEKO",
+                "1642067605873348610",
+                Byte.valueOf("0")));
+    }
 }

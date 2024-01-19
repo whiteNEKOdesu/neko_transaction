@@ -75,4 +75,15 @@ public class ProductApplyInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 分页查询学生自身的商品上架请求
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @SaCheckLogin
+    @PostMapping("user_self_page_query")
+    public ResultObject<Page<ProductApplyInfoVo>> userSelfPageQuery(@Validated @RequestBody QueryVo vo){
+        return ResultObject.ok(productApplyInfoService.userSelfApplyPageQuery(vo));
+    }
 }

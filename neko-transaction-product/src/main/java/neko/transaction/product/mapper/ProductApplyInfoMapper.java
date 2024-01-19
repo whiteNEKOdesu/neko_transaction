@@ -30,7 +30,7 @@ public interface ProductApplyInfoMapper extends BaseMapper<ProductApplyInfo> {
                                                      String queryWords);
 
     /**
-     * 分页查询未处理的商品上架请求的结果总页数
+     * 分页查询未处理的商品上架请求的结果总数
      * @param queryWords 查询条件
      * @return 查询结果的总结果数
      */
@@ -42,4 +42,30 @@ public interface ProductApplyInfoMapper extends BaseMapper<ProductApplyInfo> {
      * @param status 新修改的状态值
      */
     int updateUnhandledApplyStatus(String productApplyId, Byte status);
+
+    /**
+     * 分页查询学生自己的商品上架请求
+     * @param limited 每页数量
+     * @param start 起始位置
+     * @param queryWords 查询条件
+     * @param uid 学生id
+     * @param status 申请状态
+     * @return 查询结果
+     */
+    List<ProductApplyInfoVo> userSelfApplyPageQuery(Integer limited,
+                                                    Integer start,
+                                                    String queryWords,
+                                                    String uid,
+                                                    Byte status);
+
+    /**
+     * 分页查询学生自己的商品上架请求的结果总数
+     * @param queryWords 查询条件
+     * @param uid 学生id
+     * @param status 申请状态
+     * @return 查询结果的总结果数
+     */
+    int userSelfApplyPageQueryNumber(String queryWords,
+                                     String uid,
+                                     Byte status);
 }

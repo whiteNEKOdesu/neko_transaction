@@ -150,4 +150,29 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         //修改状态为未通过
         this.baseMapper.updateUnhandledApplyStatus(productApplyId, ProductApplyStatus.REJECTED);
     }
+
+    /**
+     * 分页查询学生自身的商品上架请求
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<ProductApplyInfoVo> userSelfApplyPageQuery(QueryVo vo) {
+        Page<ProductApplyInfoVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        String uid = (String) StpUtil.getLoginId();
+        Object objectId = vo.getObjectId();
+        Byte status = objectId != null ? Byte.valueOf(objectId.toString()) : null;
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.userSelfApplyPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords(),
+                uid,
+                status));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.userSelfApplyPageQueryNumber(vo.getQueryWords(),
+                uid,
+                status));
+
+        return page;
+    }
 }
