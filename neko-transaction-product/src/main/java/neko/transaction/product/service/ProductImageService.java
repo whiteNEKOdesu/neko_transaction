@@ -1,6 +1,8 @@
 package neko.transaction.product.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.ProductImage;
 
 import java.util.List;
@@ -19,5 +21,12 @@ public interface ProductImageService extends IService<ProductImage> {
      * @param productId 商品id
      * @return 响应结果
      */
-    List<ProductImage> allById(String productId);
+    List<ProductImage> allByProductId(String productId);
+
+    /**
+     * 分页查询指定的商品id对应的商品图片信息
+     * @param vo 查询vo
+     * @return 响应结果
+     */
+    Page<ProductImage> pageQueryByProductId(QueryVo vo);
 }

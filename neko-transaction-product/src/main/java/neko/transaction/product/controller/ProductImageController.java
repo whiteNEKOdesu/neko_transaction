@@ -30,8 +30,18 @@ public class ProductImageController {
      * @param productId 商品id
      * @return 响应结果
      */
-    @GetMapping("page_query_by_id")
-    public ResultObject<List<ProductImage>> pageQueryById(@RequestParam String productId){
-        return ResultObject.ok(productImageService.allById(productId));
+    @GetMapping("all_by_product_id")
+    public ResultObject<List<ProductImage>> allByProductId(@RequestParam String productId){
+        return ResultObject.ok(productImageService.allByProductId(productId));
+    }
+
+    /**
+     * 分页查询指定的商品id对应的商品图片信息
+     * @param vo 查询vo
+     * @return 响应结果
+     */
+    @PostMapping("page_query_by_product_id")
+    public ResultObject<Page<ProductImage>> pageQueryByProductId(@Validated @RequestBody QueryVo vo){
+        return ResultObject.ok(productImageService.pageQueryByProductId(vo));
     }
 }
