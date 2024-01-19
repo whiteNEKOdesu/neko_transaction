@@ -25,4 +25,10 @@ public class ProductInfoMapperTest {
                 "1642067605873348610",
                 Byte.valueOf("0")));
     }
+
+    @Test
+    public void getUserSelfProductInfoById(){
+        System.out.println(productInfoMapper.getUserSelfProductInfoById("1748171551460679681",
+                "1642067605873348610"));
+    }
 }

@@ -21,4 +21,11 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @return 查询结果
      */
     Page<ProductInfoVo> userSelfPageQuery(QueryVo vo);
+
+    /**
+     * 根据商品id查询用户自己的商品信息
+     * @param productId 商品id
+     * @return 查询结果
+     */
+    ProductInfoVo getUserSelfProductInfoById(String productId);
 }

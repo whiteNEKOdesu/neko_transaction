@@ -46,4 +46,14 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
         return page;
     }
+
+    /**
+     * 根据商品id查询用户自己的商品信息
+     * @param productId 商品id
+     * @return 查询结果
+     */
+    @Override
+    public ProductInfoVo getUserSelfProductInfoById(String productId) {
+        return this.baseMapper.getUserSelfProductInfoById(productId, (String) StpUtil.getLoginId());
+    }
 }

@@ -7,10 +7,7 @@ import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.ProductInfoVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -37,5 +34,16 @@ public class ProductInfoController {
     @PostMapping("user_self_page_query")
     public ResultObject<Page<ProductInfoVo>> userSelfPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(productInfoService.userSelfPageQuery(vo));
+    }
+
+    /**
+     * 根据商品id查询用户自己的商品信息
+     * @param productId 商品id
+     * @return 查询结果
+     */
+    @SaCheckLogin
+    @GetMapping("user_self_product_by_id")
+    public ResultObject<ProductInfoVo> userSelfProductById(@RequestParam String productId){
+        return ResultObject.ok(productInfoService.getUserSelfProductInfoById(productId));
     }
 }

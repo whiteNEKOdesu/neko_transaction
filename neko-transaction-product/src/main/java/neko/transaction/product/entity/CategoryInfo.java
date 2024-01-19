@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -20,8 +21,7 @@ import lombok.experimental.Accessors;
  * @author NEKO
  * @since 2024-01-17
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("category_info")
 public class CategoryInfo implements Serializable {

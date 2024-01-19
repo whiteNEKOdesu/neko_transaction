@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,8 +20,7 @@ import lombok.experimental.Accessors;
  * @author NEKO
  * @since 2024-01-17
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("product_apply_info")
 public class ProductApplyInfo implements Serializable {

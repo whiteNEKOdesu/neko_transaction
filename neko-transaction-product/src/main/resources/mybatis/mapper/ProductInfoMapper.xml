@@ -41,4 +41,16 @@
             and status != 2
         </where>
     </select>
+
+    <select id="getUserSelfProductInfoById" resultType="neko.transaction.product.vo.ProductInfoVo">
+        select product_info.*,
+        concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+        join category_info
+        on product_info.category_id = category_info.category_id
+        join category_info parent
+        on category_info.parent_id = parent.category_id
+        where product_info.product_id = #{productId} and uid = #{uid}
+--         过滤已删除商品信息
+        and status != 2
+    </select>
 </mapper>

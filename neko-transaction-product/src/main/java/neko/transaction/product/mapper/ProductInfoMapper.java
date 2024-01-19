@@ -42,4 +42,12 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
     int userSelfPageQueryNumber(String queryWords,
                                 String uid,
                                 Byte status);
+
+    /**
+     * 根据商品id查询用户自己的商品信息
+     * @param productId 商品id
+     * @param uid 学生学号
+     * @return 查询结果
+     */
+    ProductInfoVo getUserSelfProductInfoById(String productId, String uid);
 }
