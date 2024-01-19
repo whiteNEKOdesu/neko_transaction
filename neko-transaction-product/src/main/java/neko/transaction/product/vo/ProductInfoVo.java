@@ -1,35 +1,20 @@
-package neko.transaction.product.entity;
+package neko.transaction.product.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
-/**
- * <p>
- * 商品信息表
- * </p>
- *
- * @author NEKO
- * @since 2024-01-18
- */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
-@TableName("product_info")
-public class ProductInfo implements Serializable {
-
+public class ProductInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * 商品id
      */
-    @TableId(type = IdType.ASSIGN_ID)
     private String productId;
 
     /**
@@ -41,6 +26,11 @@ public class ProductInfo implements Serializable {
      * 分类id
      */
     private Integer categoryId;
+
+    /**
+     * 分类名
+     */
+    private String categoryName;
 
     /**
      * 商品名

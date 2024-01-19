@@ -125,6 +125,9 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         //step2 -> 添加商品信息到商品信息表
         ProductInfo productInfo = new ProductInfo();
         BeanUtil.copyProperties(productApplyInfo, productInfo);
+        String applyImage = productApplyInfo.getApplyImage();
+        //设置商品展示图片
+        productInfo.setDisplayImage(applyImage);
         productInfoService.save(productInfo);
 
         //step3 -> 添加商品图片信息到商品图片信息表
@@ -132,7 +135,7 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         //设置商品id
         productImage.setProductId(productInfo.getProductId())
                 //设置商品图片url
-                .setProductImage(productApplyInfo.getApplyImage());
+                .setProductImage(applyImage);
         productImageService.save(productImage);
     }
 

@@ -56,6 +56,11 @@ public class ProductApplyInfoVo implements Serializable {
     private BigDecimal price;
 
     /**
+     * 0->待审核，1->通过，2->未通过
+     */
+    private Byte status;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;
