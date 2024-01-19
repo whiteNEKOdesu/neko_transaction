@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.product.mapper.ProductInfoMapper">
+    <select id="userSelfPageQuery" resultType="neko.transaction.product.vo.ProductInfoVo">
+        select product_info.*,
+               concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+        join category_info
+        on product_info.category_id = category_info.category_id
+        join category_info parent
+        on category_info.parent_id = parent.category_id
+        <where>
+            uid = #{uid}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and product_info.status = #{status}
+            </if>
+--             过滤已删除商品信息
+            and status != 2
+        </where>
+        order by product_info.product_id desc
+        limit #{start}, #{limited}
+    </select>
 
+    <select id="userSelfPageQueryNumber" resultType="int">
+        select count(product_info.product_id) from product_info
+        join category_info
+        on product_info.category_id = category_info.category_id
+        join category_info parent
+        on category_info.parent_id = parent.category_id
+        <where>
+            uid = #{uid}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and product_info.status = #{status}
+            </if>
+--             过滤已删除商品信息
+            and status != 2
+        </where>
+    </select>
 </mapper>

@@ -44,7 +44,7 @@ public interface ProductApplyInfoMapper extends BaseMapper<ProductApplyInfo> {
     int updateUnhandledApplyStatus(String productApplyId, Byte status);
 
     /**
-     * 分页查询学生自己的商品上架请求
+     * 分页查询学生自身的商品上架请求
      * @param limited 每页数量
      * @param start 起始位置
      * @param queryWords 查询条件
@@ -59,7 +59,7 @@ public interface ProductApplyInfoMapper extends BaseMapper<ProductApplyInfo> {
                                                     Byte status);
 
     /**
-     * 分页查询学生自己的商品上架请求的结果总数
+     * 分页查询学生自身的商品上架请求的结果总数
      * @param queryWords 查询条件
      * @param uid 学生id
      * @param status 申请状态

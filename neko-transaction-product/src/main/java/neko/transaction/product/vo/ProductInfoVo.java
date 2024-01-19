@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * 商品信息vo
+ */
 @Data
 @Accessors(chain = true)
 public class ProductInfoVo implements Serializable {
@@ -28,9 +31,9 @@ public class ProductInfoVo implements Serializable {
     private Integer categoryId;
 
     /**
-     * 分类名
+     * 全分类名
      */
-    private String categoryName;
+    private String fullCategoryName;
 
     /**
      * 商品名
