@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
-            <version>3.5.3</version>
+            <version>${mybatis.plus.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
