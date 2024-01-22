@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.ware.mapper.WareInfoMapper">
-
+    <select id="wareInfoById" resultType="neko.transaction.ware.vo.WareInfoVo">
+        select ware_id, product_id, (stock - lock_number) stock, create_time, update_time
+        from ware_info
+        where product_id = #{productId}
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package neko.transaction.ware.mapper;
 
 import neko.transaction.ware.entity.WareInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import neko.transaction.ware.vo.WareInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -14,5 +15,10 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface WareInfoMapper extends BaseMapper<WareInfo> {
-
+    /**
+     * 根据商品id获取库存信息
+     * @param productId 商品id
+     * @return 库存信息
+     */
+    WareInfoVo wareInfoById(String productId);
 }
