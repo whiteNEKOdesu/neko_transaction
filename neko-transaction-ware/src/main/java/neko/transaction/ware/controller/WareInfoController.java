@@ -1,5 +1,6 @@
 package neko.transaction.ware.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.ware.service.WareInfoService;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,19 @@ public class WareInfoController {
     @PostMapping("new_ware_info")
     public ResultObject<Object> newWareInfo(@RequestParam String productId, @RequestParam Integer stock){
         wareInfoService.newWareInfo(productId, stock);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 修改库存数量
+     * @param productId 商品id
+     * @param offset 库存偏移量
+     */
+    @SaCheckLogin
+    @PostMapping("update_stock")
+    public ResultObject<Object> updateStock(@RequestParam String productId, @RequestParam Integer offset){
+        wareInfoService.updateStock(productId, offset);
 
         return ResultObject.ok();
     }

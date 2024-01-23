@@ -21,4 +21,11 @@ public interface WareInfoMapper extends BaseMapper<WareInfo> {
      * @return 库存信息
      */
     WareInfoVo wareInfoById(String productId);
+
+    /**
+     * 根据商品id修改库存剩余数量
+     * @param productId 商品id
+     * @param offset 库存偏移量
+     */
+    int updateStockByProductId(String productId, int offset);
 }

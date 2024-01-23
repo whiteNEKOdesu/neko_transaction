@@ -14,4 +14,9 @@ public class WareInfoMapperTest {
     public void wareInfoById(){
         System.out.println(wareInfoMapper.wareInfoById("NEKO"));
     }
+
+    @Test
+    public void updateStockByProductId(){
+        System.out.println(wareInfoMapper.updateStockByProductId("1749707857651134465", 5));
+    }
 }

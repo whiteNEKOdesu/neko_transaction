@@ -26,4 +26,11 @@ public interface WareInfoService extends IService<WareInfo> {
      * @param stock 库存数量
      */
     void newWareInfo(String productId, Integer stock);
+
+    /**
+     * 修改库存数量
+     * @param productId 商品id
+     * @param offset 库存偏移量
+     */
+    void updateStock(String productId, int offset);
 }

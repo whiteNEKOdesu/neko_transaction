@@ -6,4 +6,11 @@
         from ware_info
         where product_id = #{productId}
     </select>
+
+    <update id="updateStockByProductId">
+        update ware_info
+        set stock = stock + #{offset}
+--         修改后库存数量必须 >= 0
+        where product_id = #{productId} and (stock - lock_number + #{offset}) >= 0
+    </update>
 </mapper>
