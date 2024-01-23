@@ -19,4 +19,11 @@ public interface WareInfoService extends IService<WareInfo> {
      * @return 库存信息
      */
     WareInfoVo wareInfoById(String productId);
+
+    /**
+     * 添加库存信息
+     * @param productId 商品id
+     * @param stock 库存数量
+     */
+    void newWareInfo(String productId, Integer stock);
 }

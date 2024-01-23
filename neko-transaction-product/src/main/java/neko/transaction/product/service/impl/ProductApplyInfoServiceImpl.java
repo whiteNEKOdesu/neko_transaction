@@ -2,29 +2,28 @@ package neko.transaction.product.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.seata.spring.annotation.GlobalTransactional;
 import neko.transaction.commonbase.utils.entity.ProductApplyStatus;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
+import neko.transaction.commonbase.utils.exception.WareServiceException;
 import neko.transaction.product.entity.CategoryInfo;
 import neko.transaction.product.entity.ProductApplyInfo;
-import neko.transaction.product.entity.ProductImage;
 import neko.transaction.product.entity.ProductInfo;
 import neko.transaction.product.feign.thirdparty.OSSFeignService;
+import neko.transaction.product.feign.ware.WareInfoFeignService;
 import neko.transaction.product.mapper.ProductApplyInfoMapper;
 import neko.transaction.product.service.CategoryInfoService;
 import neko.transaction.product.service.ProductApplyInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.service.ProductImageService;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.NewProductApplyInfoVo;
 import neko.transaction.product.vo.ProductApplyInfoVo;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -50,6 +49,9 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
 
     @Resource
     private OSSFeignService ossFeignService;
+
+    @Resource
+    private WareInfoFeignService wareInfoFeignService;
 
     /**
      * 添加商品上架申请信息
@@ -110,7 +112,7 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
      * @param productApplyId 申请id
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @GlobalTransactional(rollbackFor = Exception.class)
     public void passApply(String productApplyId) {
         ProductApplyInfo productApplyInfo = this.baseMapper.selectById(productApplyId);
         if(productApplyInfo == null){
@@ -129,6 +131,12 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
         //设置商品展示图片
         productInfo.setDisplayImage(applyImage);
         productInfoService.save(productInfo);
+
+        //step3 -> 远程调用库存微服务初始化库存
+        ResultObject<Object> r = wareInfoFeignService.newWareInfo(productInfo.getProductId(), 0);
+        if(!r.getResponseCode().equals(200)){
+            throw new WareServiceException("ware微服务远程调用异常");
+        }
     }
 
     /**

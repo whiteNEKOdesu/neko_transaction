@@ -2,10 +2,7 @@ package neko.transaction.ware.controller;
 
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.ware.service.WareInfoService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -31,5 +28,18 @@ public class WareInfoController {
     @GetMapping("ware_info_by_id")
     public ResultObject<Object> wareInfoById(@RequestParam String productId){
         return ResultObject.ok(wareInfoService.wareInfoById(productId));
+    }
+
+    /**
+     * 添加库存信息，仅提供给微服务远程调用
+     * @param productId 商品id
+     * @param stock 库存数量
+     * @return 响应结果
+     */
+    @PostMapping("new_ware_info")
+    public ResultObject<Object> newWareInfo(@RequestParam String productId, @RequestParam Integer stock){
+        wareInfoService.newWareInfo(productId, stock);
+
+        return ResultObject.ok();
     }
 }

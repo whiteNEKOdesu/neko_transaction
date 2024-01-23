@@ -23,13 +23,11 @@ public class SATokenConfig {
                 .addInclude("/order/order_log/preorder_status")
                 .addInclude("/ware/ware_info/unlock_stock")
                 .addInclude("/ware/stock_lock_log/order_record_sku_id_infos")
-                .addInclude("/product/sku_info/order_detail_infos")
                 .addInclude("/ware/ware_info/confirm_lock_stock_pay")
-                .addInclude("/product/point_dict/price_point")
-                .addInclude("/member/member_info/add_point")
                 .addInclude("/member/member_info/real_name_info")
                 .addInclude("/third_party/oss/upload_image")
                 .addInclude("/third_party/oss/delete_file")
+                .addInclude("/ware/ware_info/new_ware_info")
                 .setAuth(obj -> {
                     StpUtil.checkRole("*");
                 })
