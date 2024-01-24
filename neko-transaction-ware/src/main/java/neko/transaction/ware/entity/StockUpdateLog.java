@@ -29,8 +29,8 @@ public class StockUpdateLog implements Serializable {
     /**
      * 库存更新记录id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String stockUpdateLogId;
+    @TableId(type = IdType.AUTO)
+    private Long stockUpdateLogId;
 
     /**
      * 商品id

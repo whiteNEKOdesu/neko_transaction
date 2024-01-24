@@ -28,8 +28,8 @@ public class MemberChatInfo implements Serializable {
     /**
      * 聊天id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String chatId;
+    @TableId(type = IdType.AUTO)
+    private Long chatId;
 
     /**
      * 聊天发起人id

@@ -33,13 +33,13 @@ public interface ProductApplyInfoService extends IService<ProductApplyInfo> {
      * 通过商品上架申请
      * @param productApplyId 申请id
      */
-    void passApply(String productApplyId);
+    void passApply(Long productApplyId);
 
     /**
      * 拒绝商品上架申请
      * @param productApplyId 申请id
      */
-    void rejectApply(String productApplyId);
+    void rejectApply(Long productApplyId);
 
     /**
      * 分页查询学生自身的商品上架请求

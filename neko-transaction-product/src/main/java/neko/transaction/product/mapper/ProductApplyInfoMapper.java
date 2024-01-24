@@ -41,7 +41,7 @@ public interface ProductApplyInfoMapper extends BaseMapper<ProductApplyInfo> {
      * @param productApplyId 申请id
      * @param status 新修改的状态值
      */
-    int updateUnhandledApplyStatus(String productApplyId, Byte status);
+    int updateUnhandledApplyStatus(Long productApplyId, Byte status);
 
     /**
      * 分页查询学生自身的商品上架请求

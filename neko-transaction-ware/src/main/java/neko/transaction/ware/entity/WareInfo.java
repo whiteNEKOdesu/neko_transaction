@@ -29,8 +29,8 @@ public class WareInfo implements Serializable {
     /**
      * 库存id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String wareId;
+    @TableId(type = IdType.AUTO)
+    private Long wareId;
 
     /**
      * 商品id

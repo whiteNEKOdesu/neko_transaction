@@ -17,7 +17,7 @@ public class WareInfoVo implements Serializable {
     /**
      * 库存id
      */
-    private String wareId;
+    private Long wareId;
 
     /**
      * 商品id

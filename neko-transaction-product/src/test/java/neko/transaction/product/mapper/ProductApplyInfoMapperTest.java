@@ -24,7 +24,7 @@ public class ProductApplyInfoMapperTest {
 
     @Test
     public void updateUnhandledApplyStatus(){
-        System.out.println(productApplyInfoMapper.updateUnhandledApplyStatus("apply_1", Byte.valueOf("1")));
+        System.out.println(productApplyInfoMapper.updateUnhandledApplyStatus(1L, Byte.valueOf("1")));
     }
 
     @Test

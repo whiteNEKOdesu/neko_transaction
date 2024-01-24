@@ -113,7 +113,7 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
      */
     @Override
     @GlobalTransactional(rollbackFor = Exception.class)
-    public void passApply(String productApplyId) {
+    public void passApply(Long productApplyId) {
         ProductApplyInfo productApplyInfo = this.baseMapper.selectById(productApplyId);
         if(productApplyInfo == null){
             throw new NoSuchResultException("无此申请信息");
@@ -144,7 +144,7 @@ public class ProductApplyInfoServiceImpl extends ServiceImpl<ProductApplyInfoMap
      * @param productApplyId 申请id
      */
     @Override
-    public void rejectApply(String productApplyId) {
+    public void rejectApply(Long productApplyId) {
         ProductApplyInfo productApplyInfo = this.baseMapper.selectById(productApplyId);
         if(productApplyInfo == null){
             throw new NoSuchResultException("无此申请信息");

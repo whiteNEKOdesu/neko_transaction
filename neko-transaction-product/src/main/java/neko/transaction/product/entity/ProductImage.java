@@ -29,8 +29,8 @@ public class ProductImage implements Serializable {
     /**
      * 商品图片id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String productImageId;
+    @TableId(type = IdType.AUTO)
+    private Long productImageId;
 
     /**
      * 商品id

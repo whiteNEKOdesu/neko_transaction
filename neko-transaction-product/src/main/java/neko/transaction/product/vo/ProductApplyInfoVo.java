@@ -18,7 +18,7 @@ public class ProductApplyInfoVo implements Serializable {
     /**
      * 商品上架申请id
      */
-    private String productApplyId;
+    private Long productApplyId;
 
     /**
      * 申请用户id

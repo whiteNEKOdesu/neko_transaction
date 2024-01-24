@@ -29,8 +29,8 @@ public class StockLockLog implements Serializable {
     /**
      * 库存锁定记录id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String stockLockLogId;
+    @TableId(type = IdType.AUTO)
+    private Long stockLockLogId;
 
     /**
      * 订单id

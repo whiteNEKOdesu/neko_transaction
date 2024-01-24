@@ -30,8 +30,8 @@ public class ProductApplyInfo implements Serializable {
     /**
      * 商品上架申请id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String productApplyId;
+    @TableId(type = IdType.AUTO)
+    private Long productApplyId;
 
     /**
      * 申请用户id

@@ -58,7 +58,7 @@ public class ProductApplyInfoController {
      */
     @SaCheckRole(RoleType.ADMIN)
     @PostMapping("pass_apply")
-    public ResultObject<Object> applyObject(@RequestParam String productApplyId){
+    public ResultObject<Object> applyObject(@RequestParam Long productApplyId){
         productApplyInfoService.passApply(productApplyId);
 
         return ResultObject.ok();
@@ -70,7 +70,7 @@ public class ProductApplyInfoController {
      */
     @SaCheckRole(RoleType.ADMIN)
     @PostMapping("reject_apply")
-    public ResultObject<Object> rejectApply(@RequestParam String productApplyId){
+    public ResultObject<Object> rejectApply(@RequestParam Long productApplyId){
         productApplyInfoService.rejectApply(productApplyId);
 
         return ResultObject.ok();
