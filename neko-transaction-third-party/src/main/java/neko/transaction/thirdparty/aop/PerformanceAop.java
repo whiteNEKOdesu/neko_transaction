@@ -51,7 +51,7 @@ public class PerformanceAop {
 
         if(isDebug){
             logExecute(cost, joinPoint, false);
-        }else if(cost > 100){
+        }else if(cost > 5000){
             logExecute(cost, joinPoint, true);
         }
 

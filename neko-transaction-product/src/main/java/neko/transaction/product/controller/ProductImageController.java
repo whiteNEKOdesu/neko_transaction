@@ -1,10 +1,12 @@
 package neko.transaction.product.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.entity.ProductImage;
 import neko.transaction.product.service.ProductImageService;
+import neko.transaction.product.vo.NewProductImageVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +45,18 @@ public class ProductImageController {
     @PostMapping("page_query_by_product_id")
     public ResultObject<Page<ProductImage>> pageQueryByProductId(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(productImageService.pageQueryByProductId(vo));
+    }
+
+    /**
+     * 添加商品图片
+     * @param vo 添加商品图片vo
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("new_product_image")
+    public ResultObject<Object> newProductImage(@Validated NewProductImageVo vo){
+        productImageService.newProductImage(vo);
+
+        return ResultObject.ok();
     }
 }

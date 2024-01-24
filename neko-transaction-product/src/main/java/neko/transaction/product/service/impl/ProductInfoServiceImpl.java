@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
@@ -18,6 +19,7 @@ import neko.transaction.product.vo.ProductApplyInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -88,6 +90,7 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         if(productInfo == null){
             throw new IllegalArgumentException("productId对应商品信息不存在");
         }
+        //商品不属于该用户
         if(!productInfo.getUid().equals(StpUtil.getLoginId())){
             throw new NotPermissionException("访问商品信息权限不足");
         }
@@ -101,10 +104,16 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
         //上传图片的url
         String uploadUrl = null;
+        //图片文件
+        MultipartFile image = vo.getDisplayImage();
 
         //step1 -> 上传图片到 oss
-        if(vo.getDisplayImage() != null){
-            ResultObject<String> r = ossFeignService.uploadImage(vo.getDisplayImage());
+        if(image != null){
+            if(image.getSize() > Constant.IMAGE_MAX_SIZE){
+                throw new IllegalArgumentException("图片超出上传大小限制");
+            }
+
+            ResultObject<String> r = ossFeignService.uploadImage(image);
             if(!r.getResponseCode().equals(200)){
                 throw new ThirdPartyServiceException("third_party微服务远程调用异常");
             }
