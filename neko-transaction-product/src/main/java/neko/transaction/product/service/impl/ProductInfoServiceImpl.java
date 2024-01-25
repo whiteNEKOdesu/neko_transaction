@@ -167,8 +167,11 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
         //step2 -> 修改商品信息状态为上架状态
         ProductInfo todoUpdate = new ProductInfo();
+        //上架时间
+        LocalDateTime now = LocalDateTime.now();
         todoUpdate.setProductId(productId)
-                .setStatus(ProductStatus.UP);
+                .setStatus(ProductStatus.UP)
+                .setUpTime(now);
         //修改商品信息表
         this.baseMapper.updateById(todoUpdate);
 
@@ -185,8 +188,6 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         ProductInfoES productInfoES = new ProductInfoES();
         //将商品信息复制到 elasticsearch 实体类
         BeanUtil.copyProperties(productInfo, productInfoES);
-        //上架时间
-        LocalDateTime now = LocalDateTime.now();
         productInfoES.setUserName(memberInfoTo.getUserName())
                 .setRealName(memberInfoTo.getRealName())
                 .setUpTime(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
