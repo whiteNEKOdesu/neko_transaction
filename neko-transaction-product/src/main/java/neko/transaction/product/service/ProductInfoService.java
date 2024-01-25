@@ -41,4 +41,10 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @param productId 商品id
      */
     void upProduct(String productId);
+
+    /**
+     * 下架商品
+     * @param productId 商品id
+     */
+    void downProduct(String productId);
 }

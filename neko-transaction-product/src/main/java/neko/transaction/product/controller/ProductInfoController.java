@@ -73,4 +73,17 @@ public class ProductInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 下架商品
+     * @param productId 商品id
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("down_product")
+    public ResultObject<Object> downProduct(@RequestParam String productId){
+        productInfoService.downProduct(productId);
+
+        return ResultObject.ok();
+    }
 }

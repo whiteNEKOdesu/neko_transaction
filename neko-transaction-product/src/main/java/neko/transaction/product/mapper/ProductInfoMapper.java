@@ -50,4 +50,11 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
      * @return 查询结果
      */
     ProductInfoVo getUserSelfProductInfoById(String productId, String uid);
+
+    /**
+     * 下架商品，更新商品状态为下架状态
+     * @param productId 商品id
+     * @param uid 学生学号
+     */
+    void downProduct(String productId, String uid);
 }

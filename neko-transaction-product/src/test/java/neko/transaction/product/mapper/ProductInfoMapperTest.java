@@ -31,4 +31,9 @@ public class ProductInfoMapperTest {
         System.out.println(productInfoMapper.getUserSelfProductInfoById("1748171551460679681",
                 "1642067605873348610"));
     }
+
+    @Test
+    public void downProduct(){
+        productInfoMapper.downProduct("1750067945863770113", "1642067605873348610");
+    }
 }

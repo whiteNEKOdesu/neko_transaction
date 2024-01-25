@@ -197,4 +197,27 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
         log.info("商品上架成功，productId: " + productId);
     }
+
+    /**
+     * 下架商品
+     * @param productId 商品id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void downProduct(String productId) {
+        //step1 -> 获取商品信息，校验权限
+        ProductInfo productInfo = this.baseMapper.selectById(productId);
+        String uid = StpUtil.getLoginId().toString();
+        if(productInfo == null || !productInfo.getUid().equals(uid)){
+            throw new NotPermissionException("商品不属于此用户");
+        }
+
+        //step2 -> 修改商品状态为下架状态
+        this.baseMapper.downProduct(productId, uid);
+
+        //step3 -> 删除 elasticsearch 数据
+        productInfoESService.deleteByProductId(productId);
+
+        log.info("商品下架成功，productId: " + productId);
+    }
 }

@@ -53,4 +53,12 @@
 --         过滤已删除商品信息
         and status != ${@neko.transaction.commonbase.utils.entity.ProductStatus@DELETED}
     </select>
+
+    <update id="downProduct">
+        update product_info
+        set status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@DOWN},
+            up_time = null
+        where product_id = #{productId} and uid = #{uid} and
+              status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@UP}
+    </update>
 </mapper>

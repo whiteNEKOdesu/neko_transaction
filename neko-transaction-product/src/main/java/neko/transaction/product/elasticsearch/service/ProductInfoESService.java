@@ -21,4 +21,10 @@ public interface ProductInfoESService {
      * 添加商品信息到 elasticsearch中
      */
     void newProductInfoToES(ProductInfoES productInfoES);
+
+    /**
+     * 根据商品id删除 elasticsearch 数据
+     * @param productId 商品id
+     */
+    void deleteByProductId(String productId);
 }

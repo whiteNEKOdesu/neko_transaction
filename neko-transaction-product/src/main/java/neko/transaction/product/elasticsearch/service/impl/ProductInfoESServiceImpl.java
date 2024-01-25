@@ -3,10 +3,7 @@ package neko.transaction.product.elasticsearch.service.impl;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch.core.BulkRequest;
-import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +76,29 @@ public class ProductInfoESServiceImpl implements ProductInfoESService {
             throw new ElasticSearchUpdateException("elasticsearch添加错误");
         }
         if(bulkResponse.errors()){
+            throw new ElasticSearchUpdateException("elasticsearch添加错误");
+        }
+    }
+
+    /**
+     * 根据商品id删除 elasticsearch 数据
+     * @param productId 商品id
+     */
+    @Override
+    public void deleteByProductId(String productId) {
+        DeleteByQueryResponse response;
+
+        try {
+            response = elasticsearchClient.deleteByQuery(builder ->
+                    builder.index(Constant.ELASTIC_SEARCH_INDEX)
+                            .query(q ->
+                                    q.term(t ->
+                                            t.field("productId")
+                                                    .value(productId))));
+        }catch (Exception e){
+            throw new ElasticSearchUpdateException("elasticsearch添加错误");
+        }
+        if(Boolean.TRUE.equals(response.timedOut())){
             throw new ElasticSearchUpdateException("elasticsearch添加错误");
         }
     }
