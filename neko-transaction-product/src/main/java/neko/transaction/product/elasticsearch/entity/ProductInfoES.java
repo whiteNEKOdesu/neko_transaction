@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * elasticsearch商品信息实体类
@@ -73,4 +74,23 @@ public class ProductInfoES implements Serializable {
      * 销量
      */
     private Integer saleNumber;
+
+    /**
+     * 高亮显示，不在 elasticsearch 中存储
+     */
+    private HighLight highLight;
+
+    @Data
+    @Accessors(chain = true)
+    public static class HighLight{
+        /**
+         * 商品名高亮
+         */
+        private List<String> productName;
+
+        /**
+         * 商品描述高亮
+         */
+        private List<String> description;
+    }
 }
