@@ -60,4 +60,17 @@ public class ProductInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 上架商品
+     * @param productId 商品id
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("up_product")
+    public ResultObject<Object> upProduct(@RequestParam String productId){
+        productInfoService.upProduct(productId);
+
+        return ResultObject.ok();
+    }
 }

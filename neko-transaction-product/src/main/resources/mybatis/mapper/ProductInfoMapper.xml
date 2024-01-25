@@ -17,7 +17,7 @@
                 and product_info.status = #{status}
             </if>
 --             过滤已删除商品信息
-            and status != 2
+            and status != ${@neko.transaction.commonbase.utils.entity.ProductStatus@DELETED}
         </where>
         order by product_info.product_id desc
         limit #{start}, #{limited}
@@ -38,7 +38,7 @@
                 and product_info.status = #{status}
             </if>
 --             过滤已删除商品信息
-            and status != 2
+            and status != ${@neko.transaction.commonbase.utils.entity.ProductStatus@DELETED}
         </where>
     </select>
 
@@ -51,6 +51,6 @@
         on category_info.parent_id = parent.category_id
         where product_info.product_id = #{productId} and uid = #{uid}
 --         过滤已删除商品信息
-        and status != 2
+        and status != ${@neko.transaction.commonbase.utils.entity.ProductStatus@DELETED}
     </select>
 </mapper>

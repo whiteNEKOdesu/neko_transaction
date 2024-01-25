@@ -66,14 +66,19 @@ public class ProductInfoVo implements Serializable {
     private Byte status;
 
     /**
+     * 商品上架申请id
+     */
+    private String productApplyId;
+
+    /**
      * 上架时间
      */
     private LocalDateTime upTime;
 
     /**
-     * 商品上架申请id
+     * 销量
      */
-    private String productApplyId;
+    private Integer saleNumber;
 
     /**
      * 创建时间

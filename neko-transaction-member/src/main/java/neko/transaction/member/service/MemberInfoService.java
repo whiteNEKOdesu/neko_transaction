@@ -47,4 +47,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @param uid 学号
      */
     void deleteById(String uid);
+
+    /**
+     * 获取用户自身的详细信息
+     * @return 用户自身的详细信息
+     */
+    MemberInfoVo userSelfInfo();
 }

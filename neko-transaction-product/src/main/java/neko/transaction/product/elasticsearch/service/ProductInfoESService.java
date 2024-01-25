@@ -1,5 +1,6 @@
 package neko.transaction.product.elasticsearch.service;
 
+import neko.transaction.product.elasticsearch.entity.ProductInfoES;
 import neko.transaction.product.vo.ProductInfoESQueryVo;
 import neko.transaction.product.vo.ProductInfoESVo;
 
@@ -15,4 +16,9 @@ public interface ProductInfoESService {
      * @return 查询结果
      */
     ProductInfoESVo productInfoPageQuery(ProductInfoESQueryVo vo) throws IOException;
+
+    /**
+     * 添加商品信息到 elasticsearch中
+     */
+    void newProductInfoToES(ProductInfoES productInfoES);
 }

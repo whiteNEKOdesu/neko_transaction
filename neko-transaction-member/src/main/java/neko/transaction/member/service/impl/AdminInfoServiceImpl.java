@@ -68,8 +68,11 @@ public class AdminInfoServiceImpl extends ServiceImpl<AdminInfoMapper, AdminInfo
                 StpUtil.login(adminInfo.getAdminId());
                 AdminInfoVo adminInfoVo = new AdminInfoVo();
                 BeanUtil.copyProperties(adminInfo, adminInfoVo);
+                //设置token
                 adminInfoVo.setToken(StpUtil.getTokenValue())
+                        //设置权限信息
                         .setWeightTypes(weightRoleRelationService.getWeightTypesByUid(adminInfo.getAdminId()))
+                        //设置角色信息
                         .setRoleTypes(weightRoleRelationService.getRoleTypesByUid(adminInfo.getAdminId()));
                 resultObject.setResult(adminInfoVo)
                         .setResponseStatus(Response.SUCCESS);

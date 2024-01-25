@@ -71,12 +71,16 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
             String userPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getUserPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
             //校验 MD5 hash 后的密码
             if(DigestUtils.md5DigestAsHex((userPassword + memberInfo.getSalt()).getBytes()).equals(memberInfo.getUserPassword())){
-                StpUtil.login(memberInfo.getUid());
-                MemberInfoVo memberInfoVo = new MemberInfoVo();
-                BeanUtil.copyProperties(memberInfo, memberInfoVo);
+                String uid = memberInfo.getUid();
+                StpUtil.login(uid);
+                //获取用户详细信息
+                MemberInfoVo memberInfoVo = this.baseMapper.getMemberInfoByUid(uid);
 
+                //设置 token
                 memberInfoVo.setToken(StpUtil.getTokenValue())
+                        //设置权限信息
                         .setWeightTypes(weightRoleRelationService.getWeightTypesByUid(memberInfo.getUid()))
+                        //设置角色信息
                         .setRoleTypes(weightRoleRelationService.getRoleTypesByUid(memberInfo.getUid()));
                 resultObject.setResult(memberInfoVo)
                         .setResponseStatus(Response.SUCCESS);
@@ -147,5 +151,20 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     @Override
     public void deleteById(String uid) {
         this.baseMapper.deleteById(uid);
+    }
+
+    /**
+     * 获取用户自身的详细信息
+     * @return 用户自身的详细信息
+     */
+    @Override
+    public MemberInfoVo userSelfInfo() {
+        String uid = StpUtil.getLoginId().toString();
+
+        return this.baseMapper.getMemberInfoByUid(uid)
+                //设置权限信息
+                .setWeightTypes(weightRoleRelationService.getWeightTypesByUid(uid))
+                //设置角色信息
+                .setRoleTypes(weightRoleRelationService.getRoleTypesByUid(uid));
     }
 }

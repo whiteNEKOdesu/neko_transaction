@@ -39,4 +39,16 @@
             </if>
         </where>
     </select>
+
+    <select id="getMemberInfoByUid" resultType="neko.transaction.member.vo.MemberInfoVo">
+        select member_info.*, major_info.major_id, major_info.major_name,
+        college_info.college_id, college_info.college_name from member_info
+        join class_info
+        on member_info.class_id = class_info.class_id
+        join major_info
+        on class_info.major_id = major_info.major_id
+        join college_info
+        on major_info.college_id = college_info.college_id
+        where uid = #{uid}
+    </select>
 </mapper>

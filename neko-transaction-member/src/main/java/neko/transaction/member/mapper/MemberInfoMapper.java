@@ -2,6 +2,7 @@ package neko.transaction.member.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import neko.transaction.member.entity.MemberInfo;
+import neko.transaction.member.vo.MemberInfoVo;
 import neko.transaction.member.vo.MemberWithSchoolInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -36,4 +37,11 @@ public interface MemberInfoMapper extends BaseMapper<MemberInfo> {
      */
     int memberWithSchoolInfoPageQueryNumber(String queryWords,
                                             String classId);
+
+    /**
+     * 根据学号获取用户信息
+     * @param uid 学号
+     * @return 用户信息
+     */
+    MemberInfoVo getMemberInfoByUid(String uid);
 }

@@ -1,4 +1,4 @@
-package neko.transaction.member.vo;
+package neko.transaction.product.to;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 学生信息vo
+ * 学生信息to
  */
 @Data
 @Accessors(chain = true)
-public class MemberInfoVo implements Serializable {
+public class MemberInfoTo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

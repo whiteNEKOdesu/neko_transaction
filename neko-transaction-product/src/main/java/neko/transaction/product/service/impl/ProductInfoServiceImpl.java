@@ -4,24 +4,34 @@ import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.Constant;
+import neko.transaction.commonbase.utils.entity.ProductStatus;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.exception.MemberServiceException;
+import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
+import neko.transaction.product.elasticsearch.entity.ProductInfoES;
+import neko.transaction.product.elasticsearch.service.ProductInfoESService;
 import neko.transaction.product.entity.CategoryInfo;
 import neko.transaction.product.entity.ProductInfo;
+import neko.transaction.product.feign.member.MemberInfoFeignService;
 import neko.transaction.product.feign.thirdparty.OSSFeignService;
 import neko.transaction.product.mapper.ProductInfoMapper;
 import neko.transaction.product.service.CategoryInfoService;
 import neko.transaction.product.service.ProductInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import neko.transaction.product.vo.ProductApplyInfoVo;
+import neko.transaction.product.to.MemberInfoTo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * <p>
@@ -32,12 +42,19 @@ import javax.annotation.Resource;
  * @since 2024-01-18
  */
 @Service
+@Slf4j
 public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, ProductInfo> implements ProductInfoService {
     @Resource
     private CategoryInfoService categoryInfoService;
 
     @Resource
+    private ProductInfoESService productInfoESService;
+
+    @Resource
     private OSSFeignService ossFeignService;
+
+    @Resource
+    private MemberInfoFeignService memberInfoFeignService;
 
     /**
      * 分页查询学生自身的商品信息
@@ -132,5 +149,51 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         if(uploadUrl != null){
             ossFeignService.deleteFile(productInfo.getDisplayImage());
         }
+    }
+
+    /**
+     * 上架商品
+     * @param productId 商品id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void upProduct(String productId) {
+        String uid = StpUtil.getLoginId().toString();
+        //step1 -> 获取商品信息
+        ProductInfoVo productInfo = this.baseMapper.getUserSelfProductInfoById(productId, uid);
+        if(productInfo == null){
+            throw new NoSuchResultException("无此productId商品信息");
+        }
+
+        //step2 -> 修改商品信息状态为上架状态
+        ProductInfo todoUpdate = new ProductInfo();
+        todoUpdate.setProductId(productId)
+                .setStatus(ProductStatus.UP);
+        //修改商品信息表
+        this.baseMapper.updateById(todoUpdate);
+
+        //step3 -> 远程调用用户微服务获取用户信息
+        ResultObject<MemberInfoTo> r = memberInfoFeignService.userSelfInfo(StpUtil.getTokenValue());
+        if(!r.getResponseCode().equals(200)){
+            throw new MemberServiceException("member微服务远程调用异常，code: " + r.getResponseCode());
+        }
+
+        //获取远程调用用户信息结果
+        MemberInfoTo memberInfoTo = r.getResult();
+
+        //step4 -> 向 elasticsearch 添加商品信息
+        ProductInfoES productInfoES = new ProductInfoES();
+        //将商品信息复制到 elasticsearch 实体类
+        BeanUtil.copyProperties(productInfo, productInfoES);
+        //上架时间
+        LocalDateTime now = LocalDateTime.now();
+        productInfoES.setUserName(memberInfoTo.getUserName())
+                .setRealName(memberInfoTo.getRealName())
+                .setUpTime(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        //elasticsearch 添加商品信息
+        productInfoESService.newProductInfoToES(productInfoES);
+
+        log.info("商品上架成功，productId: " + productId);
     }
 }

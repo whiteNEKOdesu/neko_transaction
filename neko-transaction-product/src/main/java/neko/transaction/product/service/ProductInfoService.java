@@ -35,4 +35,10 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @param vo 修改商品信息vo
      */
     void updateProductInfo(UpdateProductInfoVo vo);
+
+    /**
+     * 上架商品
+     * @param productId 商品id
+     */
+    void upProduct(String productId);
 }

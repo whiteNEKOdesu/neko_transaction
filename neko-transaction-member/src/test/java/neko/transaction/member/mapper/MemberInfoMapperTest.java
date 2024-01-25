@@ -22,4 +22,9 @@ public class MemberInfoMapperTest {
     public void memberWithSchoolInfoPageQueryNumber(){
         System.out.println(memberInfoMapper.memberWithSchoolInfoPageQueryNumber("", ""));
     }
+
+    @Test
+    public void getMemberInfoByUid(){
+        System.out.println(memberInfoMapper.getMemberInfoByUid("1642067605873348610"));
+    }
 }

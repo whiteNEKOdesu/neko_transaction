@@ -1,5 +1,6 @@
 package neko.transaction.member.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
@@ -75,5 +76,15 @@ public class MemberInfoController {
         memberInfoService.deleteById(uid);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取用户自身的详细信息
+     * @return 用户自身的详细信息
+     */
+    @SaCheckLogin
+    @GetMapping("user_self_info")
+    public ResultObject<MemberInfoVo> userSelfInfo(){
+        return ResultObject.ok(memberInfoService.userSelfInfo());
     }
 }
