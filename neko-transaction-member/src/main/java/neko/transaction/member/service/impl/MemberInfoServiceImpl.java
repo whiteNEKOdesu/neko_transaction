@@ -167,4 +167,14 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
                 //设置角色信息
                 .setRoleTypes(weightRoleRelationService.getRoleTypesByUid(uid));
     }
+
+    /**
+     * 根据学号获取用户公开信息
+     * @param uid 学号
+     * @return 用户公开信息
+     */
+    @Override
+    public PublicMemberInfoVo publicMemberInfoByUid(String uid) {
+        return this.baseMapper.getPublicMemberInfoByUid(uid);
+    }
 }

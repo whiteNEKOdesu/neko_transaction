@@ -7,10 +7,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.service.MemberInfoService;
-import neko.transaction.member.vo.LogInVo;
-import neko.transaction.member.vo.MemberInfoVo;
-import neko.transaction.member.vo.MemberWithSchoolInfoVo;
-import neko.transaction.member.vo.NewMemberInfoVo;
+import neko.transaction.member.vo.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,5 +83,15 @@ public class MemberInfoController {
     @GetMapping("user_self_info")
     public ResultObject<MemberInfoVo> userSelfInfo(){
         return ResultObject.ok(memberInfoService.userSelfInfo());
+    }
+
+    /**
+     * 根据学号获取用户公开信息
+     * @param uid 学号
+     * @return 用户公开信息
+     */
+    @GetMapping("public_member_info")
+    public ResultObject<PublicMemberInfoVo> publicMemberInfo(@RequestParam String uid){
+        return ResultObject.ok(memberInfoService.publicMemberInfoByUid(uid));
     }
 }

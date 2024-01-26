@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.vo.MemberInfoVo;
 import neko.transaction.member.vo.MemberWithSchoolInfoVo;
+import neko.transaction.member.vo.PublicMemberInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -44,4 +45,11 @@ public interface MemberInfoMapper extends BaseMapper<MemberInfo> {
      * @return 用户信息
      */
     MemberInfoVo getMemberInfoByUid(String uid);
+
+    /**
+     * 根据学号获取用户公开信息
+     * @param uid 学号
+     * @return 用户公开信息
+     */
+    PublicMemberInfoVo getPublicMemberInfoByUid(String uid);
 }

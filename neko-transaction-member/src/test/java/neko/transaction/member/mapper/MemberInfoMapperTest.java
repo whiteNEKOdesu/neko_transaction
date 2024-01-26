@@ -27,4 +27,9 @@ public class MemberInfoMapperTest {
     public void getMemberInfoByUid(){
         System.out.println(memberInfoMapper.getMemberInfoByUid("1642067605873348610"));
     }
+
+    @Test
+    public void getPublicMemberInfoByUid(){
+        System.out.println(memberInfoMapper.getPublicMemberInfoByUid("1642067605873348610"));
+    }
 }

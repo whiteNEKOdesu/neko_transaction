@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.entity.MemberInfo;
-import neko.transaction.member.vo.LogInVo;
-import neko.transaction.member.vo.MemberInfoVo;
-import neko.transaction.member.vo.MemberWithSchoolInfoVo;
-import neko.transaction.member.vo.NewMemberInfoVo;
+import neko.transaction.member.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,4 +50,11 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @return 用户自身的详细信息
      */
     MemberInfoVo userSelfInfo();
+
+    /**
+     * 根据学号获取用户公开信息
+     * @param uid 学号
+     * @return 用户公开信息
+     */
+    PublicMemberInfoVo publicMemberInfoByUid(String uid);
 }
