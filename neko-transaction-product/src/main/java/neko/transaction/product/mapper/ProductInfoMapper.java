@@ -2,6 +2,7 @@ package neko.transaction.product.mapper;
 
 import neko.transaction.product.entity.ProductInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -57,4 +58,11 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
      * @param uid 学生学号
      */
     void downProduct(String productId, String uid);
+
+    /**
+     * 获取上架的商品详情信息
+     * @param productId 商品id
+     * @return 商品详情信息
+     */
+    ProductDetailInfoVo getUpProductDetailInfo(String productId);
 }

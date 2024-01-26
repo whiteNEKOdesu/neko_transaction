@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.ProductInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
 
@@ -47,4 +48,11 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @param productId 商品id
      */
     void downProduct(String productId);
+
+    /**
+     * 获取上架的商品详情信息
+     * @param productId 商品id
+     * @return 商品详情信息
+     */
+    ProductDetailInfoVo getUpProductDetailInfo(String productId);
 }

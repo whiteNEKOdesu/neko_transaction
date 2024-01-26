@@ -61,4 +61,16 @@
         where product_id = #{productId} and uid = #{uid} and
               status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@UP}
     </update>
+
+    <select id="getUpProductDetailInfo" resultType="neko.transaction.product.vo.ProductDetailInfoVo">
+        select product_info.*,
+            concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+        join category_info
+        on product_info.category_id = category_info.category_id
+        join category_info parent
+        on category_info.parent_id = parent.category_id
+        where product_info.product_id = #{productId} and
+--         过滤已删除商品信息
+            status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@UP}
+    </select>
 </mapper>

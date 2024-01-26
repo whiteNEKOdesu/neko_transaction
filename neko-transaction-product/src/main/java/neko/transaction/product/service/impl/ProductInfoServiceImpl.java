@@ -3,6 +3,7 @@ package neko.transaction.product.service.impl;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,10 @@ import neko.transaction.product.mapper.ProductInfoMapper;
 import neko.transaction.product.service.CategoryInfoService;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.to.MemberInfoTo;
+import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -55,6 +59,9 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
     @Resource
     private MemberInfoFeignService memberInfoFeignService;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 分页查询学生自身的商品信息
@@ -219,5 +226,33 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         productInfoESService.deleteByProductId(productId);
 
         log.info("商品下架成功，productId: " + productId);
+    }
+
+    /**
+     * 获取上架的商品详情信息
+     * @param productId 商品id
+     * @return 商品详情信息
+     */
+    @Override
+    public ProductDetailInfoVo getUpProductDetailInfo(String productId) {
+        String key = Constant.PRODUCT_REDIS_PREFIX + "product_detail_info:" + productId;
+        //获取 redis 缓存
+        String cache = stringRedisTemplate.opsForValue().get(key);
+
+        //缓存有数据
+        if(cache != null){
+            return JSONUtil.toBean(cache, ProductDetailInfoVo.class);
+        }
+
+        //获取商品详情信息
+        ProductDetailInfoVo productDetailInfoVo = this.baseMapper.getUpProductDetailInfo(productId);
+
+        //缓存无数据，将查询存入缓存
+        stringRedisTemplate.opsForValue().setIfAbsent(key,
+                JSONUtil.toJsonStr(productDetailInfoVo),
+                1000 * 60 * 60 * 5,
+                TimeUnit.MILLISECONDS);
+
+        return productDetailInfoVo;
     }
 }

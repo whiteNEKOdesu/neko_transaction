@@ -36,4 +36,9 @@ public class ProductInfoMapperTest {
     public void downProduct(){
         productInfoMapper.downProduct("1750067945863770113", "1642067605873348610");
     }
+
+    @Test
+    public void getUpProductDetailInfo(){
+        System.out.println(productInfoMapper.getUpProductDetailInfo("1750067945863770113"));
+    }
 }

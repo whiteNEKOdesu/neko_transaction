@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.ProductInfoService;
+import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
 import org.springframework.validation.annotation.Validated;
@@ -85,5 +86,15 @@ public class ProductInfoController {
         productInfoService.downProduct(productId);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取上架的商品详情信息
+     * @param productId 商品id
+     * @return 商品详情信息
+     */
+    @GetMapping("product_detail_info")
+    public ResultObject<ProductDetailInfoVo> productDetailInfo(@RequestParam String productId){
+        return ResultObject.ok(productInfoService.getUpProductDetailInfo(productId));
     }
 }
