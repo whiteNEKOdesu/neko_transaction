@@ -40,7 +40,7 @@ public class StockLockLog implements Serializable {
     /**
      * 库存id
      */
-    private String wareId;
+    private Long wareId;
 
     /**
      * 库存锁定数量

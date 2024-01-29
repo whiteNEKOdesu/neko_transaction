@@ -19,4 +19,9 @@ public class WareInfoMapperTest {
     public void updateStockByProductId(){
         System.out.println(wareInfoMapper.updateStockByProductId("1749707857651134465", 5));
     }
+
+    @Test
+    public void lockStock(){
+        System.out.println(wareInfoMapper.lockStock(1L, 5));
+    }
 }

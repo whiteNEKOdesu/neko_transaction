@@ -2,12 +2,11 @@ package neko.transaction.product.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.mapper.OrderInfoMapper;
 import neko.transaction.product.service.OrderInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 

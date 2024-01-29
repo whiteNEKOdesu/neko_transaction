@@ -2,19 +2,28 @@ package neko.transaction.ware.service.impl;
 
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.commonbase.utils.exception.ProductServiceException;
 import neko.transaction.commonbase.utils.exception.StockNotEnoughException;
+import neko.transaction.ware.entity.StockLockLog;
 import neko.transaction.ware.entity.WareInfo;
 import neko.transaction.ware.feign.product.ProductInfoFeignService;
 import neko.transaction.ware.mapper.WareInfoMapper;
+import neko.transaction.ware.service.StockLockLogService;
 import neko.transaction.ware.service.WareInfoService;
 import neko.transaction.ware.to.ProductInfoTo;
+import neko.transaction.ware.vo.LockStockVo;
 import neko.transaction.ware.vo.WareInfoVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -26,6 +35,9 @@ import javax.annotation.Resource;
  */
 @Service
 public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> implements WareInfoService {
+    @Resource
+    private StockLockLogService stockLockLogService;
+
     @Resource
     private ProductInfoFeignService productInfoFeignService;
 
@@ -73,5 +85,51 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> i
         if(this.baseMapper.updateStockByProductId(productId, offset) != 1){
             throw new StockNotEnoughException("库存修改后小于0");
         }
+    }
+
+    /**
+     * 锁定库存
+     * @param vo 锁定库存vo
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void lockStock(LockStockVo vo) {
+        //订单号
+        String orderId = vo.getOrderId();
+        //存放库存锁定记录信息，用于添加到库存锁定日志表
+        List<StockLockLog> stockLockLogs = new ArrayList<>();
+        //要锁定的库存的商品信息
+        List<LockStockVo.LockProductInfo> lockProductInfos = vo.getLockProductInfos();
+
+        //step1 -> 锁定对应商品的库存
+        for(LockStockVo.LockProductInfo lockProductInfo : lockProductInfos){
+            //获取当前商品的库存信息
+            WareInfo wareInfo = this.baseMapper.selectOne(new QueryWrapper<WareInfo>().lambda()
+                    .eq(WareInfo::getProductId, lockProductInfo.getProductId()));
+
+            if(wareInfo == null){
+                throw new NoSuchResultException("无此库存");
+            }
+
+            Long wareId = wareInfo.getWareId();
+            Integer lockNumber = lockProductInfo.getLockNumber();
+
+            //step1.1 -> 锁定库存
+            if(this.baseMapper.lockStock(wareId, lockNumber) != 1){
+                throw new StockNotEnoughException("库存不足");
+            }
+
+            //库存锁定记录信息
+            StockLockLog stockLockLog = new StockLockLog();
+            stockLockLog.setOrderId(orderId)
+                    .setWareId(wareId)
+                    .setLockNumber(lockNumber);
+
+            //step1.2 -> 将库存锁定记录信息添加到 list 中，用于添加到库存锁定日志表
+            stockLockLogs.add(stockLockLog);
+        }
+
+        //step2 -> 将库存锁定记录信息添加到库存锁定日志表
+        stockLockLogService.saveBatch(stockLockLogs);
     }
 }

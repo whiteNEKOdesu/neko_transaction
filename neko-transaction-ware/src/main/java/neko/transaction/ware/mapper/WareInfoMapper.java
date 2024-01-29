@@ -28,4 +28,12 @@ public interface WareInfoMapper extends BaseMapper<WareInfo> {
      * @param offset 库存偏移量
      */
     int updateStockByProductId(String productId, int offset);
+
+    /**
+     * 锁定指定库存id的库存
+     * @param wareId 库存id
+     * @param lockNumber 锁定数量
+     */
+    int lockStock(Long wareId,
+                  Integer lockNumber);
 }

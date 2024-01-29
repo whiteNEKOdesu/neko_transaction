@@ -2,6 +2,7 @@ package neko.transaction.ware.service;
 
 import neko.transaction.ware.entity.WareInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.ware.vo.LockStockVo;
 import neko.transaction.ware.vo.WareInfoVo;
 
 /**
@@ -33,4 +34,10 @@ public interface WareInfoService extends IService<WareInfo> {
      * @param offset 库存偏移量
      */
     void updateStock(String productId, int offset);
+
+    /**
+     * 锁定库存
+     * @param vo 锁定库存vo
+     */
+    void lockStock(LockStockVo vo);
 }

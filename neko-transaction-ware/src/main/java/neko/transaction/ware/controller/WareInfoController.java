@@ -3,6 +3,8 @@ package neko.transaction.ware.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.ware.service.WareInfoService;
+import neko.transaction.ware.vo.LockStockVo;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -53,6 +55,16 @@ public class WareInfoController {
     @PostMapping("update_stock")
     public ResultObject<Object> updateStock(@RequestParam String productId, @RequestParam Integer offset){
         wareInfoService.updateStock(productId, offset);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 锁定指定库存数量，建议只提供给微服务远程调用
+     */
+    @PostMapping("lock_stock")
+    public ResultObject<Object> lockStock(@Validated @RequestBody LockStockVo vo){
+        wareInfoService.lockStock(vo);
 
         return ResultObject.ok();
     }
