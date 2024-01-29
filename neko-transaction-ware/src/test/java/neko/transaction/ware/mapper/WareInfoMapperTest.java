@@ -24,4 +24,9 @@ public class WareInfoMapperTest {
     public void lockStock(){
         System.out.println(wareInfoMapper.lockStock(1L, 5));
     }
+
+    @Test
+    public void unlockStock(){
+        System.out.println(wareInfoMapper.unlockStock(1L, 1L));
+    }
 }

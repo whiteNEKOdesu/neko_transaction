@@ -19,4 +19,11 @@
         set lock_number = lock_number + #{lockNumber}
         where ware_id = #{wareId} and stock >= lock_number + #{lockNumber}
     </update>
+
+    <update id="unlockStock">
+        update ware_info
+        set lock_number = lock_number - (select lock_number from stock_lock_log
+            where stock_lock_log_id = #{stockLockLogId} and status = 0)
+        where ware_id= #{wareId}
+    </update>
 </mapper>
