@@ -26,4 +26,10 @@
             where stock_lock_log_id = #{stockLockLogId} and status = 0)
         where ware_id= #{wareId}
     </update>
+
+    <update id="decreaseStock">
+        update ware_info
+        set stock = stock - #{lockNumber}, lock_number = lock_number - #{lockNumber}
+        where ware_id= #{wareId}
+    </update>
 </mapper>

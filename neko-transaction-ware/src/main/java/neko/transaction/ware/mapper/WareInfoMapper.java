@@ -44,4 +44,12 @@ public interface WareInfoMapper extends BaseMapper<WareInfo> {
      */
     int unlockStock(Long wareId,
                     Long stockLockLogId);
+
+    /**
+     * 订单支付确认后，减少对应的库存数量字段，以及锁定的数量字段
+     * @param wareId 库存id
+     * @param lockNumber 减少的库存数量
+     */
+    void decreaseStock(Long wareId,
+                       Integer lockNumber);
 }
