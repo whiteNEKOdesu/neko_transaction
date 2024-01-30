@@ -28,7 +28,7 @@
     </update>
 
     <update id="decreaseStock">
-        update ware_info
+        update md_workflow_element
         set stock = stock - #{lockNumber}, lock_number = lock_number - #{lockNumber}
         where ware_id= #{wareId}
     </update>

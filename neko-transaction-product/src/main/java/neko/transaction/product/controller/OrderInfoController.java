@@ -3,11 +3,12 @@ package neko.transaction.product.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.OrderInfoService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import neko.transaction.product.vo.NewOrderInfoVo;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.concurrent.ExecutionException;
 
 /**
  * <p>
@@ -31,5 +32,18 @@ public class OrderInfoController {
     @GetMapping("preorder_token")
     public ResultObject<String> preorderToken(){
         return ResultObject.ok(orderInfoService.getPreOrderToken());
+    }
+
+    /**
+     * 提交订单
+     * @param vo 提交订单vo
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PutMapping("new_order")
+    public ResultObject<Object> newOrder(@Validated @RequestBody NewOrderInfoVo vo) throws ExecutionException, InterruptedException {
+        orderInfoService.newOrder(vo);
+
+        return ResultObject.ok();
     }
 }

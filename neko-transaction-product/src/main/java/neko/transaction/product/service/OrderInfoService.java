@@ -2,6 +2,9 @@ package neko.transaction.product.service;
 
 import neko.transaction.product.entity.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.product.vo.NewOrderInfoVo;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * <p>
@@ -17,4 +20,10 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 创建订单传入的 token
      */
     String getPreOrderToken();
+
+    /**
+     * 添加订单
+     * @param vo 提交订单vo
+     */
+    void newOrder(NewOrderInfoVo vo) throws ExecutionException, InterruptedException;
 }

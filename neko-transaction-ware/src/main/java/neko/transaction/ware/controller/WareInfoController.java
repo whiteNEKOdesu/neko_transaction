@@ -61,6 +61,8 @@ public class WareInfoController {
 
     /**
      * 锁定指定库存数量，建议只提供给微服务远程调用
+     * @param vo 锁定库存vo
+     * @return 响应结果
      */
     @PostMapping("lock_stock")
     public ResultObject<Object> lockStock(@Validated @RequestBody LockStockVo vo){

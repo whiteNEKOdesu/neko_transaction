@@ -1,5 +1,6 @@
 package neko.transaction.product.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class OrderInfo implements Serializable {
     /**
      * 订单号
      */
-    @TableId("order_id")
+    @TableId(type = IdType.INPUT)
     private String orderId;
 
     /**
