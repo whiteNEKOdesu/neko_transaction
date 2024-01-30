@@ -91,9 +91,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 添加订单
      * @param vo 提交订单vo
+     * @return 订单号
      */
     @Override
-    public void newOrder(NewOrderInfoVo vo) throws ExecutionException, InterruptedException {
+    public String newOrder(NewOrderInfoVo vo) throws ExecutionException, InterruptedException {
         String token = vo.getToken();
         String uid = StpUtil.getLoginId().toString();
         //创建订单幂等性保证的 token 的 redis key
@@ -309,6 +310,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(isException.get()){
             throw new StockNotEnoughException("库存不足");
         }
+
+        return orderId;
     }
 
     /**

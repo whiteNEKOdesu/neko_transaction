@@ -24,8 +24,9 @@ public interface OrderInfoService extends IService<OrderInfo> {
     /**
      * 添加订单
      * @param vo 提交订单vo
+     * @return 订单号
      */
-    void newOrder(NewOrderInfoVo vo) throws ExecutionException, InterruptedException;
+    String newOrder(NewOrderInfoVo vo) throws ExecutionException, InterruptedException;
 
     /**
      * 根据订单号获取支付宝支付页面

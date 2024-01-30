@@ -37,14 +37,12 @@ public class OrderInfoController {
     /**
      * 提交订单
      * @param vo 提交订单vo
-     * @return 响应结果
+     * @return 订单号
      */
     @SaCheckLogin
     @PutMapping("new_order")
-    public ResultObject<Object> newOrder(@Validated @RequestBody NewOrderInfoVo vo) throws ExecutionException, InterruptedException {
-        orderInfoService.newOrder(vo);
-
-        return ResultObject.ok();
+    public ResultObject<String> newOrder(@Validated @RequestBody NewOrderInfoVo vo) throws ExecutionException, InterruptedException {
+        return ResultObject.ok(orderInfoService.newOrder(vo));
     }
 
     /**
