@@ -26,4 +26,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @param vo 提交订单vo
      */
     void newOrder(NewOrderInfoVo vo) throws ExecutionException, InterruptedException;
+
+    /**
+     * 根据订单号获取支付宝支付页面
+     * @param orderId 订单号
+     * @param token 用户登录认证的 token
+     * @return 支付宝支付页面
+     */
+    String getAlipayPage(String orderId, String token);
 }

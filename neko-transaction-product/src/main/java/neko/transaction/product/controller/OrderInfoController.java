@@ -46,4 +46,12 @@ public class OrderInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 根据订单号获取支付宝支付页面
+     */
+    @GetMapping(value = "alipay_page", produces = "text/html")
+    public String alipayPage(@RequestParam String orderId, @RequestParam String token){
+        return orderInfoService.getAlipayPage(orderId, token);
+    }
 }

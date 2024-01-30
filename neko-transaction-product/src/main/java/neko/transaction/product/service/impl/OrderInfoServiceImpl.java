@@ -6,11 +6,9 @@ import cn.hutool.json.JSONUtil;
 import com.alipay.api.AlipayApiException;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import neko.transaction.commonbase.utils.entity.Constant;
-import neko.transaction.commonbase.utils.entity.MQMessageType;
-import neko.transaction.commonbase.utils.entity.RabbitMqConstant;
-import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.*;
 import neko.transaction.commonbase.utils.exception.NoSuchResultException;
+import neko.transaction.commonbase.utils.exception.OrderOverTimeException;
 import neko.transaction.commonbase.utils.exception.StockNotEnoughException;
 import neko.transaction.product.config.AliPayTemplate;
 import neko.transaction.product.entity.OrderInfo;
@@ -31,6 +29,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -310,5 +309,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if(isException.get()){
             throw new StockNotEnoughException("库存不足");
         }
+    }
+
+    /**
+     * 根据订单号获取支付宝支付页面
+     * @param orderId 订单号
+     * @param token 用户登录认证的 token
+     * @return 支付宝支付页面
+     */
+    @Override
+    public String getAlipayPage(String orderId, String token) {
+        OrderInfo orderInfo = this.baseMapper.selectById(orderId);
+        if(orderInfo == null || !orderInfo.getStatus().equals(OrderStatus.UNPAID)){
+            throw new OrderOverTimeException("订单超时");
+        }
+
+        String key = Constant.PRODUCT_REDIS_PREFIX + "order:" + StpUtil.getLoginIdByToken(token) + orderId + ":pay_page";
+        String alipayPayPage = stringRedisTemplate.opsForValue().get(key);
+        if(!StringUtils.hasText(alipayPayPage)){
+            throw new OrderOverTimeException("订单超时");
+        }
+
+        return alipayPayPage;
     }
 }
