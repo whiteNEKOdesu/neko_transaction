@@ -21,6 +21,10 @@ spring:
         file-extension: yaml #指定yaml格式的配置
         group: NEKO-TRANSACTION-PRODUCT #指定分组
         namespace: 3de83da7-02c3-46e1-8c59-930031b9c30b #指定命名空间ID
+        shared-configs:
+          - data-id: order-dynamic-thread-pool.yaml
+            refresh: true
+            group: NEKO-TRANSACTION-PRODUCT
     sentinel:
       transport:
         #配置Sentinel dashboard地址
