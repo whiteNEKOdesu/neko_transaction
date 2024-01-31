@@ -2,6 +2,7 @@ package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.service.OrderInfoService;
 import neko.transaction.product.vo.NewOrderInfoVo;
 import org.springframework.validation.annotation.Validated;
@@ -51,5 +52,15 @@ public class OrderInfoController {
     @GetMapping(value = "alipay_page", produces = "text/html")
     public String alipayPage(@RequestParam String orderId, @RequestParam String token){
         return orderInfoService.getAlipayPage(orderId, token);
+    }
+
+    /**
+     * 根据订单号获取订单信息，用于检查订单状态，建议只提供给微服务远程调用
+     * @param orderId 订单号
+     * @return 订单信息
+     */
+    @GetMapping("remote_invoke_order_info_by_id")
+    public ResultObject<OrderInfo> remoteInvokeOrderInfoById(@RequestParam String orderId){
+        return ResultObject.ok(orderInfoService.getOrderInfoById(orderId));
     }
 }

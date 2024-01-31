@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * 用户微服务商品信息远程调用
+ * 商品微服务商品信息远程调用
  */
 @FeignClient(value = ServiceName.PRODUCT_SERVICE, contextId = "ProductInfo")
 public interface ProductInfoFeignService {

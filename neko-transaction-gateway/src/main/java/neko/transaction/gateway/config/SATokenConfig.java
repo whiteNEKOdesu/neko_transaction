@@ -20,7 +20,6 @@ public class SATokenConfig {
                 .addInclude("/product/sku_info/sku_id_market_info")
                 .addInclude("/product/sku_info/product_infos")
                 .addInclude("/ware/ware_info/lock_stock")
-                .addInclude("/order/order_log/preorder_status")
                 .addInclude("/ware/ware_info/unlock_stock")
                 .addInclude("/ware/stock_lock_log/order_record_sku_id_infos")
                 .addInclude("/ware/ware_info/confirm_lock_stock_pay")
@@ -28,6 +27,7 @@ public class SATokenConfig {
                 .addInclude("/third_party/oss/upload_image")
                 .addInclude("/third_party/oss/delete_file")
                 .addInclude("/ware/ware_info/new_ware_info")
+                .addInclude("/product/order_info/remote_invoke_order_info_by_id")
                 .setAuth(obj -> {
                     StpUtil.checkRole("*");
                 })

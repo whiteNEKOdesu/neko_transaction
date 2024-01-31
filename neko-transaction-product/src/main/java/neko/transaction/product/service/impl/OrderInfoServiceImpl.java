@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.alipay.api.AlipayApiException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.*;
@@ -112,7 +113,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         //订单号
-        String orderId = IdWorker.getIdStr();
+        String orderId = IdWorker.getTimeId();
 
         //step2 -> 向延迟队列发送订单号，用于超时解锁库存
         RabbitMQMessageTo<String> rabbitMQMessageTo = RabbitMQMessageTo.generateMessage(orderId, MQMessageType.ORDER_STATUS_CHECK_TYPE);
@@ -148,8 +149,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
 
             return productInfoMap;
-        }, threadPool);
-        getProductInfoTask.exceptionally(e -> {
+        }, threadPool).exceptionally(e -> {
             isException.set(true);
             e.printStackTrace();
 
@@ -175,8 +175,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
 
             return cost.setScale(2, BigDecimal.ROUND_DOWN);
-        }), threadPool);
-        calculateCostTask.exceptionally(e -> {
+        }), threadPool).exceptionally(e -> {
             isException.set(true);
             e.printStackTrace();
 
@@ -205,8 +204,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }catch (AlipayApiException e){
                 e.printStackTrace();
             }
-        }, threadPool);
-        alipayTask.exceptionally(e -> {
+        }, threadPool).exceptionally(e -> {
             isException.set(true);
             e.printStackTrace();
 
@@ -227,8 +225,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             //记录订单信息到订单表
             this.baseMapper.insert(orderInfo);
-        }, threadPool);
-        orderLogTask.exceptionally(e -> {
+        }, threadPool).exceptionally(e -> {
             isException.set(true);
             e.printStackTrace();
 
@@ -273,8 +270,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     JSONUtil.toJsonStr(newOrderRedisTo),
                     4,
                     TimeUnit.HOURS);
-        }), threadPool);
-        redisLogTask.exceptionally(e -> {
+        }), threadPool).exceptionally(e -> {
             isException.set(true);
             e.printStackTrace();
 
@@ -297,8 +293,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             if(!r.getResponseCode().equals(200)){
                 isException.set(true);
             }
-        }, threadPool);
-        lockStockTask.exceptionally(e -> {
+        }, threadPool).exceptionally(e -> {
             isException.set(true);
             e.printStackTrace();
 
@@ -334,5 +329,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
 
         return alipayPayPage;
+    }
+
+    /**
+     * 根据订单号获取订单信息，用于检查订单状态
+     * @param orderId 订单号
+     * @return 订单信息
+     */
+    @Override
+    public OrderInfo getOrderInfoById(String orderId) {
+        return this.baseMapper.selectById(orderId);
     }
 }

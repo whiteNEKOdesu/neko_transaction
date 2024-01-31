@@ -35,4 +35,11 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 支付宝支付页面
      */
     String getAlipayPage(String orderId, String token);
+
+    /**
+     * 根据订单号获取订单信息，用于检查订单状态
+     * @param orderId 订单号
+     * @return 订单信息
+     */
+    OrderInfo getOrderInfoById(String orderId);
 }
