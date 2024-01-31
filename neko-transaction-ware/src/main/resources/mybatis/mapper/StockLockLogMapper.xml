@@ -6,4 +6,10 @@
         set status = ${@neko.transaction.commonbase.utils.entity.StockStatus@CANCEL_LOCK}
         where order_id = #{orderId} and status = ${@neko.transaction.commonbase.utils.entity.StockStatus@LOCKING}
     </update>
+
+    <update id="updateStatusToPaid">
+        update stock_lock_log
+        set status = ${@neko.transaction.commonbase.utils.entity.StockStatus@PAID}
+        where order_id = #{orderId} and status != ${@neko.transaction.commonbase.utils.entity.StockStatus@PAID}
+    </update>
 </mapper>

@@ -4,13 +4,15 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.alipay.api.AlipayApiException;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.*;
 import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.commonbase.utils.exception.OrderOverTimeException;
 import neko.transaction.commonbase.utils.exception.StockNotEnoughException;
+import neko.transaction.commonbase.utils.exception.WareServiceException;
 import neko.transaction.product.config.AliPayTemplate;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.entity.ProductInfo;
@@ -22,6 +24,7 @@ import neko.transaction.product.to.AliPayTo;
 import neko.transaction.product.to.LockStockTo;
 import neko.transaction.product.to.NewOrderRedisTo;
 import neko.transaction.product.to.RabbitMQMessageTo;
+import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.ReturnedMessage;
@@ -33,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -52,6 +56,7 @@ import java.util.stream.Collectors;
  * @since 2024-01-27
  */
 @Service
+@Slf4j
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo> implements OrderInfoService {
     @Resource
     private ProductInfoService productInfoService;
@@ -348,5 +353,68 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public void updateOrderInfoStatusToCancel(String orderId) {
         this.baseMapper.updateOrderInfoStatusToCancel(orderId);
+    }
+
+    /**
+     * 支付宝支付成功异步通知处理
+     * @param vo 支付宝支付成功异步通知vo
+     * @param request HttpServletRequest
+     * @return 向支付宝响应的处理结果
+     */
+    @Override
+    public String alipayTradeCheck(AliPayAsyncVo vo, HttpServletRequest request) throws AlipayApiException {
+        //验签
+        Map<String,String> params = new HashMap<>();
+        Map<String,String[]> requestParams = request.getParameterMap();
+        for (String name : requestParams.keySet()) {
+            String[] values = requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i]
+                        : valueStr + values[i] + ",";
+            }
+            //乱码解决，这段代码在出现乱码时使用valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+            params.put(name, valueStr);
+        }
+
+        //调用SDK验证签名
+        boolean signVerified = AlipaySignature.rsaCheckV1(params,
+                aliPayTemplate.getAlipayPublicKey(),
+                aliPayTemplate.getCharset(),
+                aliPayTemplate.getSignType());
+
+        if(signVerified){
+            if(vo.getTrade_status().equals("TRADE_SUCCESS") || vo.getTrade_status().equals("TRADE_FINISHED")){
+                //获取订单号
+                String orderId = vo.getOut_trade_no();
+                //获取订单信息
+                OrderInfo orderInfo = this.baseMapper.selectById(orderId);
+                if(orderInfo == null){
+                    log.error("订单号: " + orderId + "，支付宝流水号: " + vo.getTrade_no() + "，订单不存在");
+
+                    return "error";
+                }
+
+                OrderInfo todoUpdate = new OrderInfo();
+                todoUpdate.setOrderId(orderId)
+                        .setAlipayTradeId(vo.getTrade_no())
+                        .setStatus(OrderStatus.PAID);
+
+                //修改订单状态信息
+                this.baseMapper.updateById(todoUpdate);
+
+                //远程调用库存微服务解锁库存并扣除库存
+                ResultObject<Object> r = wareInfoFeignService.confirmLockStockPaid(orderId);
+                if(!r.getResponseCode().equals(200)){
+                    throw new WareServiceException("ware微服务远程调用异常");
+                }
+
+                log.info("订单号: " + orderId + "，支付宝流水号: " + vo.getTrade_no() + "，订单支付确认完成");
+            }
+
+            return "success";
+        }else{
+            return "error";
+        }
     }
 }

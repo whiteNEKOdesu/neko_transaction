@@ -36,4 +36,12 @@ public interface WareInfoFeignService {
      */
     @PostMapping("ware_info/unlock_stock")
     ResultObject<Object> unlockStock(@RequestParam String orderId);
+
+    /**
+     * 解锁指定订单号涉及的库存并扣除库存，用于确认支付后扣除库存
+     * @param orderId 订单号
+     * @return 响应结果
+     */
+    @PostMapping("ware_info/confirm_lock_stock_paid")
+    ResultObject<Object> confirmLockStockPaid(@RequestParam String orderId);
 }

@@ -17,4 +17,10 @@ public interface StockLockLogService extends IService<StockLockLog> {
      * @param orderId 订单号
      */
     void updateStatusToCancelLock(String orderId);
+
+    /**
+     * 根据订单号将库存锁定日志状态修改为已支付
+     * @param orderId 订单号
+     */
+    void updateStatusToPaid(String orderId);
 }

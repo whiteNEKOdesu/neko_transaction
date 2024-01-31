@@ -73,10 +73,24 @@ public class WareInfoController {
 
     /**
      * 解锁指定订单号库存，建议只提供给微服务远程调用
+     * @param orderId 订单号
+     * @return 响应结果
      */
     @PostMapping("unlock_stock")
     public ResultObject<Object> unlockStock(@RequestParam String orderId){
         wareInfoService.unlockStock(orderId);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 解锁指定订单号涉及的库存并扣除库存，用于确认支付后扣除库存，建议只提供给微服务远程调用
+     * @param orderId 订单号
+     * @return 响应结果
+     */
+    @PostMapping("confirm_lock_stock_paid")
+    public ResultObject<Object> confirmLockStockPaid(@RequestParam String orderId){
+        wareInfoService.confirmLockStockPaid(orderId);
 
         return ResultObject.ok();
     }

@@ -22,7 +22,7 @@ public class SATokenConfig {
                 .addInclude("/ware/ware_info/lock_stock")
                 .addInclude("/ware/ware_info/unlock_stock")
                 .addInclude("/ware/stock_lock_log/order_record_sku_id_infos")
-                .addInclude("/ware/ware_info/confirm_lock_stock_pay")
+                .addInclude("/ware/ware_info/confirm_lock_stock_paid")
                 .addInclude("/member/member_info/real_name_info")
                 .addInclude("/third_party/oss/upload_image")
                 .addInclude("/third_party/oss/delete_file")

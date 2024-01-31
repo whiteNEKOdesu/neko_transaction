@@ -14,4 +14,9 @@ public class StockLockLogMapperTest {
     public void updateStatusToCancelLock(){
         stockLockLogMapper.updateStatusToCancelLock("202401311052224051752525198848925698");
     }
+
+    @Test
+    public void updateStatusToPaid(){
+        stockLockLogMapper.updateStatusToPaid("202401311521066471752592828817457153");
+    }
 }

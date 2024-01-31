@@ -1,14 +1,17 @@
 package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.alipay.api.AlipayApiException;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.service.OrderInfoService;
+import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -62,5 +65,16 @@ public class OrderInfoController {
     @GetMapping("remote_invoke_order_info_by_id")
     public ResultObject<OrderInfo> remoteInvokeOrderInfoById(@RequestParam String orderId){
         return ResultObject.ok(orderInfoService.getOrderInfoById(orderId));
+    }
+
+    /**
+     * 支付宝支付成功异步通知处理
+     * @param vo 支付宝支付成功异步通知vo
+     * @param request HttpServletRequest
+     * @return 向支付宝响应的处理结果
+     */
+    @PostMapping("alipay_listener")
+    public String alipayListener(AliPayAsyncVo vo, HttpServletRequest request) throws AlipayApiException {
+        return orderInfoService.alipayTradeCheck(vo, request);
     }
 }

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,6 +171,37 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> i
 
         //解锁库存
         unlockStockTask(orderId);
+    }
+
+    /**
+     * 解锁指定订单号涉及的库存并扣除库存，用于确认支付后扣除库存
+     * @param orderId 订单号
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void confirmLockStockPaid(String orderId) {
+        log.info("订单支付确认准备扣除库存，订单号: " + orderId);
+
+        //获取订单锁定库存记录信息
+        List<StockLockLog> stockLockLogs = stockLockLogService.lambdaQuery().eq(StockLockLog::getOrderId, orderId)
+                .eq(StockLockLog::getStatus, StockStatus.LOCKING)
+                .list();
+        if(stockLockLogs == null || stockLockLogs.isEmpty()){
+            log.warn("订单号: " + orderId + "对应库存锁定记录不存在");
+
+            return;
+        }
+
+        for(StockLockLog stockLockLog : stockLockLogs){
+            //解锁库存并扣除库存
+            this.baseMapper.decreaseStock(stockLockLog.getWareId(),
+                    stockLockLog.getLockNumber());
+        }
+
+        //修改库存锁定记录状态为已支付
+        stockLockLogService.updateStatusToPaid(orderId);
+
+        log.info("订单支付确认扣除库存完成，订单号: " + orderId);
     }
 
     /**

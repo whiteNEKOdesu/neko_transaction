@@ -17,5 +17,5 @@ public class StockStatus {
     /**
      * 用户已支付
      */
-    public static Byte PAY = 1;
+    public static Byte PAID = 1;
 }

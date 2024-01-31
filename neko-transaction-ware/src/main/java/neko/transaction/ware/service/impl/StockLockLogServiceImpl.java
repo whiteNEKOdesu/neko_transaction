@@ -25,4 +25,13 @@ public class StockLockLogServiceImpl extends ServiceImpl<StockLockLogMapper, Sto
     public void updateStatusToCancelLock(String orderId) {
         this.baseMapper.updateStatusToCancelLock(orderId);
     }
+
+    /**
+     * 根据订单号将库存锁定日志状态修改为已支付
+     * @param orderId 订单号
+     */
+    @Override
+    public void updateStatusToPaid(String orderId) {
+        this.baseMapper.updateStatusToPaid(orderId);
+    }
 }
