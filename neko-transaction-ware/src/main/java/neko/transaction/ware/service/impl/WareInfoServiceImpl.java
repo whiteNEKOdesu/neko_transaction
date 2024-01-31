@@ -4,16 +4,22 @@ import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import neko.transaction.commonbase.utils.entity.OrderStatus;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.StockStatus;
 import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.commonbase.utils.exception.ProductServiceException;
 import neko.transaction.commonbase.utils.exception.StockNotEnoughException;
+import neko.transaction.commonbase.utils.exception.StockUnlockException;
 import neko.transaction.ware.entity.StockLockLog;
 import neko.transaction.ware.entity.WareInfo;
+import neko.transaction.ware.feign.product.OrderInfoFeignService;
 import neko.transaction.ware.feign.product.ProductInfoFeignService;
 import neko.transaction.ware.mapper.WareInfoMapper;
 import neko.transaction.ware.service.StockLockLogService;
 import neko.transaction.ware.service.WareInfoService;
+import neko.transaction.ware.to.OrderInfoTo;
 import neko.transaction.ware.to.ProductInfoTo;
 import neko.transaction.ware.vo.LockStockVo;
 import neko.transaction.ware.vo.WareInfoVo;
@@ -21,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +39,16 @@ import java.util.List;
  * @since 2024-01-22
  */
 @Service
+@Slf4j
 public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> implements WareInfoService {
     @Resource
     private StockLockLogService stockLockLogService;
 
     @Resource
     private ProductInfoFeignService productInfoFeignService;
+
+    @Resource
+    private OrderInfoFeignService orderInfoFeignService;
 
     /**
      * 根据商品id获取库存信息
@@ -131,5 +140,67 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> i
 
         //step2 -> 将库存锁定记录信息添加到库存锁定日志表
         stockLockLogService.saveBatch(stockLockLogs);
+    }
+
+    /**
+     * 根据订单号解锁库存
+     * @param orderId 订单号
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void unlockStock(String orderId) {
+        log.info("订单超时准备解锁库存，订单号: " + orderId);
+
+        //远程调用商品微服务获取订单信息
+        ResultObject<OrderInfoTo> r = orderInfoFeignService.remoteInvokeOrderInfoById(orderId);
+        if(!r.getResponseCode().equals(200)){
+            throw new ProductServiceException("product微服务远程调用异常");
+        }
+
+        //获取订单信息
+        OrderInfoTo orderInfo = r.getResult();
+
+        if(orderInfo == null){
+            log.warn("解锁库存订单号: " + orderId + "，订单不存在，尝试解锁库存");
+            //解锁库存
+            unlockStockTask(orderId);
+
+            return;
+        }
+
+        //订单未取消，不解锁库存
+        if(!orderInfo.getStatus().equals(OrderStatus.CANCELED)){
+            throw new StockUnlockException("订单未取消，不解锁库存");
+        }
+
+        //解锁库存
+        unlockStockTask(orderId);
+    }
+
+    /**
+     * 解锁库存任务
+     * @param orderId 订单号
+     */
+    private void unlockStockTask(String orderId){
+        //获取订单锁定库存记录信息
+        List<StockLockLog> stockLockLogs = stockLockLogService.lambdaQuery().eq(StockLockLog::getOrderId, orderId)
+                .eq(StockLockLog::getStatus, StockStatus.LOCKING)
+                .list();
+        if(stockLockLogs == null || stockLockLogs.isEmpty()){
+            log.warn("订单号: " + orderId + "对应库存锁定记录不存在");
+
+            return;
+        }
+
+        for(StockLockLog stockLockLog : stockLockLogs){
+            //解锁库存
+            this.baseMapper.unlockStock(stockLockLog.getWareId(),
+                    stockLockLog.getStockLockLogId());
+        }
+
+        //修改库存锁定记录状态为已解锁
+        stockLockLogService.updateStatusToCancelLock(orderId);
+
+        log.info("订单超时解锁库存完成，订单号: " + orderId);
     }
 }

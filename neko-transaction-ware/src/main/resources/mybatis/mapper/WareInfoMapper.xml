@@ -23,13 +23,13 @@
     <update id="unlockStock">
         update ware_info
         set lock_number = lock_number - (select lock_number from stock_lock_log
-            where stock_lock_log_id = #{stockLockLogId} and status = 0)
-        where ware_id= #{wareId}
+            where stock_lock_log_id = #{stockLockLogId} and status = ${@neko.transaction.commonbase.utils.entity.StockStatus@LOCKING})
+        where ware_id = #{wareId}
     </update>
 
     <update id="decreaseStock">
-        update md_workflow_element
+        update ware_info
         set stock = stock - #{lockNumber}, lock_number = lock_number - #{lockNumber}
-        where ware_id= #{wareId}
+        where ware_id = #{wareId}
     </update>
 </mapper>

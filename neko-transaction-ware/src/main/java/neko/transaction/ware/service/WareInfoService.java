@@ -40,4 +40,10 @@ public interface WareInfoService extends IService<WareInfo> {
      * @param vo 锁定库存vo
      */
     void lockStock(LockStockVo vo);
+
+    /**
+     * 根据订单号解锁库存
+     * @param orderId 订单号
+     */
+    void unlockStock(String orderId);
 }
