@@ -4,6 +4,7 @@ import neko.transaction.product.entity.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.NewOrderInfoVo;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -42,4 +43,10 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 订单信息
      */
     OrderInfo getOrderInfoById(String orderId);
+
+    /**
+     * 根据订单号将订单状态修改为取消状态
+     * @param orderId 订单号
+     */
+    void updateOrderInfoStatusToCancel(String orderId);
 }

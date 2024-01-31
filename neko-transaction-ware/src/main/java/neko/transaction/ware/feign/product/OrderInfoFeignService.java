@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = ServiceName.PRODUCT_SERVICE, contextId = "OrderInfo")
 public interface OrderInfoFeignService {
     /**
-     * 根据订单号获取订单信息，用于检查订单状态，建议只提供给微服务远程调用
+     * 根据订单号获取订单信息，用于检查订单状态
      * @param orderId 订单号
      * @return 订单信息
      */

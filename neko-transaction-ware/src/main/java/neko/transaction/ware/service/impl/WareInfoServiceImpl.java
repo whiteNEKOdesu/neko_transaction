@@ -168,11 +168,6 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> i
             return;
         }
 
-        //订单未取消，不解锁库存
-        if(!orderInfo.getStatus().equals(OrderStatus.CANCELED)){
-            throw new StockUnlockException("订单未取消，不解锁库存");
-        }
-
         //解锁库存
         unlockStockTask(orderId);
     }

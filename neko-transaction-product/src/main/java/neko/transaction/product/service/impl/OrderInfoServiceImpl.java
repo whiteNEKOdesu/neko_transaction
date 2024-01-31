@@ -340,4 +340,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public OrderInfo getOrderInfoById(String orderId) {
         return this.baseMapper.selectById(orderId);
     }
+
+    /**
+     * 根据订单号将订单状态修改为取消状态
+     * @param orderId 订单号
+     */
+    @Override
+    public void updateOrderInfoStatusToCancel(String orderId) {
+        this.baseMapper.updateOrderInfoStatusToCancel(orderId);
+    }
 }

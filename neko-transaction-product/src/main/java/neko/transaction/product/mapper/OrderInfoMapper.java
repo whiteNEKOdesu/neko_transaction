@@ -14,5 +14,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
-
+    /**
+     * 根据订单号将订单状态修改为取消状态
+     * @param orderId 订单号
+     */
+    void updateOrderInfoStatusToCancel(String orderId);
 }

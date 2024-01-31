@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = ServiceName.WARE_SERVICE, contextId = "WareInfo")
 public interface WareInfoFeignService {
     /**
-     * 添加库存信息，仅提供给微服务远程调用
+     * 添加库存信息
      * @param productId 商品id
      * @param stock 库存数量
      * @return 响应结果
@@ -30,4 +30,10 @@ public interface WareInfoFeignService {
      */
     @PostMapping("ware_info/lock_stock")
     ResultObject<Object> lockStock(@Validated @RequestBody LockStockTo to);
+
+    /**
+     * 解锁指定订单号库存
+     */
+    @PostMapping("ware_info/unlock_stock")
+    ResultObject<Object> unlockStock(@RequestParam String orderId);
 }
