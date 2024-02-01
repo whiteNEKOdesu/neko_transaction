@@ -60,4 +60,11 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 向支付宝响应的处理结果
      */
     String alipayTradeCheck(AliPayAsyncVo vo, HttpServletRequest request) throws AlipayApiException;
+
+    /**
+     * 根据订单号获取用户自身的订单信息
+     * @param orderId 订单号
+     * @return 用户自身的订单信息
+     */
+    OrderInfo getUserSelfOrderInfoByOrderId(String orderId);
 }

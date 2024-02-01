@@ -77,4 +77,14 @@ public class OrderInfoController {
     public String alipayListener(AliPayAsyncVo vo, HttpServletRequest request) throws AlipayApiException {
         return orderInfoService.alipayTradeCheck(vo, request);
     }
+
+    /**
+     * 根据订单号获取用户自身的订单信息
+     * @param orderId 订单号
+     * @return 用户自身的订单信息
+     */
+    @GetMapping("user_self_order_info_by_order_id")
+    public ResultObject<OrderInfo> userSelfOrderInfoByOrderId(@RequestParam String orderId){
+        return ResultObject.ok(orderInfoService.getUserSelfOrderInfoByOrderId(orderId));
+    }
 }

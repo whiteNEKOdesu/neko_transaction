@@ -5,6 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -465,5 +466,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }else{
             return "error";
         }
+    }
+
+    /**
+     * 根据订单号获取用户自身的订单信息
+     * @param orderId 订单号
+     * @return 用户自身的订单信息
+     */
+    @Override
+    public OrderInfo getUserSelfOrderInfoByOrderId(String orderId) {
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(OrderInfo::getOrderId, orderId)
+                .eq(OrderInfo::getUid, StpUtil.getLoginId().toString())
+                .ne(OrderInfo::getStatus, OrderStatus.CANCELED);
+
+        return this.baseMapper.selectOne(queryWrapper);
     }
 }
