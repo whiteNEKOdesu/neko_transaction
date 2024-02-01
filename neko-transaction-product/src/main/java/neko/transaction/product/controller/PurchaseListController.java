@@ -47,4 +47,16 @@ public class PurchaseListController {
     public ResultObject<List<PurchaseListRedisTo>> purchaseListInfos(){
         return ResultObject.ok(purchaseListService.userSelfPurchaseListInfos());
     }
+
+    /**
+     * 根据商品id删除购物车中的商品
+     * @param productId 商品id
+     */
+    @SaCheckLogin
+    @DeleteMapping("delete_by_id")
+    public ResultObject<Object> deleteById(@RequestParam String productId){
+        purchaseListService.deleteById(productId);
+
+        return ResultObject.ok();
+    }
 }

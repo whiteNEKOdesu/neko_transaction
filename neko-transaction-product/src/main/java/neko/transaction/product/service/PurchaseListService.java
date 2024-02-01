@@ -25,4 +25,10 @@ public interface PurchaseListService {
      * @return 用户自身的购物车全部商品信息
      */
     List<PurchaseListRedisTo> userSelfPurchaseListInfos();
+
+    /**
+     * 根据商品id删除购物车中的商品
+     * @param productId 商品id
+     */
+    void deleteById(String productId);
 }
