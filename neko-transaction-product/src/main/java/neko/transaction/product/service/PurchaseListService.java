@@ -31,4 +31,11 @@ public interface PurchaseListService {
      * @param productId 商品id
      */
     void deleteById(String productId);
+
+    /**
+     * 根据商品id集合删除购物车中的商品
+     * @param productIds 商品id集合
+     * @param uid 学号
+     */
+    void deleteByIds(List<String> productIds, String uid);
 }

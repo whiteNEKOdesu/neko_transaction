@@ -23,6 +23,7 @@ import neko.transaction.product.mapper.OrderInfoMapper;
 import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.service.OrderInfoService;
 import neko.transaction.product.service.ProductInfoService;
+import neko.transaction.product.service.PurchaseListService;
 import neko.transaction.product.to.AliPayTo;
 import neko.transaction.product.to.LockStockTo;
 import neko.transaction.product.to.NewOrderRedisTo;
@@ -70,6 +71,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Resource
     private OrderDetailInfoService orderDetailInfoService;
+
+    @Resource
+    private PurchaseListService purchaseListService;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -459,6 +463,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 ResultObject<Object> r = wareInfoFeignService.confirmLockStockPaid(orderId);
                 if(!r.getResponseCode().equals(200)){
                     throw new WareServiceException("ware微服务远程调用异常");
+                }
+
+                //step5 -> 如果订单从购物车提交，则删除购物车中对应的商品
+                if(newOrderRedisTo.getIsFromPurchaseList()){
+                    purchaseListService.deleteByIds(productIds, orderInfo.getUid());
                 }
 
                 log.info("订单号: " + orderId + "，支付宝流水号: " + vo.getTrade_no() + "，订单支付确认完成");

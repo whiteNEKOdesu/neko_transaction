@@ -35,7 +35,7 @@ public class NewOrderInfoVo implements Serializable {
      * 是否从购物车中提交
      */
     @NotNull
-    private Boolean isFromPurchaseList = false;
+    private Boolean isFromPurchaseList;
 
     /**
      * 商品信息

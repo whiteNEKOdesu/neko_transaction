@@ -139,4 +139,17 @@ public class PurchaseListServiceImpl implements PurchaseListService {
 
         boundHashOperations.delete(productId);
     }
+
+    /**
+     * 根据商品id集合删除购物车中的商品
+     * @param productIds 商品id集合
+     * @param uid 学号
+     */
+    @Override
+    public void deleteByIds(List<String> productIds, String uid) {
+        String key = Constant.PRODUCT_REDIS_PREFIX + "purchase_list:" + uid;
+        BoundHashOperations<String, Object, Object> boundHashOperations = stringRedisTemplate.boundHashOps(key);
+
+        boundHashOperations.delete(productIds.toArray());
+    }
 }
