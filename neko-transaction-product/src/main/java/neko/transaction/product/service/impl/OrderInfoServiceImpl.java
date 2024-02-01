@@ -254,7 +254,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
             NewOrderRedisTo newOrderRedisTo = new NewOrderRedisTo();
             //设置订单号
-            newOrderRedisTo.setOrderId(orderId);
+            newOrderRedisTo.setOrderId(orderId)
+                    //设置是否从购物车中提交
+                    .setIsFromPurchaseList(vo.getIsFromPurchaseList());
             List<NewOrderRedisTo.ProductsInOrder> productsInOrders = new ArrayList<>();
             for (NewOrderInfoVo.NewOrderProductInfo newOrderProductInfo : vo.getNewOrderProductInfos()) {
                 //要购买的商品id

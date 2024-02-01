@@ -83,6 +83,7 @@ public class OrderInfoController {
      * @param orderId 订单号
      * @return 用户自身的订单信息
      */
+    @SaCheckLogin
     @GetMapping("user_self_order_info_by_order_id")
     public ResultObject<OrderInfo> userSelfOrderInfoByOrderId(@RequestParam String orderId){
         return ResultObject.ok(orderInfoService.getUserSelfOrderInfoByOrderId(orderId));

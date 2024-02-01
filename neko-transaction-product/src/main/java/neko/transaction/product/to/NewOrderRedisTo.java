@@ -26,6 +26,11 @@ public class NewOrderRedisTo implements Serializable {
     private List<ProductsInOrder> productsInOrders;
 
     /**
+     * 是否从购物车中提交
+     */
+    private Boolean isFromPurchaseList = false;
+
+    /**
      * 订单的商品信息
      */
     @Data

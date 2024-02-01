@@ -11,38 +11,26 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 提交订单vo
+ * 添加商品到购物车的vo
  */
 @Data
 @Accessors(chain = true)
-public class NewOrderInfoVo implements Serializable {
+public class AddToPurchaseListVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 提交订单接口幂等性保证的token
-     */
-    @NotBlank
-    private String token;
-
-    /**
-     * 要购买的商品信息
+     * 要添加的商品信息
      */
     @Valid
     @NotEmpty
-    private List<NewOrderProductInfo> newOrderProductInfos;
-
-    /**
-     * 是否从购物车中提交
-     */
-    @NotNull
-    private Boolean isFromPurchaseList = false;
+    private List<PurchaseListProductInfo> productInfos;
 
     /**
      * 商品信息
      */
     @Data
     @Accessors(chain = true)
-    public static class NewOrderProductInfo{
+    public static class PurchaseListProductInfo{
         /**
          * 商品id
          */
