@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 @SpringBootTest
 public class ProductInfoMapperTest {
@@ -40,5 +41,16 @@ public class ProductInfoMapperTest {
     @Test
     public void getUpProductDetailInfo(){
         System.out.println(productInfoMapper.getUpProductDetailInfo("1750067945863770113"));
+    }
+
+    @Test
+    public void getProductDetailInfoByIds(){
+        System.out.println(productInfoMapper.getProductDetailInfoByIds(Arrays.asList("1750067945863770113",
+                "1750068049572130817")));
+    }
+
+    @Test
+    public void increaseSaleNumber(){
+        productInfoMapper.increaseSaleNumber("1750067945863770113", 1);
     }
 }

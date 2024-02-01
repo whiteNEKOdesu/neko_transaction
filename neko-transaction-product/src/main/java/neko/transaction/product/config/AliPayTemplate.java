@@ -51,8 +51,12 @@ public class AliPayTemplate {
         //AlipayClient alipayClient = new DefaultAlipayClient(AlipayTemplate.gatewayUrl, AlipayTemplate.app_id, AlipayTemplate.merchant_private_key, "json", AlipayTemplate.charset, AlipayTemplate.alipay_public_key, AlipayTemplate.sign_type);
         //1、根据支付宝的配置生成一个支付客户端
         alipayClient = new DefaultAlipayClient(gatewayUrl,
-                appId, merchantPrivateKey, "json",
-                charset, alipayPublicKey, signType);
+                appId,
+                merchantPrivateKey,
+                "json",
+                charset,
+                alipayPublicKey,
+                signType);
     }
 
     public  String pay(AliPayTo to) throws AlipayApiException {

@@ -8,6 +8,8 @@ import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 商品信息表 服务类
@@ -55,4 +57,18 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @return 商品详情信息
      */
     ProductDetailInfoVo getUpProductDetailInfo(String productId);
+
+    /**
+     * 根据商品id集合获取商品详情信息
+     * @param productIds 商品id集合
+     * @return 商品id集合对应的商品详情信息
+     */
+    List<ProductDetailInfoVo> getProductDetailInfoByIds(List<String> productIds);
+
+    /**
+     * 添加销量
+     * @param productId 商品id
+     * @param increase 要添加的数量
+     */
+    void increaseSaleNumber(String productId, Integer increase);
 }

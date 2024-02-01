@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -254,5 +255,25 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
                 TimeUnit.MILLISECONDS);
 
         return productDetailInfoVo;
+    }
+
+    /**
+     * 根据商品id集合获取商品详情信息
+     * @param productIds 商品id集合
+     * @return 商品id集合对应的商品详情信息
+     */
+    @Override
+    public List<ProductDetailInfoVo> getProductDetailInfoByIds(List<String> productIds) {
+        return this.baseMapper.getProductDetailInfoByIds(productIds);
+    }
+
+    /**
+     * 添加销量
+     * @param productId 商品id
+     * @param increase 要添加的数量
+     */
+    @Override
+    public void increaseSaleNumber(String productId, Integer increase) {
+        this.baseMapper.increaseSaleNumber(productId, increase);
     }
 }

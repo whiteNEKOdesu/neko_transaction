@@ -14,10 +14,12 @@ import neko.transaction.commonbase.utils.exception.OrderOverTimeException;
 import neko.transaction.commonbase.utils.exception.StockNotEnoughException;
 import neko.transaction.commonbase.utils.exception.WareServiceException;
 import neko.transaction.product.config.AliPayTemplate;
+import neko.transaction.product.entity.OrderDetailInfo;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.entity.ProductInfo;
 import neko.transaction.product.feign.ware.WareInfoFeignService;
 import neko.transaction.product.mapper.OrderInfoMapper;
+import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.service.OrderInfoService;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.to.AliPayTo;
@@ -26,6 +28,7 @@ import neko.transaction.product.to.NewOrderRedisTo;
 import neko.transaction.product.to.RabbitMQMessageTo;
 import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
+import neko.transaction.product.vo.ProductDetailInfoVo;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -63,6 +66,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     @Resource
     private WareInfoFeignService wareInfoFeignService;
+
+    @Resource
+    private OrderDetailInfoService orderDetailInfoService;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -237,7 +243,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return null;
         });
 
-        //step3.1.2 -> 将商品信息记录到 redis 中
+        //step3.1.2 -> 异步将商品信息记录到 redis 中
         CompletableFuture<Void> redisLogTask = getProductInfoTask.thenAcceptAsync((productInfoMap -> {
             if (productInfoMap == null || productInfoMap.isEmpty()) {
                 isException.set(true);
@@ -269,7 +275,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             newOrderRedisTo.setProductsInOrders(productsInOrders);
 
-            String productInfoKey = Constant.PRODUCT_REDIS_PREFIX + "order:" + uid + orderId + ":product_info";
+            String productInfoKey = Constant.PRODUCT_REDIS_PREFIX + "order:" + orderId + ":product_info";
             //记录订单商品信息到 redis 中
             stringRedisTemplate.opsForValue().setIfAbsent(productInfoKey,
                     JSONUtil.toJsonStr(newOrderRedisTo),
@@ -282,7 +288,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return null;
         });
 
-        //step3.2 -> 锁定库存
+        //step3.2 -> 异步锁定库存
         CompletableFuture<Void> lockStockTask = CompletableFuture.runAsync(() -> {
             LockStockTo lockStockTo = new LockStockTo();
             //收集锁定库存的商品信息
@@ -395,6 +401,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     return "error";
                 }
 
+                //step1 -> 修改订单状态信息为已支付状态
                 OrderInfo todoUpdate = new OrderInfo();
                 todoUpdate.setOrderId(orderId)
                         .setAlipayTradeId(vo.getTrade_no())
@@ -403,7 +410,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //修改订单状态信息
                 this.baseMapper.updateById(todoUpdate);
 
-                //远程调用库存微服务解锁库存并扣除库存
+                //step2 -> 获取订单涉及的商品信息，并添加到订单详情表
+                String productInfoKey = Constant.PRODUCT_REDIS_PREFIX + "order:" + orderId + ":product_info";
+                //获取订单涉及的商品信息
+                NewOrderRedisTo newOrderRedisTo = JSONUtil.toBean(stringRedisTemplate.opsForValue().get(productInfoKey), NewOrderRedisTo.class);
+
+                //map 映射关系: productId -> NewOrderRedisTo.ProductsInOrder
+                Map<String,NewOrderRedisTo.ProductsInOrder> productInfoMap = new HashMap<>();
+                for(NewOrderRedisTo.ProductsInOrder productsInOrder : newOrderRedisTo.getProductsInOrders()){
+                    productInfoMap.put(productsInOrder.getProductId(), productsInOrder);
+                }
+                List<String> productIds = new ArrayList<>(productInfoMap.keySet());
+                //获取商品详情信息
+                List<ProductDetailInfoVo> productDetailInfo = productInfoService.getProductDetailInfoByIds(productIds);
+                //添加到订单详情表的集合
+                List<OrderDetailInfo> todoAdds = new ArrayList<>();
+                for(ProductDetailInfoVo productDetailInfoVo : productDetailInfo){
+                    //获取订单号
+                    String productId = productDetailInfoVo.getProductId();
+                    NewOrderRedisTo.ProductsInOrder productsInOrder = productInfoMap.get(productId);
+                    OrderDetailInfo orderDetailInfo = new OrderDetailInfo();
+                    //设置订单详情信息
+                    orderDetailInfo.setOrderId(orderId)
+                            .setProductId(productId)
+                            .setProductName(productDetailInfoVo.getProductName())
+                            .setDisplayImage(productDetailInfoVo.getDisplayImage())
+                            .setFullCategoryName(productDetailInfoVo.getFullCategoryName())
+                            .setSellerUid(productDetailInfoVo.getUid())
+                            .setCost(productsInOrder.getCost())
+                            .setActualCost(productsInOrder.getActualCost())
+                            .setNumber(productsInOrder.getNumber());
+
+                    todoAdds.add(orderDetailInfo);
+                }
+
+                //将订单详情信息添加到订单详情表
+                orderDetailInfoService.saveBatch(todoAdds);
+
+                //step3 -> 添加对应商品销量
+                for(NewOrderRedisTo.ProductsInOrder productsInOrder : newOrderRedisTo.getProductsInOrders()){
+                    productInfoService.increaseSaleNumber(productsInOrder.getProductId(), productsInOrder.getNumber());
+                }
+
+                //step4 -> 远程调用库存微服务解锁库存并扣除库存
                 ResultObject<Object> r = wareInfoFeignService.confirmLockStockPaid(orderId);
                 if(!r.getResponseCode().equals(200)){
                     throw new WareServiceException("ware微服务远程调用异常");
