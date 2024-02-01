@@ -1,6 +1,9 @@
 package neko.transaction.product.service;
 
 import neko.transaction.product.vo.AddToPurchaseListVo;
+import neko.transaction.product.vo.PurchaseListRedisTo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +19,10 @@ public interface PurchaseListService {
      * @param vo 添加商品到购物车的vo
      */
     void addToPurchaseList(AddToPurchaseListVo vo);
+
+    /**
+     * 获取用户自身的购物车全部商品信息
+     * @return 用户自身的购物车全部商品信息
+     */
+    List<PurchaseListRedisTo> userSelfPurchaseListInfos();
 }

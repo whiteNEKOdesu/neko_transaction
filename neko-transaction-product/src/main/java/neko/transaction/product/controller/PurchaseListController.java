@@ -4,13 +4,12 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.PurchaseListService;
 import neko.transaction.product.vo.AddToPurchaseListVo;
+import neko.transaction.product.vo.PurchaseListRedisTo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -37,5 +36,15 @@ public class PurchaseListController {
         purchaseListService.addToPurchaseList(vo);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取用户自身的购物车全部商品信息
+     * @return 用户自身的购物车全部商品信息
+     */
+    @SaCheckLogin
+    @GetMapping("purchase_list_infos")
+    public ResultObject<List<PurchaseListRedisTo>> purchaseListInfos(){
+        return ResultObject.ok(purchaseListService.userSelfPurchaseListInfos());
     }
 }

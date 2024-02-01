@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,5 +103,27 @@ public class PurchaseListServiceImpl implements PurchaseListService {
             //添加到 redis 中
             boundHashOperations.put(productId, JSONUtil.toJsonStr(todoAdd));
         }
+    }
+
+    /**
+     * 获取用户自身的购物车全部商品信息
+     * @return 用户自身的购物车全部商品信息
+     */
+    @Override
+    public List<PurchaseListRedisTo> userSelfPurchaseListInfos() {
+        String uid = StpUtil.getLoginId().toString();
+        String key = Constant.PRODUCT_REDIS_PREFIX + "purchase_list:" + uid;
+        BoundHashOperations<String, Object, Object> boundHashOperations = stringRedisTemplate.boundHashOps(key);
+        List<Object> values = boundHashOperations.values();
+        if(values == null || values.isEmpty()){
+            return null;
+        }
+
+        List<PurchaseListRedisTo> result = new ArrayList<>();
+        for(Object value : values){
+            result.add(JSONUtil.toBean(value.toString(), PurchaseListRedisTo.class));
+        }
+
+        return result;
     }
 }
