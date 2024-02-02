@@ -7,6 +7,7 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.*;
@@ -30,6 +31,7 @@ import neko.transaction.product.to.NewOrderRedisTo;
 import neko.transaction.product.to.RabbitMQMessageTo;
 import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
+import neko.transaction.product.vo.OrderInfoPageQueryVo;
 import neko.transaction.product.vo.ProductDetailInfoVo;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.ReturnedMessage;
@@ -492,5 +494,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .ne(OrderInfo::getStatus, OrderStatus.CANCELED);
 
         return this.baseMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 分页查询学生自身的订单信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<OrderInfoPageQueryVo> userSelfPageQuery(QueryVo vo) {
+        Page<OrderInfoPageQueryVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        String uid = StpUtil.getLoginId().toString();
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.userSelfPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords(),
+                uid));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.userSelfPageQueryNumber(vo.getQueryWords(), uid));
+
+        return page;
     }
 }

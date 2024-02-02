@@ -1,10 +1,13 @@
 package neko.transaction.product.service;
 
 import com.alipay.api.AlipayApiException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
+import neko.transaction.product.vo.OrderInfoPageQueryVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -67,4 +70,11 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 用户自身的订单信息
      */
     OrderInfo getUserSelfOrderInfoByOrderId(String orderId);
+
+    /**
+     * 分页查询学生自身的订单信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    Page<OrderInfoPageQueryVo> userSelfPageQuery(QueryVo vo);
 }

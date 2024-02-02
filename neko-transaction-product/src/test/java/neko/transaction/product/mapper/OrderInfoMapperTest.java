@@ -14,4 +14,18 @@ public class OrderInfoMapperTest {
     public void updateOrderInfoStatusToCancel(){
         orderInfoMapper.updateOrderInfoStatusToCancel("202401311052224051752525198848925698");
     }
+
+    @Test
+    public void userSelfPageQuery(){
+        System.out.println(orderInfoMapper.userSelfPageQuery(8,
+                0,
+                "",
+                "1642067605873348610"));
+    }
+
+    @Test
+    public void userSelfPageQueryNumber(){
+        System.out.println(orderInfoMapper.userSelfPageQueryNumber("",
+                "1642067605873348610"));
+    }
 }

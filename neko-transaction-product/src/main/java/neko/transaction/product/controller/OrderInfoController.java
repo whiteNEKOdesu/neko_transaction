@@ -2,11 +2,14 @@ package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.alipay.api.AlipayApiException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.service.OrderInfoService;
 import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
+import neko.transaction.product.vo.OrderInfoPageQueryVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,5 +90,16 @@ public class OrderInfoController {
     @GetMapping("user_self_order_info_by_order_id")
     public ResultObject<OrderInfo> userSelfOrderInfoByOrderId(@RequestParam String orderId){
         return ResultObject.ok(orderInfoService.getUserSelfOrderInfoByOrderId(orderId));
+    }
+
+    /**
+     * 分页查询学生自身的订单信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @SaCheckLogin
+    @PostMapping("user_self_page_query")
+    public ResultObject<Page<OrderInfoPageQueryVo>> userSelfPageQuery(@Validated @RequestBody QueryVo vo){
+        return ResultObject.ok(orderInfoService.userSelfPageQuery(vo));
     }
 }
