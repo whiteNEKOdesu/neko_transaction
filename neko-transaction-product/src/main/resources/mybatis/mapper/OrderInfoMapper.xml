@@ -49,6 +49,9 @@
                     <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
                         and order_detail_info.product_name like concat(#{queryWords},'%')
                     </if>
+                    <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                        and order_detail_info.status = #{status}
+                    </if>
                     and order_info.status = ${@neko.transaction.commonbase.utils.entity.OrderStatus@PAID}
                     limit #{start}, #{limited}
                 </where>
@@ -65,6 +68,9 @@
             order_info.uid = #{uid}
             <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
                 and order_detail_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and order_detail_info.status = #{status}
             </if>
             and order_info.status = ${@neko.transaction.commonbase.utils.entity.OrderStatus@PAID}
         </where>

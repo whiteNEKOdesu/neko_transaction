@@ -505,13 +505,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public Page<OrderInfoPageQueryVo> userSelfPageQuery(QueryVo vo) {
         Page<OrderInfoPageQueryVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
         String uid = StpUtil.getLoginId().toString();
+        Object objectId = vo.getObjectId();
+        Byte status = objectId != null ? Byte.valueOf(objectId.toString()) : null;
         //设置分页查询结果
         page.setRecords(this.baseMapper.userSelfPageQuery(vo.getLimited(),
                 vo.daoPage(),
                 vo.getQueryWords(),
-                uid));
+                uid,
+                status));
         //设置分页查询总页数
-        page.setTotal(this.baseMapper.userSelfPageQueryNumber(vo.getQueryWords(), uid));
+        page.setTotal(this.baseMapper.userSelfPageQueryNumber(vo.getQueryWords(),
+                uid,
+                status));
 
         return page;
     }

@@ -29,19 +29,23 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @param start 起始位置
      * @param queryWords 查询条件
      * @param uid 学号
+     * @param status 商品订单状态
      * @return 查询结果
      */
     List<OrderInfoPageQueryVo> userSelfPageQuery(Integer limited,
                                                  Integer start,
                                                  String queryWords,
-                                                 String uid);
+                                                 String uid,
+                                                 Byte status);
 
     /**
      * 分页查询学生自身的订单信息的结果总数量
      * @param queryWords 查询条件
      * @param uid 学号
+     * @param status 商品订单状态
      * @return 查询结果的结果总数量
      */
     int userSelfPageQueryNumber(String queryWords,
-                                String uid);
+                                String uid,
+                                Byte status);
 }

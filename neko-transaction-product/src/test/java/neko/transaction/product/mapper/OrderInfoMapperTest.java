@@ -20,12 +20,14 @@ public class OrderInfoMapperTest {
         System.out.println(orderInfoMapper.userSelfPageQuery(8,
                 0,
                 "",
-                "1642067605873348610"));
+                "1642067605873348610",
+                Byte.valueOf("0")));
     }
 
     @Test
     public void userSelfPageQueryNumber(){
         System.out.println(orderInfoMapper.userSelfPageQueryNumber("",
-                "1642067605873348610"));
+                "1642067605873348610",
+                Byte.valueOf("0")));
     }
 }
