@@ -14,6 +14,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.entity.MemberInfo;
+import neko.transaction.member.entity.UserRoleRelation;
 import neko.transaction.member.ip.IPHandler;
 import neko.transaction.member.mapper.MemberInfoMapper;
 import neko.transaction.member.service.MemberInfoService;
@@ -23,11 +24,13 @@ import neko.transaction.member.service.UserRoleRelationService;
 import neko.transaction.member.service.WeightRoleRelationService;
 import neko.transaction.member.vo.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * <p>
@@ -125,6 +128,7 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
      * 添加用户
      * @param vo 添加用户vo
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void newMemberInfo(NewMemberInfoVo vo) {
         MemberInfo memberInfo = new MemberInfo();
@@ -137,20 +141,30 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         //生成盐
         String salt = Arrays.toString(RandomUtil.randomBytes(10));
         //设置 MD5 hash 后的密码
-        memberInfo.setUserPassword(DigestUtils.md5DigestAsHex((userPassword + memberInfo.getSalt()).getBytes()))
+        memberInfo.setUserPassword(DigestUtils.md5DigestAsHex((userPassword + salt).getBytes()))
                 .setSalt(salt);
 
         //添加用户
         this.baseMapper.insert(memberInfo);
+
+        //为用户设置普通用户以及普通会员角色
+        userRoleRelationService.newRelations(vo.getUid(),
+                Collections.singletonList(1));
     }
 
     /**
      * 根据学号删除用户
      * @param uid 学号
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(String uid) {
         this.baseMapper.deleteById(uid);
+
+        QueryWrapper<UserRoleRelation> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(UserRoleRelation::getUid, uid);
+        //删除角色联系
+        userRoleRelationService.remove(queryWrapper);
     }
 
     /**
