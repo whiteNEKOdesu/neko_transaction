@@ -53,6 +53,7 @@
                         and order_detail_info.status = #{status}
                     </if>
                     and order_info.status = ${@neko.transaction.commonbase.utils.entity.OrderStatus@PAID}
+                    order by order_info.order_id desc
                     limit #{start}, #{limited}
                 </where>
             ) sub_query
