@@ -1,7 +1,10 @@
 package neko.transaction.member.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.member.entity.MemberChatInfo;
 import neko.transaction.member.service.MemberChatInfoService;
 import neko.transaction.member.vo.NewMemberChatVo;
 import org.springframework.validation.annotation.Validated;
@@ -37,5 +40,16 @@ public class MemberChatInfoController {
         memberChatInfoService.newMemberChatInfo(vo);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 分页查询指定的聊天对象学号的聊天信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @SaCheckLogin
+    @PostMapping("page_query_by_chat_id")
+    public ResultObject<Page<MemberChatInfo>> pageQueryByChatId(@Validated @RequestBody QueryVo vo){
+        return ResultObject.ok(memberChatInfoService.pageQueryByToId(vo));
     }
 }

@@ -1,10 +1,13 @@
 package neko.transaction.member.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.MemberChatInfo;
 import neko.transaction.member.mapper.MemberChatInfoMapper;
 import neko.transaction.member.service.MemberChatInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.member.vo.NewMemberChatVo;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +35,33 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
                 .setBody(vo.getBody());
 
         this.baseMapper.insert(memberChatInfo);
+    }
+
+    /**
+     * 分页查询指定的聊天对象学号的聊天信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<MemberChatInfo> pageQueryByToId(QueryVo vo) {
+        if(vo.getObjectId() == null){
+            throw new IllegalArgumentException("缺少聊天对象uid");
+        }
+        Page<MemberChatInfo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        String chatId = vo.getObjectId().toString();
+        String uid = StpUtil.getLoginId().toString();
+
+        QueryWrapper<MemberChatInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(MemberChatInfo::getToId, chatId)
+                .eq(MemberChatInfo::getFromId, uid)
+                .or()
+                .eq(MemberChatInfo::getToId, uid)
+                .eq(MemberChatInfo::getFromId, chatId)
+                .orderByDesc(MemberChatInfo::getChatId);
+
+        //分页查询
+        this.baseMapper.selectPage(page, queryWrapper);
+
+        return page;
     }
 }

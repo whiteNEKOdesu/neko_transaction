@@ -1,5 +1,7 @@
 package neko.transaction.member.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.MemberChatInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.member.vo.NewMemberChatVo;
@@ -18,4 +20,11 @@ public interface MemberChatInfoService extends IService<MemberChatInfo> {
      * @param vo 添加聊天消息的vo
      */
     void newMemberChatInfo(NewMemberChatVo vo);
+
+    /**
+     * 分页查询指定的聊天对象学号的聊天信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    Page<MemberChatInfo> pageQueryByToId(QueryVo vo);
 }
