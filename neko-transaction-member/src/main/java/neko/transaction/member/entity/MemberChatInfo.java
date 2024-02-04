@@ -47,11 +47,6 @@ public class MemberChatInfo implements Serializable {
     private String body;
 
     /**
-     * 消息类型，0->用户之间的消息，1->用户，管理员之间的消息
-     */
-    private Byte type;
-
-    /**
      * 是否删除
      */
     private Byte isDelete;
