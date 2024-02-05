@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.member.mapper.MemberChatInfoMapper">
+    <select id="memberChattingWithPageQuery" resultType="neko.transaction.member.vo.MemberChatInfoLogVo">
+        select member_chat_info.from_id, member_info.real_name,
+            (count(member_chat_info.from_id) - sub_query.readed) unread_number from member_chat_info
+        join member_info
+        on member_chat_info.from_id = member_info.uid
+        join (
+            select member_chat_info.from_id, count(member_chat_info_read_log.chat_id) readed from member_chat_info
+            left join member_chat_info_read_log
+            on member_chat_info.chat_id = member_chat_info_read_log.chat_id
+            where member_chat_info.to_id = #{uid}
+            group by member_chat_info.from_id
+        ) sub_query
+        on member_chat_info.from_id = sub_query.from_id
+        where member_chat_info.to_id = #{uid}
+        group by member_chat_info.from_id
+        order by unread_number desc
+        limit #{start}, #{limited}
+    </select>
 
+    <select id="memberChattingWithPageQueryNumber" resultType="int">
+        select count(distinct from_id) from member_chat_info
+        where to_id = #{uid}
+    </select>
 </mapper>
