@@ -157,6 +157,10 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         if(uploadUrl != null){
             ossFeignService.deleteFile(productInfo.getDisplayImage());
         }
+
+        //step4 -> 删除商品详细信息缓存
+        String key = Constant.PRODUCT_REDIS_PREFIX + "product_detail_info:" + productId;
+        stringRedisTemplate.delete(key);
     }
 
     /**
