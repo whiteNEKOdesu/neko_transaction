@@ -4,9 +4,12 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.ChatWebSocketMessageType;
+import neko.transaction.commonbase.utils.entity.ProfilesActive;
 import neko.transaction.member.vo.ChatWebSocketVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -17,6 +20,18 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint("/websocket/chat/{token}")
 @Slf4j
 public class WebSocket {
+    @Value("${spring.profiles.active}")
+    private String active;
+
+    private Boolean isDebug = true;
+
+    @PostConstruct
+    public void init(){
+        if(ProfilesActive.PROP.equals(active)){
+            isDebug = false;
+        }
+    }
+
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
@@ -45,7 +60,10 @@ public class WebSocket {
             this.uid = StpUtil.getLoginIdByToken(token).toString();
             webSockets.add(this);
             sessionPool.put(this.uid, session);
-            log.info("【websocket消息】有新的连接，总数为:" + webSockets.size());
+
+            if(isDebug){
+                log.info("【websocket消息】有新的连接，总数为:" + webSockets.size());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,7 +78,9 @@ public class WebSocket {
             webSockets.remove(this);
             sessionPool.remove(this.uid);
 
-            log.info("【websocket消息】连接断开，总数为:"+webSockets.size());
+            if(isDebug){
+                log.info("【websocket消息】连接断开，总数为:" + webSockets.size());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,7 +99,9 @@ public class WebSocket {
             return;
         }
 
-        log.info("【websocket消息】收到uid: " + this.uid + "，消息: " + vo);
+        if(isDebug){
+            log.info("【websocket消息】收到uid: " + this.uid + "，消息: " + vo);
+        }
     }
 
     /** 发送错误时的处理
@@ -113,17 +135,23 @@ public class WebSocket {
     /**
      * 此为单点消息
      */
-    public void sendOneMessage(String uid, String message) {
+    public boolean sendOneMessage(String uid, String message) {
         Session session = sessionPool.get(uid);
 
         if (session != null&&session.isOpen()) {
             try {
-                log.info("【websocket消息】 单点消息:" + message);
                 session.getAsyncRemote().sendText(message);
+                if(isDebug){
+                    log.info("【websocket消息】 单点消息:" + message);
+                }
+
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        return false;
     }
 
     /**
