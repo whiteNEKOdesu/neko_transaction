@@ -70,6 +70,25 @@ spring:
   main:
     #允许出现beanName一样的BeanDefinition
     allow-bean-definition-overriding: true
+seata:
+  config:
+    type: nacos
+    nacos:
+      server-addr: 192.168.30.131:8848
+      group : NEKO-TRANSACTION-SEATA
+      namespace: 3de83da7-02c3-46e1-8c59-930031b9c30b
+      dataId: neko-transaction-seata-server.properties #对应nacos中dataId
+      username: nacos
+      password: nacos
+  enabled: true
+  tx-service-group: default_tx_group #对应seata中yaml设置分组
+  registry:
+    type: nacos
+    nacos:
+      application: neko-transaction-seata-server
+      server-addr: 192.168.30.131:8848
+      group: NEKO-TRANSACTION
+      namespace: 3de83da7-02c3-46e1-8c59-930031b9c30b
 mybatis-plus:
   config-location: classpath:mybatis/mybatis-config-dev.xml
   mapper-locations: classpath:mybatis/mapper/*.xml

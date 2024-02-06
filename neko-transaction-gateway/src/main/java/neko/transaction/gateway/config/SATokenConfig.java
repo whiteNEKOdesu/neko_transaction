@@ -28,6 +28,7 @@ public class SATokenConfig {
                 .addInclude("/third_party/oss/delete_file")
                 .addInclude("/ware/ware_info/new_ware_info")
                 .addInclude("/product/order_info/remote_invoke_order_info_by_id")
+                .addInclude("/member/member_info/add_balance")
                 .setAuth(obj -> {
                     StpUtil.checkRole("*");
                 })

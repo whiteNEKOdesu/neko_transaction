@@ -12,5 +12,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-01-27
  */
 public interface OrderDetailInfoService extends IService<OrderDetailInfo> {
-
+    /**
+     * 学生确认收货
+     * @param orderDetailId 订单详情id
+     */
+    void confirmReceived(String orderDetailId);
 }

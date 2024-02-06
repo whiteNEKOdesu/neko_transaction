@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MemberInfoMapperTest {
@@ -31,5 +32,11 @@ public class MemberInfoMapperTest {
     @Test
     public void getPublicMemberInfoByUid(){
         System.out.println(memberInfoMapper.getPublicMemberInfoByUid("1642067605873348610"));
+    }
+
+    @Test
+    public void addBalance(){
+        memberInfoMapper.addBalance("1642067605873348610",
+                new BigDecimal("15"));
     }
 }

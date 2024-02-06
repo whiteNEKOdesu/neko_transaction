@@ -94,4 +94,16 @@ public class MemberInfoController {
     public ResultObject<PublicMemberInfoVo> publicMemberInfo(@RequestParam String uid){
         return ResultObject.ok(memberInfoService.publicMemberInfoByUid(uid));
     }
+
+    /**
+     * 添加用户余额，建议只提供给微服务远程调用
+     * @param vo 添加用户余额vo
+     * @return 响应结果
+     */
+    @PostMapping("add_balance")
+    public ResultObject<Object> addBalance(@Validated @RequestBody AddMemberBalanceVo vo){
+        memberInfoService.addBalance(vo);
+
+        return ResultObject.ok();
+    }
 }

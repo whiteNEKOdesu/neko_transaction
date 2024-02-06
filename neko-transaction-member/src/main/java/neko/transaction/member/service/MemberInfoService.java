@@ -8,6 +8,7 @@ import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -57,4 +58,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @return 用户公开信息
      */
     PublicMemberInfoVo publicMemberInfoByUid(String uid);
+
+    /**
+     * 添加用户余额
+     * @param vo 添加用户余额vo
+     */
+    void addBalance(AddMemberBalanceVo vo);
 }

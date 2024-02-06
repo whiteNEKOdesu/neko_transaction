@@ -7,6 +7,7 @@ import neko.transaction.member.vo.MemberWithSchoolInfoVo;
 import neko.transaction.member.vo.PublicMemberInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -52,4 +53,11 @@ public interface MemberInfoMapper extends BaseMapper<MemberInfo> {
      * @return 用户公开信息
      */
     PublicMemberInfoVo getPublicMemberInfoByUid(String uid);
+
+    /**
+     * 添加用户余额
+     * @param uid 学号
+     * @param addNumber 要添加的余额
+     */
+    void addBalance(String uid, BigDecimal addNumber);
 }

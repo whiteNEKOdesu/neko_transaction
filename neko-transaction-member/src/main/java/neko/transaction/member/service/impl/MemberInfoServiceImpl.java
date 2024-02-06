@@ -10,6 +10,7 @@ import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
@@ -18,7 +19,6 @@ import neko.transaction.member.entity.UserRoleRelation;
 import neko.transaction.member.ip.IPHandler;
 import neko.transaction.member.mapper.MemberInfoMapper;
 import neko.transaction.member.service.MemberInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.member.service.MemberLogInLogService;
 import neko.transaction.member.service.UserRoleRelationService;
 import neko.transaction.member.service.WeightRoleRelationService;
@@ -29,6 +29,7 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -190,5 +191,15 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     @Override
     public PublicMemberInfoVo publicMemberInfoByUid(String uid) {
         return this.baseMapper.getPublicMemberInfoByUid(uid);
+    }
+
+    /**
+     * 添加用户余额
+     * @param vo 添加用户余额vo
+     */
+    @Override
+    public void addBalance(AddMemberBalanceVo vo) {
+        this.baseMapper.addBalance(vo.getUid(), vo.getAddNumber()
+                .setScale(2, BigDecimal.ROUND_DOWN));
     }
 }

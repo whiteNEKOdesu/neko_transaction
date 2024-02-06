@@ -63,4 +63,10 @@
         on major_info.college_id = college_info.college_id
         where uid = #{uid}
     </select>
+
+    <update id="addBalance">
+        update member_info
+        set balance = balance + #{addNumber}
+        where uid = #{uid}
+    </update>
 </mapper>
