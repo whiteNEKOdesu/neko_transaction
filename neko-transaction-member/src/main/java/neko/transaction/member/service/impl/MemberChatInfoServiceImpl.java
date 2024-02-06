@@ -8,6 +8,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.MemberChatInfo;
 import neko.transaction.member.mapper.MemberChatInfoMapper;
 import neko.transaction.member.service.MemberChatInfoService;
+import neko.transaction.member.vo.MemberChatInfoLogVo;
 import neko.transaction.member.vo.NewMemberChatVo;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,25 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
 
         //分页查询
         this.baseMapper.selectPage(page, queryWrapper);
+
+        return page;
+    }
+
+    /**
+     * 分页查询用户自身的聊天对象信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<MemberChatInfoLogVo> memberChattingWithPageQuery(QueryVo vo) {
+        Page<MemberChatInfoLogVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        String uid = StpUtil.getLoginId().toString();
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.memberChattingWithPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                uid));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.memberChattingWithPageQueryNumber(uid));
 
         return page;
     }
