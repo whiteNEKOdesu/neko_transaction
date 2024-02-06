@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.member.mapper.MemberChatInfoReadLogMapper">
-
+    <insert id="insertBatch">
+        insert into member_chat_info_read_log(chat_id, from_id, to_id) values
+        <foreach collection="chatIds" item="id" separator=",">
+            (#{id}, #{fromId}, #{toId})
+        </foreach>
+    </insert>
 </mapper>

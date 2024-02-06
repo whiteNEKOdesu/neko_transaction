@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MemberChatInfoMapperTest {
     @Resource
     private MemberChatInfoMapper memberChatInfoMapper;
@@ -20,5 +20,10 @@ public class MemberChatInfoMapperTest {
     @Test
     public void memberChattingWithPageQueryNumber(){
         System.out.println(memberChatInfoMapper.memberChattingWithPageQueryNumber("1642067605873348610"));
+    }
+
+    @Test
+    public void getUnreadChatIdByFromIdToId(){
+        System.out.println(memberChatInfoMapper.getUnreadChatIdByFromIdToId("2022djy", "1642067605873348610"));
     }
 }

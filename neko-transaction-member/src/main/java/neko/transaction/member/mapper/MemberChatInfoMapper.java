@@ -34,4 +34,12 @@ public interface MemberChatInfoMapper extends BaseMapper<MemberChatInfo> {
      * @return 查询结果的结果总数量
      */
     int memberChattingWithPageQueryNumber(String uid);
+
+    /**
+     * 根据发送人学号，接收人学号获取未读聊天id
+     * @param fromId 送人学号
+     * @param toId 接收人学号
+     * @return 未读聊天id
+     */
+    List<Long> getUnreadChatIdByFromIdToId(String fromId, String toId);
 }

@@ -7,10 +7,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.MemberChatInfo;
 import neko.transaction.member.mapper.MemberChatInfoMapper;
+import neko.transaction.member.service.MemberChatInfoReadLogService;
 import neko.transaction.member.service.MemberChatInfoService;
 import neko.transaction.member.vo.MemberChatInfoLogVo;
 import neko.transaction.member.vo.NewMemberChatVo;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * <p>
@@ -22,6 +28,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper, MemberChatInfo> implements MemberChatInfoService {
+    @Resource
+    private MemberChatInfoReadLogService memberChatInfoReadLogService;
+
+    @Resource(name = "threadPoolExecutor")
+    private Executor threadPool;
 
     /**
      * 添加聊天消息
@@ -51,6 +62,17 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
         Page<MemberChatInfo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
         String chatId = vo.getObjectId().toString();
         String uid = StpUtil.getLoginId().toString();
+        if(vo.getCurrentPage().equals(1)){
+            //异步添加已读消息记录，将消息标记为已读
+            CompletableFuture.runAsync(() -> {
+                List<Long> chatIds = this.baseMapper.getUnreadChatIdByFromIdToId(chatId, uid);
+                memberChatInfoReadLogService.newMemberChatInfoReadLog(chatIds, chatId, uid);
+            }, threadPool).exceptionallyAsync(e -> {
+                e.printStackTrace();
+
+                return null;
+            }, threadPool);
+        }
 
         QueryWrapper<MemberChatInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(MemberChatInfo::getToId, chatId)

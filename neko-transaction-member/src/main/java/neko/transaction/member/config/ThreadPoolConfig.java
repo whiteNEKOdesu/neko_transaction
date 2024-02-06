@@ -1,4 +1,4 @@
-package neko.transaction.product.config;
+package neko.transaction.member.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

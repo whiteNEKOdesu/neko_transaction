@@ -24,4 +24,12 @@
         select count(distinct from_id) from member_chat_info
         where to_id = #{uid}
     </select>
+
+    <select id="getUnreadChatIdByFromIdToId" resultType="Long">
+        select chat_id from member_chat_info
+        where from_id = #{fromId} and to_id = #{toId} and chat_id not in(
+            select chat_id from member_chat_info_read_log
+            where from_id = #{fromId} and to_id = #{toId}
+        )
+    </select>
 </mapper>

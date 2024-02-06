@@ -7,12 +7,14 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserRoleMapperTest {
+public class MemberChatInfoReadLogMapperTest {
     @Resource
-    private UserRoleMapper userRoleMapper;
+    private MemberChatInfoReadLogMapper memberChatInfoReadLogMapper;
 
     @Test
-    public void getMemberLevelRoleNumberByRoleIds(){
-        System.out.println(userRoleMapper.getMemberLevelRoleNumberByRoleIds(Arrays.asList(1, 2)));
+    public void insertBatch(){
+        memberChatInfoReadLogMapper.insertBatch(Arrays.asList(1L, 2L),
+                "2022djy",
+                "1642067605873348610");
     }
 }

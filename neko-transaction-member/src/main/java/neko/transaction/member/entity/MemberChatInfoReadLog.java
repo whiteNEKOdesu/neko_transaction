@@ -38,6 +38,16 @@ public class MemberChatInfoReadLog implements Serializable {
     private Long chatId;
 
     /**
+     * 聊天发起人id
+     */
+    private String fromId;
+
+    /**
+     * 接收人id
+     */
+    private String toId;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;
