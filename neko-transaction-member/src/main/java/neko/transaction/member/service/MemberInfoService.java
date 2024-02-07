@@ -37,6 +37,12 @@ public interface MemberInfoService extends IService<MemberInfo> {
     ResultObject<MemberInfoVo> uidLogin(UidLogInVo vo, HttpServletRequest request);
 
     /**
+     * 发送邮箱登录邮件
+     * @param receiver 邮箱
+     */
+    void sendLogInCode(String receiver);
+
+    /**
      * 分页查询学生及所属二级学院，专业，班级信息
      * @param vo 分页查询vo
      * @return 查询结果

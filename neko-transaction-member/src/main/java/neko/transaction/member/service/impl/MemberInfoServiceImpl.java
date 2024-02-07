@@ -172,6 +172,30 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     }
 
     /**
+     * 发送邮箱登录邮件
+     * @param receiver 邮箱
+     */
+    @Override
+    public void sendLogInCode(String receiver) {
+        QueryWrapper<MemberInfo> queryWrapper = new QueryWrapper<>();
+        MemberInfo memberInfo = this.baseMapper.selectOne(queryWrapper.lambda().eq(MemberInfo::getMail, receiver));
+        if(memberInfo == null){
+            throw new NoSuchResultException("无此用户");
+        }
+
+        String key = Constant.MEMBER_REDIS_PREFIX + "log_in_mail_code:" + receiver;
+        String code = RandomUtil.randomNumbers(6);
+        stringRedisTemplate.opsForValue().set(key,
+                code,
+                1000 * 60 * 5,
+                TimeUnit.MILLISECONDS);
+        ResultObject<Object> r = mailFeignService.sendLogInMail(receiver, code);
+        if(r.getResponseCode() != 200){
+            throw new MailSendException("邮件发送错误");
+        }
+    }
+
+    /**
      * 分页查询学生及所属二级学院，专业，班级信息
      * @param vo 分页查询vo
      * @return 查询结果

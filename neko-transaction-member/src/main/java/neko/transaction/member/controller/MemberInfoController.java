@@ -172,7 +172,7 @@ public class MemberInfoController {
      * @return 发送的邮箱
      */
     @PostMapping("send_user_password_reset_code")
-    public ResultObject<Object> sendPasswordResetCode(@RequestParam String uid){
+    public ResultObject<String> sendPasswordResetCode(@RequestParam String uid){
         return ResultObject.ok(memberInfoService.sendUserPasswordResetCode(uid));
     }
 
@@ -184,6 +184,18 @@ public class MemberInfoController {
     @PostMapping("reset_user_password")
     public ResultObject<Object> resetUserPassword(@Validated @RequestBody ResetUserPasswordVo vo){
         memberInfoService.resetUserPassword(vo);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 发送邮箱登录邮件
+     * @param receiver 邮箱
+     * @return 响应结果
+     */
+    @PostMapping("send_log_in_code")
+    public ResultObject<Object> sendLogInCode(@RequestParam String receiver){
+        memberInfoService.sendLogInCode(receiver);
 
         return ResultObject.ok();
     }

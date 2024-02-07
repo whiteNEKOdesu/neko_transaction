@@ -28,4 +28,13 @@ public interface MailFeignService {
      */
     @PostMapping("mail/send_password_reset_mail")
     ResultObject<Object> sendPasswordResetMail(@RequestParam String receiver, @RequestParam String code);
+
+    /**
+     * 发送邮箱登录验证码
+     * @param receiver 接收人邮箱
+     * @param code 验证码
+     * @return 响应结果
+     */
+    @PostMapping("mail/send_log_in_mail")
+    ResultObject<Object> sendLogInMail(@RequestParam String receiver, @RequestParam String code);
 }
