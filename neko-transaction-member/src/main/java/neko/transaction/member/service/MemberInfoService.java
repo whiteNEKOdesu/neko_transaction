@@ -64,4 +64,11 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @param vo 添加用户余额vo
      */
     void addBalance(AddMemberBalanceVo vo);
+
+    /**
+     * 用户名是否重复
+     * @param userName 用户名
+     * @return 用户名是否重复
+     */
+    boolean userNameIsRepeat(String userName);
 }

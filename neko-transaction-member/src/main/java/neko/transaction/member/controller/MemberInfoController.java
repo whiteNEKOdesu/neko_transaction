@@ -106,4 +106,14 @@ public class MemberInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 用户名是否重复
+     * @param userName 用户名
+     * @return 用户名是否重复
+     */
+    @GetMapping("user_name_is_repeat")
+    public ResultObject<Boolean> userNameIsRepeat(@RequestParam String userName){
+        return ResultObject.ok(memberInfoService.userNameIsRepeat(userName));
+    }
 }

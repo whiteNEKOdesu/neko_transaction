@@ -202,4 +202,15 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         this.baseMapper.addBalance(vo.getUid(), vo.getAddNumber()
                 .setScale(2, BigDecimal.ROUND_DOWN));
     }
+
+    /**
+     * 用户名是否重复
+     * @param userName 用户名
+     * @return 用户名是否重复
+     */
+    @Override
+    public boolean userNameIsRepeat(String userName) {
+        return this.baseMapper.selectOne(new QueryWrapper<MemberInfo>().lambda()
+                .eq(MemberInfo::getUserName, userName)) != null;
+    }
 }
