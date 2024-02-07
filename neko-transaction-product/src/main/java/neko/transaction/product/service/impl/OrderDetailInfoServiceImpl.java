@@ -56,7 +56,7 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
         //step2 -> 远程调用用户微服务添加卖家余额
         AddMemberBalanceTo to = new AddMemberBalanceTo();
         to.setUid(orderDetailInfo.getSellerUid())
-                .setAddNumber(orderDetailInfo.getActualCost());
+                .setAddNumber(orderDetailInfo.getCost());
 
         ResultObject<Object> r = memberInfoFeignService.addBalance(to);
         if(!r.getResponseCode().equals(200)){
