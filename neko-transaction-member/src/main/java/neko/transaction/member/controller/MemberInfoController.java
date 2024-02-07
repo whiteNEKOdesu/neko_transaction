@@ -41,6 +41,17 @@ public class MemberInfoController {
     }
 
     /**
+     * 用户学号，密码登录
+     * @param vo 登录vo
+     * @param request HttpServletRequest
+     * @return 用户信息vo
+     */
+    @PostMapping("uid_login")
+    public ResultObject<MemberInfoVo> uidLogIn(@Validated @RequestBody UidLogInVo vo, HttpServletRequest request){
+        return memberInfoService.uidLogin(vo, request);
+    }
+
+    /**
      * 分页查询学生及所属二级学院，专业，班级信息
      * @param vo 分页查询vo
      * @return 查询结果

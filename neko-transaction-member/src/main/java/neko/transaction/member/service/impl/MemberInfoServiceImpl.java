@@ -123,6 +123,55 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     }
 
     /**
+     * 用户学号，密码登录
+     * @param vo 登录vo
+     * @param request HttpServletRequest
+     * @return 用户信息vo
+     */
+    @Override
+    public ResultObject<MemberInfoVo> uidLogin(UidLogInVo vo, HttpServletRequest request) {
+        String uid = vo.getUid();
+        ResultObject<MemberInfoVo> resultObject = new ResultObject<>();
+        //根据学号查询用户信息
+        MemberInfo memberInfo = this.baseMapper.selectById(uid);
+
+        if(memberInfo == null){
+            return resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR);
+        }else{
+            //RSA 解密获取密码
+            String userPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getUserPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
+            //校验 MD5 hash 后的密码
+            if(DigestUtils.md5DigestAsHex((userPassword + memberInfo.getSalt()).getBytes()).equals(memberInfo.getUserPassword())){
+                StpUtil.login(uid);
+                //获取用户详细信息
+                MemberInfoVo memberInfoVo = this.baseMapper.getMemberInfoByUid(uid);
+
+                //设置 token
+                memberInfoVo.setToken(StpUtil.getTokenValue())
+                        //设置权限信息
+                        .setWeightTypes(weightRoleRelationService.getWeightTypesByUid(memberInfo.getUid()))
+                        //设置角色信息
+                        .setRoleTypes(weightRoleRelationService.getRoleTypesByUid(memberInfo.getUid()));
+                resultObject.setResult(memberInfoVo)
+                        .setResponseStatus(Response.SUCCESS);
+
+                //记录登录信息
+                memberLogInLogService.newLog(memberInfo.getUid(),
+                        IPHandler.getIP(request),
+                        true);
+            }else{
+                resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR);
+                //记录登录信息
+                memberLogInLogService.newLog(memberInfo.getUid(),
+                        IPHandler.getIP(request),
+                        false);
+            }
+        }
+
+        return resultObject.compact();
+    }
+
+    /**
      * 分页查询学生及所属二级学院，专业，班级信息
      * @param vo 分页查询vo
      * @return 查询结果
