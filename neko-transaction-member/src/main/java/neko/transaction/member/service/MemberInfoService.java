@@ -77,4 +77,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @param vo 修改密码vo
      */
     void updateUserPassword(UpdateUserPasswordVo vo);
+
+    /**
+     * 修改用户名
+     * @param userName 用户名
+     */
+    void updateUserName(String userName);
 }

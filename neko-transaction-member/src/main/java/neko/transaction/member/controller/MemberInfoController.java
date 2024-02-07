@@ -129,4 +129,17 @@ public class MemberInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 修改用户名
+     * @param userName 用户名
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("update_user_name")
+    public ResultObject<Object> updateUserName(@RequestParam String userName){
+        memberInfoService.updateUserName(userName);
+
+        return ResultObject.ok();
+    }
 }

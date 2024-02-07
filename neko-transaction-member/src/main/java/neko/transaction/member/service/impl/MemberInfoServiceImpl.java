@@ -28,11 +28,11 @@ import neko.transaction.member.vo.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -241,5 +241,22 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         }else{
             throw new LoginException("密码错误");
         }
+    }
+
+    /**
+     * 修改用户名
+     * @param userName 用户名
+     */
+    @Override
+    public void updateUserName(String userName) {
+        if(!StringUtils.hasText(userName)){
+            throw new IllegalArgumentException("用户名为空");
+        }
+
+        MemberInfo memberInfo = new MemberInfo();
+        memberInfo.setUid(StpUtil.getLoginId().toString())
+                .setUserName(userName);
+
+        this.baseMapper.updateById(memberInfo);
     }
 }
