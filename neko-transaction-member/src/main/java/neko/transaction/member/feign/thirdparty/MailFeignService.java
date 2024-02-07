@@ -21,7 +21,7 @@ public interface MailFeignService {
     ResultObject<Object> sendRegisterMail(@RequestParam String receiver, @RequestParam String code);
 
     /**
-     * 发送密码充值验证码
+     * 发送密码重置验证码
      * @param receiver 接收人邮箱
      * @param code 验证码
      * @return 响应结果

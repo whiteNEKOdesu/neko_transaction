@@ -29,6 +29,7 @@ public class SATokenConfig {
                 .addInclude("/ware/ware_info/new_ware_info")
                 .addInclude("/product/order_info/remote_invoke_order_info_by_id")
                 .addInclude("/member/member_info/add_balance")
+                .addInclude("/third_party/mail/send_log_in_mail")
                 .setAuth(obj -> {
                     StpUtil.checkRole("*");
                 })
