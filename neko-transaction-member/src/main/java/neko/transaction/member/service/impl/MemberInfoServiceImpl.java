@@ -11,14 +11,14 @@ import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
-import neko.transaction.commonbase.utils.exception.LoginException;
-import neko.transaction.commonbase.utils.exception.NoSuchResultException;
-import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
+import neko.transaction.commonbase.utils.exception.*;
 import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.entity.UserRoleRelation;
+import neko.transaction.member.feign.thirdparty.MailFeignService;
 import neko.transaction.member.feign.thirdparty.OSSFeignService;
 import neko.transaction.member.ip.IPHandler;
 import neko.transaction.member.mapper.MemberInfoMapper;
@@ -27,6 +27,7 @@ import neko.transaction.member.service.MemberLogInLogService;
 import neko.transaction.member.service.UserRoleRelationService;
 import neko.transaction.member.service.WeightRoleRelationService;
 import neko.transaction.member.vo.*;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -38,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -60,6 +62,12 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
 
     @Resource
     private OSSFeignService ossFeignService;
+
+    @Resource
+    private MailFeignService mailFeignService;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Resource
     private RSA rsa;
@@ -298,5 +306,61 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         this.baseMapper.updateById(todoUpdateMemberInfo);
 
         return url;
+    }
+
+    /**
+     * 发送重置密码邮件
+     * @param uid 学号
+     * @return 发送的邮箱
+     */
+    @Override
+    public String sendUserPasswordResetCode(String uid) {
+        MemberInfo memberInfo = this.baseMapper.selectById(uid);
+        if(memberInfo == null){
+            throw new NoSuchResultException("无此用户");
+        }
+
+        String email = memberInfo.getMail();
+        String key = Constant.MEMBER_REDIS_PREFIX + "password_reset_mail_code:" + email;
+        String code = RandomUtil.randomNumbers(6);
+        stringRedisTemplate.opsForValue().set(key,
+                code,
+                1000 * 60 * 5,
+                TimeUnit.MILLISECONDS);
+        ResultObject<Object> r = mailFeignService.sendPasswordResetMail(email, code);
+
+        if(r.getResponseCode() != 200){
+            throw new MailSendException("邮件发送错误");
+        }
+
+        return email;
+    }
+
+    /**
+     * 接收重置密码邮件后，使用验证码重置密码
+     * @param vo 重置密码vo
+     */
+    @Override
+    public void resetUserPassword(ResetUserPasswordVo vo) {
+        String uid = vo.getUid();
+        MemberInfo memberInfo = this.baseMapper.selectById(uid);
+        if(memberInfo == null){
+            throw new NoSuchResultException("无此用户");
+        }
+
+        String key = Constant.MEMBER_REDIS_PREFIX + "password_reset_mail_code:" + memberInfo.getMail();
+        String todoCode = stringRedisTemplate.opsForValue().get(key);
+
+        if(!vo.getCode().equals(todoCode)){
+            throw new CodeIllegalException("验证码错误");
+        }
+        String todoPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getTodoPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
+        MemberInfo todoMemberInfo = new MemberInfo();
+        todoPassword = DigestUtils.md5DigestAsHex((todoPassword + memberInfo.getSalt()).getBytes());
+        todoMemberInfo.setUid(uid)
+                .setUserPassword(todoPassword);
+
+        this.baseMapper.updateById(todoMemberInfo);
+        stringRedisTemplate.delete(key);
     }
 }

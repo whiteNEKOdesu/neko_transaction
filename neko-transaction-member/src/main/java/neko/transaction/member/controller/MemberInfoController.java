@@ -154,4 +154,26 @@ public class MemberInfoController {
     public ResultObject<String> updateUserImagePath(@RequestPart MultipartFile file){
         return ResultObject.ok(memberInfoService.updateUserImagePath(file));
     }
+
+    /**
+     * 发送密码重置邮件
+     * @param uid 学号
+     * @return 发送的邮箱
+     */
+    @PostMapping("send_user_password_reset_code")
+    public ResultObject<Object> sendPasswordResetCode(@RequestParam String uid){
+        return ResultObject.ok(memberInfoService.sendUserPasswordResetCode(uid));
+    }
+
+    /**
+     * 重置密码
+     * @param vo 重置密码vo
+     * @return 响应结果
+     */
+    @PostMapping("reset_user_password")
+    public ResultObject<Object> resetUserPassword(@Validated @RequestBody ResetUserPasswordVo vo){
+        memberInfoService.resetUserPassword(vo);
+
+        return ResultObject.ok();
+    }
 }

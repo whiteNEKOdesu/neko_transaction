@@ -91,4 +91,17 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @return 修改后的头像url
      */
     String updateUserImagePath(MultipartFile file);
+
+    /**
+     * 发送重置密码邮件
+     * @param uid 学号
+     * @return 发送的邮箱
+     */
+    String sendUserPasswordResetCode(String uid);
+
+    /**
+     * 接收重置密码邮件后，使用验证码重置密码
+     * @param vo 重置密码vo
+     */
+    void resetUserPassword(ResetUserPasswordVo vo);
 }
