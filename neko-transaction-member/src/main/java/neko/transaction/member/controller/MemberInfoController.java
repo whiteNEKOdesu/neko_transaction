@@ -116,4 +116,17 @@ public class MemberInfoController {
     public ResultObject<Boolean> userNameIsRepeat(@RequestParam String userName){
         return ResultObject.ok(memberInfoService.userNameIsRepeat(userName));
     }
+
+    /**
+     * 修改密码
+     * @param vo 修改密码vo
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("update_user_password")
+    public ResultObject<Object> updateUserPassword(@Validated @RequestBody UpdateUserPasswordVo vo){
+        memberInfoService.updateUserPassword(vo);
+
+        return ResultObject.ok();
+    }
 }

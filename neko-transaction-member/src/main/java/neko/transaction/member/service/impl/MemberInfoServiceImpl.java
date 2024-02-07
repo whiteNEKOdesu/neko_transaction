@@ -14,6 +14,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.exception.LoginException;
+import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.entity.UserRoleRelation;
 import neko.transaction.member.ip.IPHandler;
@@ -30,6 +32,7 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -212,5 +215,31 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     public boolean userNameIsRepeat(String userName) {
         return this.baseMapper.selectOne(new QueryWrapper<MemberInfo>().lambda()
                 .eq(MemberInfo::getUserName, userName)) != null;
+    }
+
+    /**
+     * 修改密码
+     * @param vo 修改密码vo
+     */
+    @Override
+    public void updateUserPassword(UpdateUserPasswordVo vo) {
+        String uid = StpUtil.getLoginId().toString();
+        MemberInfo memberInfo = this.baseMapper.selectById(uid);
+        if(memberInfo == null){
+            throw new NoSuchResultException("无此用户");
+        }
+
+        String userPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getUserPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
+        if(DigestUtils.md5DigestAsHex((userPassword + memberInfo.getSalt()).getBytes()).equals(memberInfo.getUserPassword())){
+            String todoPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getTodoPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
+            MemberInfo todoMemberInfo = new MemberInfo();
+            todoPassword = DigestUtils.md5DigestAsHex((todoPassword + memberInfo.getSalt()).getBytes());
+            todoMemberInfo.setUid(uid)
+                    .setUserPassword(todoPassword);
+
+            this.baseMapper.updateById(todoMemberInfo);
+        }else{
+            throw new LoginException("密码错误");
+        }
     }
 }

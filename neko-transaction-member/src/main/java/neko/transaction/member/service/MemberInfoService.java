@@ -71,4 +71,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @return 用户名是否重复
      */
     boolean userNameIsRepeat(String userName);
+
+    /**
+     * 修改密码
+     * @param vo 修改密码vo
+     */
+    void updateUserPassword(UpdateUserPasswordVo vo);
 }
