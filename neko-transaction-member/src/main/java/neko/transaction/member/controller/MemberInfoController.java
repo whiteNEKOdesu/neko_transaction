@@ -52,6 +52,29 @@ public class MemberInfoController {
     }
 
     /**
+     * 发送邮箱登录邮件
+     * @param receiver 邮箱
+     * @return 响应结果
+     */
+    @PostMapping("send_log_in_code")
+    public ResultObject<Object> sendLogInCode(@RequestParam String receiver){
+        memberInfoService.sendLogInCode(receiver);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 用户邮箱登录
+     * @param vo 登录vo
+     * @param request HttpServletRequest
+     * @return 用户信息vo
+     */
+    @PostMapping("email_login")
+    public ResultObject<MemberInfoVo> emailLogIn(@Validated @RequestBody EmailLogInVo vo, HttpServletRequest request){
+        return memberInfoService.emailLogin(vo, request);
+    }
+
+    /**
      * 分页查询学生及所属二级学院，专业，班级信息
      * @param vo 分页查询vo
      * @return 查询结果
@@ -184,18 +207,6 @@ public class MemberInfoController {
     @PostMapping("reset_user_password")
     public ResultObject<Object> resetUserPassword(@Validated @RequestBody ResetUserPasswordVo vo){
         memberInfoService.resetUserPassword(vo);
-
-        return ResultObject.ok();
-    }
-
-    /**
-     * 发送邮箱登录邮件
-     * @param receiver 邮箱
-     * @return 响应结果
-     */
-    @PostMapping("send_log_in_code")
-    public ResultObject<Object> sendLogInCode(@RequestParam String receiver){
-        memberInfoService.sendLogInCode(receiver);
 
         return ResultObject.ok();
     }

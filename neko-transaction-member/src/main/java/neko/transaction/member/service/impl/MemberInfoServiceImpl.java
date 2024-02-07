@@ -196,6 +196,58 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     }
 
     /**
+     * 用户邮箱登录
+     * @param vo 登录vo
+     * @param request HttpServletRequest
+     * @return 用户信息vo
+     */
+    @Override
+    public ResultObject<MemberInfoVo> emailLogin(EmailLogInVo vo, HttpServletRequest request) {
+        String mail = vo.getMail();
+        QueryWrapper<MemberInfo> queryWrapper = new QueryWrapper<>();
+        MemberInfo memberInfo = this.baseMapper.selectOne(queryWrapper.lambda().eq(MemberInfo::getMail, mail));
+        if(memberInfo == null){
+            throw new NoSuchResultException("无此用户");
+        }
+
+        String code = vo.getCode();
+        String key = Constant.MEMBER_REDIS_PREFIX + "log_in_mail_code:" + mail;
+        String todoCode = stringRedisTemplate.opsForValue().get(key);
+        String uid = memberInfo.getUid();
+        ResultObject<MemberInfoVo> resultObject = new ResultObject<>();
+
+        if(code.equals(todoCode)){
+            StpUtil.login(uid);
+            //获取用户详细信息
+            MemberInfoVo memberInfoVo = this.baseMapper.getMemberInfoByUid(uid);
+
+            //设置 token
+            memberInfoVo.setToken(StpUtil.getTokenValue())
+                    //设置权限信息
+                    .setWeightTypes(weightRoleRelationService.getWeightTypesByUid(memberInfo.getUid()))
+                    //设置角色信息
+                    .setRoleTypes(weightRoleRelationService.getRoleTypesByUid(memberInfo.getUid()));
+            resultObject.setResult(memberInfoVo)
+                    .setResponseStatus(Response.SUCCESS);
+
+            //记录登录信息
+            memberLogInLogService.newLog(memberInfo.getUid(),
+                    IPHandler.getIP(request),
+                    true);
+        }else{
+            resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR);
+            //记录登录信息
+            memberLogInLogService.newLog(uid,
+                    IPHandler.getIP(request),
+                    false);
+        }
+        //删除验证码
+        stringRedisTemplate.delete(key);
+
+        return resultObject.compact();
+    }
+
+    /**
      * 分页查询学生及所属二级学院，专业，班级信息
      * @param vo 分页查询vo
      * @return 查询结果
