@@ -10,6 +10,7 @@ import neko.transaction.member.service.MemberInfoService;
 import neko.transaction.member.vo.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -141,5 +142,16 @@ public class MemberInfoController {
         memberInfoService.updateUserName(userName);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 修改头像
+     * @param file 图片
+     * @return 修改后的头像url
+     */
+    @SaCheckLogin
+    @PostMapping("update_user_image_path")
+    public ResultObject<String> updateUserImagePath(@RequestPart MultipartFile file){
+        return ResultObject.ok(memberInfoService.updateUserImagePath(file));
     }
 }

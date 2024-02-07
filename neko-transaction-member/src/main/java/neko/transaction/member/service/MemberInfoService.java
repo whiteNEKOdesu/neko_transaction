@@ -6,6 +6,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.vo.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -83,4 +84,11 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @param userName 用户名
      */
     void updateUserName(String userName);
+
+    /**
+     * 修改头像
+     * @param file 图片
+     * @return 修改后的头像url
+     */
+    String updateUserImagePath(MultipartFile file);
 }

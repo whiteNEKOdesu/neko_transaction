@@ -16,8 +16,10 @@ import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.LoginException;
 import neko.transaction.commonbase.utils.exception.NoSuchResultException;
+import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
 import neko.transaction.member.entity.MemberInfo;
 import neko.transaction.member.entity.UserRoleRelation;
+import neko.transaction.member.feign.thirdparty.OSSFeignService;
 import neko.transaction.member.ip.IPHandler;
 import neko.transaction.member.mapper.MemberInfoMapper;
 import neko.transaction.member.service.MemberInfoService;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +57,9 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
 
     @Resource
     private WeightRoleRelationService weightRoleRelationService;
+
+    @Resource
+    private OSSFeignService ossFeignService;
 
     @Resource
     private RSA rsa;
@@ -258,5 +264,39 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
                 .setUserName(userName);
 
         this.baseMapper.updateById(memberInfo);
+    }
+
+    /**
+     * 修改头像
+     * @param file 图片
+     * @return 修改后的头像url
+     */
+    @Override
+    public String updateUserImagePath(MultipartFile file) {
+        //step1 -> 远程调用第三方微服务，上传图片到oss
+        ResultObject<String> r = ossFeignService.uploadImage(file);
+        if(!r.getResponseCode().equals(200)){
+            throw new ThirdPartyServiceException("thirdparty微服务远程调用异常");
+        }
+
+        String url = r.getResult();
+        String uid = StpUtil.getLoginId().toString();
+        MemberInfo memberInfo = this.baseMapper.selectById(uid);
+        //step2 -> 远程调用第三方微服务，删除原图片
+        if(memberInfo.getUserImagePath() != null){
+            ResultObject<Object> deleteResult = ossFeignService.deleteFile(memberInfo.getUserImagePath());
+            if(!deleteResult.getResponseCode().equals(200)){
+                throw new ThirdPartyServiceException("thirdparty微服务远程调用异常");
+            }
+        }
+
+        //step3 -> 修改用户信息
+        MemberInfo todoUpdateMemberInfo = new MemberInfo();
+        todoUpdateMemberInfo.setUid(uid)
+                .setUserImagePath(url);
+
+        this.baseMapper.updateById(todoUpdateMemberInfo);
+
+        return url;
     }
 }
