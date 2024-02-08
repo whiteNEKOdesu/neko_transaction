@@ -116,8 +116,9 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         if(productInfo == null){
             throw new IllegalArgumentException("productId对应商品信息不存在");
         }
+        String uid = StpUtil.getLoginId().toString();
         //商品不属于该用户
-        if(!productInfo.getUid().equals(StpUtil.getLoginId())){
+        if(!productInfo.getUid().equals(uid)){
             throw new NotPermissionException("访问商品信息权限不足");
         }
 
@@ -162,6 +163,16 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         //step4 -> 删除商品详细信息缓存
         String key = Constant.PRODUCT_REDIS_PREFIX + "product_detail_info:" + productId;
         stringRedisTemplate.delete(key);
+
+        //step5 -> 修改 elasticsearch 商品信息
+        ProductInfoES productInfoES = new ProductInfoES();
+        ProductInfoVo productInfoVo = this.baseMapper.getUserSelfProductInfoById(productId, uid);
+        //将商品信息复制到 elasticsearch 实体类
+        BeanUtil.copyProperties(productInfoVo, productInfoES);
+        productInfoES.setUpTime(productInfoVo.getUpTime()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        //修改 elasticsearch 商品信息
+        productInfoESService.updateProductInfo(productInfoES);
     }
 
     /**
