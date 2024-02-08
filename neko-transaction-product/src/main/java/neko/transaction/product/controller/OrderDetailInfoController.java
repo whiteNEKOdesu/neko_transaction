@@ -1,12 +1,13 @@
 package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.OrderDetailInfoService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import neko.transaction.product.vo.OrderDetailInfoVo;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -35,5 +36,16 @@ public class OrderDetailInfoController {
         orderDetailInfoService.confirmReceived(orderDetailId);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 分页查询卖家自身的订单详情信息
+     * @param vo 查询vo
+     * @return 查询结果
+     */
+    @SaCheckLogin
+    @PostMapping("seller_self_page_query")
+    public ResultObject<Page<OrderDetailInfoVo>> sellerSelfPageQuery(@Validated @RequestBody QueryVo vo){
+        return ResultObject.ok(orderDetailInfoService.sellerSelfPageQuery(vo));
     }
 }

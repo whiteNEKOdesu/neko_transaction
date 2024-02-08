@@ -7,4 +7,34 @@
         on order_detail_info.order_id = order_info.order_id
         where order_detail_info.order_detail_id = #{orderDetailId} and order_info.uid = #{uid}
     </select>
+
+    <select id="sellerSelfPageQuery" resultType="neko.transaction.product.vo.OrderDetailInfoVo">
+        select order_detail_info.*, order_info.uid from order_detail_info
+        join order_info
+        on order_detail_info.order_id = order_info.order_id
+        <where>
+            order_detail_info.seller_uid = #{sellerUid}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and order_detail_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and order_detail_info.status = #{status}
+            </if>
+        </where>
+        order by order_detail_info.order_detail_id desc
+        limit #{start}, #{limited}
+    </select>
+
+    <select id="sellerSelfPageQueryNumber" resultType="int">
+        select count(order_detail_id) from order_detail_info
+        <where>
+            seller_uid = #{sellerUid}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>
