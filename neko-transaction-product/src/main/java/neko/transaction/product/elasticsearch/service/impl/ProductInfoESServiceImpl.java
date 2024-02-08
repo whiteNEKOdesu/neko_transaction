@@ -104,6 +104,32 @@ public class ProductInfoESServiceImpl implements ProductInfoESService {
     }
 
     /**
+     * 更新 elasticsearch 商品信息
+     * @param productInfoES elasticsearch商品信息实体类
+     */
+    @Override
+    public void updateProductInfo(ProductInfoES productInfoES) {
+        String productId = productInfoES.getProductId();
+        if(productId == null){
+            return;
+        }
+
+        try {
+            //修改elasticsearch中商品信息数据
+            UpdateResponse<ProductInfoES> response = elasticsearchClient.update(builder ->
+                    builder.index(Constant.ELASTIC_SEARCH_INDEX)
+                            .id(productId)
+                            .doc(productInfoES)
+                            //表示修改而不是覆盖
+                            .docAsUpsert(true), ProductInfoES.class);
+
+            log.info("修改elasticsearch中商品数据，productId: " + productId + "，修改数量: " + response.shards().successful().intValue());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 构建商品查询请求
      */
     private SearchRequest buildSearchRequest(ProductInfoESQueryVo vo){

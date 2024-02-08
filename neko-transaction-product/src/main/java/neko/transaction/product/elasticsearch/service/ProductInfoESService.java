@@ -27,4 +27,10 @@ public interface ProductInfoESService {
      * @param productId 商品id
      */
     void deleteByProductId(String productId);
+
+    /**
+     * 更新 elasticsearch 商品信息
+     * @param productInfoES elasticsearch商品信息实体类
+     */
+    void updateProductInfo(ProductInfoES productInfoES);
 }

@@ -78,5 +78,5 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
      * @param productId 商品id
      * @param increase 要添加的数量
      */
-    void increaseSaleNumber(String productId, Integer increase);
+    void increaseSaleNumber(String productId, Long increase);
 }

@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -278,6 +279,32 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
      */
     @Override
     public void increaseSaleNumber(String productId, Integer increase) {
-        this.baseMapper.increaseSaleNumber(productId, increase);
+        String key = Constant.PRODUCT_REDIS_PREFIX + "product_sale_number:" + productId;
+        //添加 redis 中缓冲的销量
+        Long saleNumber = stringRedisTemplate.opsForValue().increment(key, increase);
+
+        if(saleNumber == null){
+            stringRedisTemplate.opsForValue().setIfAbsent(key,
+                    increase.toString());
+
+            return;
+        }
+
+        if(saleNumber >= 10){
+            //修改商品信息表销量信息
+            this.baseMapper.increaseSaleNumber(productId, saleNumber);
+
+            //将redis中销量设为 0
+            stringRedisTemplate.opsForValue().set(key,
+                    "0");
+
+            //修改elasticsearch中商品信息数据
+            ProductInfo productInfo = this.baseMapper.selectById(productId);
+            ProductInfoES productInfoES = new ProductInfoES();
+            productInfoES.setProductId(productId)
+                    .setSaleNumber(productInfo.getSaleNumber());
+
+            productInfoESService.updateProductInfo(productInfoES);
+        }
     }
 }

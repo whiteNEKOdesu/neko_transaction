@@ -456,10 +456,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 //将订单详情信息添加到订单详情表
                 orderDetailInfoService.saveBatch(todoAdds);
 
-                //step3 -> 添加对应商品销量
-                for(NewOrderRedisTo.ProductsInOrder productsInOrder : newOrderRedisTo.getProductsInOrders()){
-                    productInfoService.increaseSaleNumber(productsInOrder.getProductId(), productsInOrder.getNumber());
-                }
+                //step3 -> 异步添加对应商品销量
+                CompletableFuture.runAsync(() -> {
+                    for(NewOrderRedisTo.ProductsInOrder productsInOrder : newOrderRedisTo.getProductsInOrders()){
+                        productInfoService.increaseSaleNumber(productsInOrder.getProductId(), productsInOrder.getNumber());
+                    }
+                }, threadPool).exceptionallyAsync(e -> {
+                    e.printStackTrace();
+
+                    return null;
+                }, threadPool);
 
                 //step4 -> 远程调用库存微服务解锁库存并扣除库存
                 ResultObject<Object> r = wareInfoFeignService.confirmLockStockPaid(orderId);

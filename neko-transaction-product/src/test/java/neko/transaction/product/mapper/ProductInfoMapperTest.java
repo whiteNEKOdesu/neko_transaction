@@ -51,6 +51,6 @@ public class ProductInfoMapperTest {
 
     @Test
     public void increaseSaleNumber(){
-        productInfoMapper.increaseSaleNumber("1750067945863770113", 1);
+        productInfoMapper.increaseSaleNumber("1750067945863770113", 1L);
     }
 }
