@@ -210,4 +210,13 @@ public class MemberInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 获取登录的 Base64 图形验证码
+     * @return Base64 图形验证码
+     */
+    @GetMapping("login_graph_verify_code")
+    public ResultObject<LogInGraphVerifyCodeVo> logInGraphVerifyCode(){
+        return ResultObject.ok(memberInfoService.getLoginBase64GraphVerifyCode());
+    }
 }

@@ -126,4 +126,10 @@ public interface MemberInfoService extends IService<MemberInfo> {
      * @param vo 重置密码vo
      */
     void resetUserPassword(ResetUserPasswordVo vo);
+
+    /**
+     * 获取登录的 Base64 图形验证码
+     * @return Base64 图形验证码
+     */
+    LogInGraphVerifyCodeVo getLoginBase64GraphVerifyCode();
 }

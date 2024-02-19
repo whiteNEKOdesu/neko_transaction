@@ -1,6 +1,9 @@
 package neko.transaction.member.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.CircleCaptcha;
+import cn.hutool.captcha.generator.RandomGenerator;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
@@ -9,6 +12,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.Constant;
@@ -487,5 +491,33 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
 
         this.baseMapper.updateById(todoMemberInfo);
         stringRedisTemplate.delete(key);
+    }
+
+    /**
+     * 获取登录的 Base64 图形验证码
+     * @return Base64 图形验证码
+     */
+    @Override
+    public LogInGraphVerifyCodeVo getLoginBase64GraphVerifyCode() {
+        //定义图形验证码的长、宽、验证码字符数、干扰元素个数
+        CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 4, 20);
+        // 自定义纯数字的验证码（随机4位数字，可重复）
+        RandomGenerator randomGenerator = new RandomGenerator("0123456789", 6);
+        captcha.setGenerator(randomGenerator);
+
+        //验证码追踪id
+        String tranceId = IdWorker.getTimeId();
+        String key = Constant.MEMBER_REDIS_PREFIX + "login_verify_code:" + tranceId;
+        //向 redis 中设置验证码
+        stringRedisTemplate.opsForValue().set(key,
+                captcha.getCode(),
+                1000 * 60 * 5,
+                TimeUnit.MILLISECONDS);
+
+        LogInGraphVerifyCodeVo vo = new LogInGraphVerifyCodeVo();
+        vo.setBase64Graph(captcha.getImageBase64())
+                .setTraceId(tranceId);
+
+        return vo;
     }
 }
