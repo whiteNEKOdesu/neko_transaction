@@ -1,6 +1,9 @@
 package neko.transaction.member.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.CircleCaptcha;
+import cn.hutool.captcha.generator.RandomGenerator;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
@@ -8,7 +11,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.entity.AdminInfo;
@@ -19,12 +24,15 @@ import neko.transaction.member.service.AdminInfoService;
 import neko.transaction.member.service.AdminLogInLogService;
 import neko.transaction.member.service.WeightRoleRelationService;
 import neko.transaction.member.vo.AdminInfoVo;
+import neko.transaction.member.vo.LogInGraphVerifyCodeVo;
 import neko.transaction.member.vo.LogInVo;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -43,7 +51,15 @@ public class AdminInfoServiceImpl extends ServiceImpl<AdminInfoMapper, AdminInfo
     private WeightRoleRelationService weightRoleRelationService;
 
     @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
     private RSA rsa;
+
+    /**
+     * 自定义纯数字的验证码（随机4位数字，可重复）
+     */
+    private static final RandomGenerator RANDOM_GENERATOR = new RandomGenerator("0123456789", 6);
 
     /**
      * 管理员登录
@@ -54,6 +70,12 @@ public class AdminInfoServiceImpl extends ServiceImpl<AdminInfoMapper, AdminInfo
     @Override
     public ResultObject<AdminInfoVo> login(LogInVo vo, HttpServletRequest request) {
         ResultObject<AdminInfoVo> resultObject = new ResultObject<>();
+        //验证图形验证码是否正确
+        if(!isGraphVerifyCodeValidate(vo.getTraceId(), vo.getCode())){
+            return resultObject.setResponseStatus(Response.CODE_ILLEGAL_ERROR)
+                    .compact();
+        }
+
         //根据用户名查询用户信息
         AdminInfo adminInfo = this.baseMapper.selectOne(new QueryWrapper<AdminInfo>().lambda()
                 .eq(AdminInfo::getUserName, vo.getUserName()));
@@ -91,5 +113,44 @@ public class AdminInfoServiceImpl extends ServiceImpl<AdminInfoMapper, AdminInfo
         }
 
         return resultObject.compact();
+    }
+
+    /**
+     * 获取登录的 Base64 图形验证码
+     * @return Base64 图形验证码
+     */
+    @Override
+    public LogInGraphVerifyCodeVo getLoginBase64GraphVerifyCode() {
+        //定义图形验证码的长、宽、验证码字符数、干扰元素个数
+        CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 4, 20);
+        captcha.setGenerator(RANDOM_GENERATOR);
+
+        //验证码追踪id
+        String traceId = IdWorker.getTimeId();
+        String key = Constant.MEMBER_REDIS_PREFIX + "admin_login_verify_code:" + traceId;
+        //向 redis 中设置验证码
+        stringRedisTemplate.opsForValue().set(key,
+                captcha.getCode(),
+                1000 * 60 * 5,
+                TimeUnit.MILLISECONDS);
+
+        LogInGraphVerifyCodeVo vo = new LogInGraphVerifyCodeVo();
+        vo.setBase64Graph(captcha.getImageBase64())
+                .setTraceId(traceId);
+
+        return vo;
+    }
+
+    /**
+     * 验证图形验证码是否正确
+     * @param traceId 验证码追踪id
+     * @param code 验证码
+     * @return 验证图形验证码是否正确
+     */
+    private boolean isGraphVerifyCodeValidate(String traceId, String code){
+        String key = Constant.MEMBER_REDIS_PREFIX + "admin_login_verify_code:" + traceId;
+        String value = stringRedisTemplate.opsForValue().getAndDelete(key);
+
+        return value != null && value.equals(code);
     }
 }

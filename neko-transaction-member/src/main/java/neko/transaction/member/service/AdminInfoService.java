@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.entity.AdminInfo;
 import neko.transaction.member.vo.AdminInfoVo;
+import neko.transaction.member.vo.LogInGraphVerifyCodeVo;
 import neko.transaction.member.vo.LogInVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,4 +25,10 @@ public interface AdminInfoService extends IService<AdminInfo> {
      * @return 管理员信息vo
      */
     ResultObject<AdminInfoVo> login(LogInVo vo, HttpServletRequest request);
+
+    /**
+     * 获取登录的 Base64 图形验证码
+     * @return Base64 图形验证码
+     */
+    LogInGraphVerifyCodeVo getLoginBase64GraphVerifyCode();
 }

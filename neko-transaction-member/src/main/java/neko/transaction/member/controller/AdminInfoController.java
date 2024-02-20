@@ -3,12 +3,10 @@ package neko.transaction.member.controller;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.member.service.AdminInfoService;
 import neko.transaction.member.vo.AdminInfoVo;
+import neko.transaction.member.vo.LogInGraphVerifyCodeVo;
 import neko.transaction.member.vo.LogInVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,5 +34,14 @@ public class AdminInfoController {
     @PostMapping("login")
     public ResultObject<AdminInfoVo> login(@Validated @RequestBody LogInVo vo, HttpServletRequest request){
         return adminInfoService.login(vo, request);
+    }
+
+    /**
+     * 获取登录的 Base64 图形验证码
+     * @return Base64 图形验证码
+     */
+    @GetMapping("login_graph_verify_code")
+    public ResultObject<LogInGraphVerifyCodeVo> logInGraphVerifyCode(){
+        return ResultObject.ok(adminInfoService.getLoginBase64GraphVerifyCode());
     }
 }

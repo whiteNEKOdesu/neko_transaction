@@ -77,6 +77,11 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     private RSA rsa;
 
     /**
+     * 自定义纯数字的验证码（随机4位数字，可重复）
+     */
+    private static final RandomGenerator RANDOM_GENERATOR = new RandomGenerator("0123456789", 6);
+
+    /**
      * 用户登录
      * @param vo 登录vo
      * @param request HttpServletRequest
@@ -513,9 +518,7 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     public LogInGraphVerifyCodeVo getLoginBase64GraphVerifyCode() {
         //定义图形验证码的长、宽、验证码字符数、干扰元素个数
         CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, 4, 20);
-        // 自定义纯数字的验证码（随机4位数字，可重复）
-        RandomGenerator randomGenerator = new RandomGenerator("0123456789", 6);
-        captcha.setGenerator(randomGenerator);
+        captcha.setGenerator(RANDOM_GENERATOR);
 
         //验证码追踪id
         String traceId = IdWorker.getTimeId();
