@@ -140,8 +140,14 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
      */
     @Override
     public ResultObject<MemberInfoVo> uidLogin(UidLogInVo vo, HttpServletRequest request) {
-        String uid = vo.getUid();
         ResultObject<MemberInfoVo> resultObject = new ResultObject<>();
+        //验证图形验证码是否正确
+        if(!isGraphVerifyCodeValidate(vo.getTraceId(), vo.getCode())){
+            return resultObject.setResponseStatus(Response.CODE_ILLEGAL_ERROR)
+                    .compact();
+        }
+
+        String uid = vo.getUid();
         //根据学号查询用户信息
         MemberInfo memberInfo = this.baseMapper.selectById(uid);
 

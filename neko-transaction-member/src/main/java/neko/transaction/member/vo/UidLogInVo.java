@@ -25,4 +25,16 @@ public class UidLogInVo implements Serializable {
      */
     @NotBlank
     private String userPassword;
+
+    /**
+     * 验证码追踪id
+     */
+    @NotBlank
+    private String traceId;
+
+    /**
+     * 验证码
+     */
+    @NotBlank
+    private String code;
 }
