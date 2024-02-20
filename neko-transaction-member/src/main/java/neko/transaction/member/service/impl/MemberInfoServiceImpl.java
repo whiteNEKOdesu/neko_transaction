@@ -91,7 +91,7 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     public ResultObject<MemberInfoVo> login(LogInVo vo, HttpServletRequest request) {
         ResultObject<MemberInfoVo> resultObject = new ResultObject<>();
         //验证图形验证码是否正确
-        if(!isGraphVerifyCodeValidate(vo.getTraceId(), vo.getCode())){
+        if(!isGraphVerifyCodeValid(vo.getTraceId(), vo.getCode())){
             return resultObject.setResponseStatus(Response.CODE_ILLEGAL_ERROR)
                     .compact();
         }
@@ -147,7 +147,7 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     public ResultObject<MemberInfoVo> uidLogin(UidLogInVo vo, HttpServletRequest request) {
         ResultObject<MemberInfoVo> resultObject = new ResultObject<>();
         //验证图形验证码是否正确
-        if(!isGraphVerifyCodeValidate(vo.getTraceId(), vo.getCode())){
+        if(!isGraphVerifyCodeValid(vo.getTraceId(), vo.getCode())){
             return resultObject.setResponseStatus(Response.CODE_ILLEGAL_ERROR)
                     .compact();
         }
@@ -542,7 +542,7 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
      * @param code 验证码
      * @return 验证图形验证码是否正确
      */
-    private boolean isGraphVerifyCodeValidate(String traceId, String code){
+    private boolean isGraphVerifyCodeValid(String traceId, String code){
         String key = Constant.MEMBER_REDIS_PREFIX + "login_verify_code:" + traceId;
         String value = stringRedisTemplate.opsForValue().getAndDelete(key);
 
