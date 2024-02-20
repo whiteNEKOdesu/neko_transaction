@@ -85,6 +85,12 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
     @Override
     public ResultObject<MemberInfoVo> login(LogInVo vo, HttpServletRequest request) {
         ResultObject<MemberInfoVo> resultObject = new ResultObject<>();
+        //验证图形验证码是否正确
+        if(!isGraphVerifyCodeValidate(vo.getTraceId(), vo.getCode())){
+            return resultObject.setResponseStatus(Response.CODE_ILLEGAL_ERROR)
+                    .compact();
+        }
+
         //根据用户名查询用户信息
         MemberInfo memberInfo = this.baseMapper.selectOne(new QueryWrapper<MemberInfo>().lambda()
                 .eq(MemberInfo::getUserName, vo.getUserName()));
@@ -506,8 +512,8 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         captcha.setGenerator(randomGenerator);
 
         //验证码追踪id
-        String tranceId = IdWorker.getTimeId();
-        String key = Constant.MEMBER_REDIS_PREFIX + "login_verify_code:" + tranceId;
+        String traceId = IdWorker.getTimeId();
+        String key = Constant.MEMBER_REDIS_PREFIX + "login_verify_code:" + traceId;
         //向 redis 中设置验证码
         stringRedisTemplate.opsForValue().set(key,
                 captcha.getCode(),
@@ -516,8 +522,21 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
 
         LogInGraphVerifyCodeVo vo = new LogInGraphVerifyCodeVo();
         vo.setBase64Graph(captcha.getImageBase64())
-                .setTraceId(tranceId);
+                .setTraceId(traceId);
 
         return vo;
+    }
+
+    /**
+     * 验证图形验证码是否正确
+     * @param traceId 验证码追踪id
+     * @param code 验证码
+     * @return 验证图形验证码是否正确
+     */
+    private boolean isGraphVerifyCodeValidate(String traceId, String code){
+        String key = Constant.MEMBER_REDIS_PREFIX + "login_verify_code:" + traceId;
+        String value = stringRedisTemplate.opsForValue().getAndDelete(key);
+
+        return value != null && value.equals(code);
     }
 }
