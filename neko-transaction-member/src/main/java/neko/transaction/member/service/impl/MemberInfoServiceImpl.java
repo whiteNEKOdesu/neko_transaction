@@ -101,7 +101,8 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
                 .eq(MemberInfo::getUserName, vo.getUserName()));
 
         if(memberInfo == null){
-            return resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR);
+            return resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR)
+                    .compact();
         }else{
             //RSA 解密获取密码
             String userPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getUserPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
@@ -157,7 +158,8 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         MemberInfo memberInfo = this.baseMapper.selectById(uid);
 
         if(memberInfo == null){
-            return resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR);
+            return resultObject.setResponseStatus(Response.USER_LOG_IN_ERROR)
+                    .compact();
         }else{
             //RSA 解密获取密码
             String userPassword = StrUtil.str(rsa.decrypt(Base64.decode(vo.getUserPassword()), KeyType.PrivateKey), CharsetUtil.CHARSET_UTF_8);
