@@ -48,6 +48,11 @@ public class ProductComment implements Serializable {
     private String uid;
 
     /**
+     * 评论
+     */
+    private String comment;
+
+    /**
      * 评分，范围 1 - 5
      */
     private Byte score;
@@ -60,12 +65,12 @@ public class ProductComment implements Serializable {
     /**
      * 是否匿名
      */
-    private Byte isNick;
+    private Boolean isNick;
 
     /**
      * 是否删除
      */
-    private Byte isDelete;
+    private Boolean isDelete;
 
     /**
      * 创建时间

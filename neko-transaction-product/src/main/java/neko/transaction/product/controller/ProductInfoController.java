@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.service.ProductInfoService;
+import neko.transaction.product.vo.NewProductCommentVo;
 import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
@@ -96,5 +97,18 @@ public class ProductInfoController {
     @GetMapping("product_detail_info")
     public ResultObject<ProductDetailInfoVo> productDetailInfo(@RequestParam String productId){
         return ResultObject.ok(productInfoService.getUpProductDetailInfo(productId));
+    }
+
+    /**
+     * 添加商品评论
+     * @param vo 添加商品评论vo
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PutMapping("new_comment")
+    public ResultObject<Object> newComment(@Validated @RequestBody NewProductCommentVo vo){
+        productInfoService.newProductComment(vo);
+
+        return ResultObject.ok();
     }
 }

@@ -91,4 +91,16 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
 
         return page;
     }
+
+    /**
+     * 用户已收货的订单详情信息是否存在
+     * @param orderId 订单号
+     * @param productId 商品id
+     * @param uid 学号
+     * @return 用户已收货的订单详情信息是否存在
+     */
+    @Override
+    public boolean isReceivedOrderDetailInfoExist(String orderId, String productId, String uid) {
+        return this.baseMapper.isReceivedOrderDetailInfoExist(orderId, productId, uid);
+    }
 }

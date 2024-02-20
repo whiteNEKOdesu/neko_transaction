@@ -50,4 +50,13 @@ public interface OrderDetailInfoMapper extends BaseMapper<OrderDetailInfo> {
     int sellerSelfPageQueryNumber(String queryWords,
                                   String sellerUid,
                                   Byte status);
+
+    /**
+     * 用户已收货的订单详情信息是否存在
+     * @param orderId 订单号
+     * @param productId 商品id
+     * @param uid 学号
+     * @return 用户已收货的订单详情信息是否存在
+     */
+    boolean isReceivedOrderDetailInfoExist(String orderId, String productId, String uid);
 }

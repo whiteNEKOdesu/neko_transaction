@@ -31,4 +31,11 @@ public class OrderDetailInfoMapperTest {
                 "1642067605873348610",
                 Byte.valueOf("0")));
     }
+
+    @Test
+    public void isReceivedOrderDetailInfoExist(){
+        System.out.println(orderDetailInfoMapper.isReceivedOrderDetailInfoExist("202402091609032401755866384899784706",
+                "1755862522365231105",
+                "1642067605873348610"));
+    }
 }

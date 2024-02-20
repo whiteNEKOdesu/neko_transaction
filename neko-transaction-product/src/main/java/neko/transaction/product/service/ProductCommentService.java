@@ -2,6 +2,7 @@ package neko.transaction.product.service;
 
 import neko.transaction.product.entity.ProductComment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.product.vo.NewProductCommentVo;
 
 /**
  * <p>
@@ -12,5 +13,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-02-20
  */
 public interface ProductCommentService extends IService<ProductComment> {
-
+    /**
+     * 添加商品评论
+     * @param vo 添加商品评论vo
+     */
+    void newProductComment(NewProductCommentVo vo);
 }

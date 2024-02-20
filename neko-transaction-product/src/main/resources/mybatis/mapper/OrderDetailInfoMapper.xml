@@ -37,4 +37,12 @@
             </if>
         </where>
     </select>
+
+    <select id="isReceivedOrderDetailInfoExist" resultType="boolean">
+        select count(order_info.order_id) = 1 from order_info
+        join order_detail_info
+        on order_info.order_id = order_detail_info.order_id
+        where order_info.order_id = #{orderId} and order_info.uid = #{uid} and order_detail_info.product_id = #{productId}
+          and order_detail_info.status = ${@neko.transaction.commonbase.utils.entity.OrderDetailInfoStatus@RECEIVED}
+    </select>
 </mapper>

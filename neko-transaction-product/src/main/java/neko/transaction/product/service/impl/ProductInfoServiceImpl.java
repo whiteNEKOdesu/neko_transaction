@@ -23,8 +23,11 @@ import neko.transaction.product.feign.member.MemberInfoFeignService;
 import neko.transaction.product.feign.thirdparty.OSSFeignService;
 import neko.transaction.product.mapper.ProductInfoMapper;
 import neko.transaction.product.service.CategoryInfoService;
+import neko.transaction.product.service.OrderDetailInfoService;
+import neko.transaction.product.service.ProductCommentService;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.to.MemberInfoTo;
+import neko.transaction.product.vo.NewProductCommentVo;
 import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
 import neko.transaction.product.vo.UpdateProductInfoVo;
@@ -52,6 +55,12 @@ import java.util.concurrent.TimeUnit;
 public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, ProductInfo> implements ProductInfoService {
     @Resource
     private CategoryInfoService categoryInfoService;
+
+    @Resource
+    private ProductCommentService productCommentService;
+
+    @Resource
+    private OrderDetailInfoService orderDetailInfoService;
 
     @Resource
     private ProductInfoESService productInfoESService;
@@ -317,5 +326,20 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
             productInfoESService.updateProductInfo(productInfoES);
         }
+    }
+
+    /**
+     * 添加商品评论
+     * @param vo 添加商品评论vo
+     */
+    @Override
+    public void newProductComment(NewProductCommentVo vo) {
+        if(!orderDetailInfoService.isReceivedOrderDetailInfoExist(vo.getOrderId(),
+                vo.getProductId(),
+                StpUtil.getLoginId().toString())){
+            throw new NotPermissionException("用户不存在此已收货的商品信息");
+        }
+
+        productCommentService.newProductComment(vo);
     }
 }
