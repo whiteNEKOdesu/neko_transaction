@@ -85,4 +85,38 @@
         ) status, count(status) number from order_info
         group by status
     </select>
+
+    <select id="transactionInYear" resultType="neko.transaction.product.vo.OrderTransactionInYearVo">
+        select ifnull(transaction_query.transaction_month, generate_query.generate_month) transaction_month,
+            ifnull(transaction_query.number, 0) order_number,
+            ifnull(transaction_query.transaction_number, 0) transaction_number from (
+--                 月份表
+                select 1 generate_month
+                union select 2 generate_month
+                union select 3 generate_month
+                union select 4 generate_month
+                union select 5 generate_month
+                union select 6 generate_month
+                union select 7 generate_month
+                union select 8 generate_month
+                union select 9 generate_month
+                union select 10 generate_month
+                union select 11 generate_month
+                union select 12 generate_month
+        ) generate_query
+        left join (
+            select month(create_time) transaction_month, count(order_id) number,
+--                 减去退货的柳树
+                sum(actual_cost) - (
+                    select ifnull(sum(actual_cost), 0) from order_detail_info
+                    where status = ${@neko.transaction.commonbase.utils.entity.OrderDetailInfoStatus@SENT_BACK} and
+                        create_time >= #{year} and create_time <![CDATA[<=]]> date_add(#{year}, interval 1 year)
+                ) transaction_number from order_info
+            where status = ${@neko.transaction.commonbase.utils.entity.OrderStatus@PAID} and
+                create_time >= #{year} and create_time <![CDATA[<=]]> date_add(#{year}, interval 1 year)
+            group by month(create_time)
+        ) transaction_query
+        on generate_query.generate_month = transaction_query.transaction_month
+        order by transaction_month
+    </select>
 </mapper>

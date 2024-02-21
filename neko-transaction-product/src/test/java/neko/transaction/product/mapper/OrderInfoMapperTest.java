@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 @SpringBootTest
 public class OrderInfoMapperTest {
@@ -34,5 +35,15 @@ public class OrderInfoMapperTest {
     @Test
     public void statusAggCount(){
         System.out.println(orderInfoMapper.statusAggCount());
+    }
+
+    @Test
+    public void transactionInYear(){
+        System.out.println(orderInfoMapper.transactionInYear(LocalDateTime.of(LocalDateTime.now().getYear(),
+                1,
+                1,
+                0,
+                0,
+                0)));
     }
 }

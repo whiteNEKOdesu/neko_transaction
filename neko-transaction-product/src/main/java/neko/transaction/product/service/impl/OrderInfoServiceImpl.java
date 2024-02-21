@@ -43,6 +43,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -531,5 +532,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public List<OrderStatusAggCountVo> statusAggCount() {
         return this.baseMapper.statusAggCount();
+    }
+
+    /**
+     * 获取指定年的订单流水信息
+     * @param year 指定年
+     * @return 订单流水信息
+     */
+    @Override
+    public List<OrderTransactionInYearVo> transactionInYear(LocalDateTime year) {
+        return this.baseMapper.transactionInYear(LocalDateTime.of(year.getYear(),
+                1,
+                1,
+                0,
+                0,
+                0));
     }
 }

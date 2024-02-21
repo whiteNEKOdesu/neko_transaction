@@ -4,8 +4,10 @@ import neko.transaction.product.entity.OrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import neko.transaction.product.vo.OrderInfoPageQueryVo;
 import neko.transaction.product.vo.OrderStatusAggCountVo;
+import neko.transaction.product.vo.OrderTransactionInYearVo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -55,4 +57,11 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return 订单按照状态聚合信息
      */
     List<OrderStatusAggCountVo> statusAggCount();
+
+    /**
+     * 获取指定年的订单流水信息
+     * @param year 指定年
+     * @return 订单流水信息
+     */
+    List<OrderTransactionInYearVo> transactionInYear(LocalDateTime year);
 }

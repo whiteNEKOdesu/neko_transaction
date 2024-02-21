@@ -9,15 +9,14 @@ import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.service.OrderInfoService;
-import neko.transaction.product.vo.AliPayAsyncVo;
-import neko.transaction.product.vo.NewOrderInfoVo;
-import neko.transaction.product.vo.OrderInfoPageQueryVo;
-import neko.transaction.product.vo.OrderStatusAggCountVo;
+import neko.transaction.product.vo.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -115,5 +114,18 @@ public class OrderInfoController {
     @GetMapping("status_agg")
     public ResultObject<List<OrderStatusAggCountVo>> statusAgg(){
         return ResultObject.ok(orderInfoService.statusAggCount());
+    }
+
+    /**
+     * 获取指定年的订单流水信息
+     * @param year 指定年
+     * @return 订单流水信息
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @GetMapping("transaction_in_year")
+    public ResultObject<List<OrderTransactionInYearVo>> transactionInYear(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                                              @RequestParam
+                                                                              LocalDateTime year){
+        return ResultObject.ok(orderInfoService.transactionInYear(year));
     }
 }

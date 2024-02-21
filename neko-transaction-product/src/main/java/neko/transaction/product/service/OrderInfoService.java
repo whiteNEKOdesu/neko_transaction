@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.OrderInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import neko.transaction.product.vo.AliPayAsyncVo;
-import neko.transaction.product.vo.NewOrderInfoVo;
-import neko.transaction.product.vo.OrderInfoPageQueryVo;
-import neko.transaction.product.vo.OrderStatusAggCountVo;
+import neko.transaction.product.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -85,4 +82,11 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 订单按照状态聚合信息
      */
     List<OrderStatusAggCountVo> statusAggCount();
+
+    /**
+     * 获取指定年的订单流水信息
+     * @param year 指定年
+     * @return 订单流水信息
+     */
+    List<OrderTransactionInYearVo> transactionInYear(LocalDateTime year);
 }
