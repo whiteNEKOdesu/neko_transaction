@@ -16,9 +16,11 @@ import neko.transaction.product.mapper.OrderDetailInfoMapper;
 import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.to.AddMemberBalanceTo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
+import neko.transaction.product.vo.OrderDetailStatusAggVo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -102,5 +104,14 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
     @Override
     public boolean isReceivedOrderDetailInfoExist(String orderId, String productId, String uid) {
         return this.baseMapper.isReceivedOrderDetailInfoExist(orderId, productId, uid);
+    }
+
+    /**
+     * 获取订单详情按照状态聚合信息
+     * @return 订单详情按照状态聚合信息
+     */
+    @Override
+    public List<OrderDetailStatusAggVo> statusAggCount() {
+        return this.baseMapper.statusAggCount();
     }
 }

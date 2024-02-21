@@ -1,15 +1,19 @@
 package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.vo.OrderDetailInfoVo;
+import neko.transaction.product.vo.OrderDetailStatusAggVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -47,5 +51,15 @@ public class OrderDetailInfoController {
     @PostMapping("seller_self_page_query")
     public ResultObject<Page<OrderDetailInfoVo>> sellerSelfPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(orderDetailInfoService.sellerSelfPageQuery(vo));
+    }
+
+    /**
+     * 获取订单详情按照状态聚合信息
+     * @return 订单详情按照状态聚合信息
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @GetMapping("status_agg")
+    public ResultObject<List<OrderDetailStatusAggVo>> statusAgg(){
+        return ResultObject.ok(orderDetailInfoService.statusAggCount());
     }
 }

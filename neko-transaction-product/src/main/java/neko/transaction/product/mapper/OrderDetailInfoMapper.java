@@ -3,6 +3,7 @@ package neko.transaction.product.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import neko.transaction.product.entity.OrderDetailInfo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
+import neko.transaction.product.vo.OrderDetailStatusAggVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -59,4 +60,10 @@ public interface OrderDetailInfoMapper extends BaseMapper<OrderDetailInfo> {
      * @return 用户已收货的订单详情信息是否存在
      */
     boolean isReceivedOrderDetailInfoExist(String orderId, String productId, String uid);
+
+    /**
+     * 获取订单详情按照状态聚合信息
+     * @return 订单详情按照状态聚合信息
+     */
+    List<OrderDetailStatusAggVo> statusAggCount();
 }

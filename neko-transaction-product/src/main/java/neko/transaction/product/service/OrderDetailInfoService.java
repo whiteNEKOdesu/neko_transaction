@@ -5,6 +5,9 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.OrderDetailInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.OrderDetailInfoVo;
+import neko.transaction.product.vo.OrderDetailStatusAggVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,4 +39,10 @@ public interface OrderDetailInfoService extends IService<OrderDetailInfo> {
      * @return 用户已收货的订单详情信息是否存在
      */
     boolean isReceivedOrderDetailInfoExist(String orderId, String productId, String uid);
+
+    /**
+     * 获取订单详情按照状态聚合信息
+     * @return 订单详情按照状态聚合信息
+     */
+    List<OrderDetailStatusAggVo> statusAggCount();
 }

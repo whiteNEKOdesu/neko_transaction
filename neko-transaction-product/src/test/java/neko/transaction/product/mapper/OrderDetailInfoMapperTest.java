@@ -38,4 +38,9 @@ public class OrderDetailInfoMapperTest {
                 "1755862522365231105",
                 "1642067605873348610"));
     }
+
+    @Test
+    public void statusAggCount(){
+        System.out.println(orderDetailInfoMapper.statusAggCount());
+    }
 }
