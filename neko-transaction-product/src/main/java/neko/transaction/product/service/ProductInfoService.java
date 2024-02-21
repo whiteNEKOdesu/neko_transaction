@@ -78,4 +78,10 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @param vo 添加商品评论vo
      */
     void newProductComment(NewProductCommentVo vo);
+
+    /**
+     * 获取销量前 8 的商品信息
+     * @return 销量前 8 的商品信息
+     */
+    List<ProductInfo> getTop8SaleNumberProductInfos();
 }

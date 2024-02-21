@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -341,5 +342,37 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         }
 
         productCommentService.newProductComment(vo);
+    }
+
+    /**
+     * 获取销量前 8 的商品信息
+     * @return 销量前 8 的商品信息
+     */
+    @Override
+    public List<ProductInfo> getTop8SaleNumberProductInfos() {
+        String key = Constant.PRODUCT_REDIS_PREFIX + "top_8_sale_number_product_infos";
+        //获取 redis 缓存
+        String cache = stringRedisTemplate.opsForValue().get(key);
+
+        //缓存有数据
+        if(cache != null){
+            return JSONUtil.toList(cache, ProductInfo.class);
+        }
+
+        QueryWrapper<ProductInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(ProductInfo::getStatus, ProductStatus.UP)
+                .eq(ProductInfo::getIsBan, false)
+                .orderByDesc(ProductInfo::getSaleNumber)
+                .last("limit 8");
+        //获取销量前 8 的销量信息
+        List<ProductInfo> productInfos = this.baseMapper.selectList(queryWrapper);
+
+        //缓存无数据，将查询存入缓存
+        stringRedisTemplate.opsForValue().setIfAbsent(key,
+                JSONUtil.toJsonStr(productInfos),
+                1,
+                TimeUnit.HOURS);
+
+        return productInfos;
     }
 }

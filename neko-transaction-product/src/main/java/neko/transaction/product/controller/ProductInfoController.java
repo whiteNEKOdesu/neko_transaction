@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.product.entity.ProductInfo;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.NewProductCommentVo;
 import neko.transaction.product.vo.ProductDetailInfoVo;
@@ -13,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -110,5 +112,14 @@ public class ProductInfoController {
         productInfoService.newProductComment(vo);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取销量前 8 的商品信息
+     * @return 销量前 8 的商品信息
+     */
+    @GetMapping("top_8_product_infos")
+    public ResultObject<List<ProductInfo>> top8ProductInfos(){
+        return ResultObject.ok(productInfoService.getTop8SaleNumberProductInfos());
     }
 }
