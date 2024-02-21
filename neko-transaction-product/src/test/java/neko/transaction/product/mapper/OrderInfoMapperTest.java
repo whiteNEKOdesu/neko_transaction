@@ -30,4 +30,9 @@ public class OrderInfoMapperTest {
                 "1642067605873348610",
                 Byte.valueOf("0")));
     }
+
+    @Test
+    public void statusAggCount(){
+        System.out.println(orderInfoMapper.statusAggCount());
+    }
 }

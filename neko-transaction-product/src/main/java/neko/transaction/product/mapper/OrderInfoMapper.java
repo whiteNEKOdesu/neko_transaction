@@ -3,6 +3,7 @@ package neko.transaction.product.mapper;
 import neko.transaction.product.entity.OrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import neko.transaction.product.vo.OrderInfoPageQueryVo;
+import neko.transaction.product.vo.OrderStatusAggCountVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -48,4 +49,10 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
     int userSelfPageQueryNumber(String queryWords,
                                 String uid,
                                 Byte status);
+
+    /**
+     * 获取订单按照状态聚合信息
+     * @return 订单按照状态聚合信息
+     */
+    List<OrderStatusAggCountVo> statusAggCount();
 }

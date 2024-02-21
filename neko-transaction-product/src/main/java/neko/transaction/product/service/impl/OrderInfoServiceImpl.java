@@ -29,10 +29,7 @@ import neko.transaction.product.to.AliPayTo;
 import neko.transaction.product.to.LockStockTo;
 import neko.transaction.product.to.NewOrderRedisTo;
 import neko.transaction.product.to.RabbitMQMessageTo;
-import neko.transaction.product.vo.AliPayAsyncVo;
-import neko.transaction.product.vo.NewOrderInfoVo;
-import neko.transaction.product.vo.OrderInfoPageQueryVo;
-import neko.transaction.product.vo.ProductDetailInfoVo;
+import neko.transaction.product.vo.*;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -525,5 +522,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 status));
 
         return page;
+    }
+
+    /**
+     * 获取订单按照状态聚合信息
+     * @return 订单按照状态聚合信息
+     */
+    @Override
+    public List<OrderStatusAggCountVo> statusAggCount() {
+        return this.baseMapper.statusAggCount();
     }
 }

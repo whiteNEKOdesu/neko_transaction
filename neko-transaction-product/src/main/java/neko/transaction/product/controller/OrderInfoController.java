@@ -1,20 +1,24 @@
 package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.alipay.api.AlipayApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.entity.OrderInfo;
 import neko.transaction.product.service.OrderInfoService;
 import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
 import neko.transaction.product.vo.OrderInfoPageQueryVo;
+import neko.transaction.product.vo.OrderStatusAggCountVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -101,5 +105,15 @@ public class OrderInfoController {
     @PostMapping("user_self_page_query")
     public ResultObject<Page<OrderInfoPageQueryVo>> userSelfPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(orderInfoService.userSelfPageQuery(vo));
+    }
+
+    /**
+     * 获取订单按照状态聚合信息
+     * @return 订单按照状态聚合信息
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @GetMapping("status_agg")
+    public ResultObject<List<OrderStatusAggCountVo>> statusAgg(){
+        return ResultObject.ok(orderInfoService.statusAggCount());
     }
 }

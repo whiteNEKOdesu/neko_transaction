@@ -76,4 +76,13 @@
             and order_info.status = ${@neko.transaction.commonbase.utils.entity.OrderStatus@PAID}
         </where>
     </select>
+
+    <select id="statusAggCount" resultType="neko.transaction.product.vo.OrderStatusAggCountVo">
+        select (case
+            when status = -1 then '超时'
+            when status = 0 then '未支付'
+            else '已支付' end
+        ) status, count(status) number from order_info
+        group by status
+    </select>
 </mapper>

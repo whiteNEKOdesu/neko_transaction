@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.AliPayAsyncVo;
 import neko.transaction.product.vo.NewOrderInfoVo;
 import neko.transaction.product.vo.OrderInfoPageQueryVo;
+import neko.transaction.product.vo.OrderStatusAggCountVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -77,4 +79,10 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @return 查询结果
      */
     Page<OrderInfoPageQueryVo> userSelfPageQuery(QueryVo vo);
+
+    /**
+     * 获取订单按照状态聚合信息
+     * @return 订单按照状态聚合信息
+     */
+    List<OrderStatusAggCountVo> statusAggCount();
 }
