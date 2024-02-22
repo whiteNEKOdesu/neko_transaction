@@ -273,6 +273,9 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
 
         //获取商品详情信息
         ProductDetailInfoVo productDetailInfoVo = this.baseMapper.getUpProductDetailInfo(productId);
+        if(productDetailInfoVo == null){
+            throw new NoSuchResultException("无此商品信息");
+        }
 
         //缓存无数据，将查询存入缓存
         stringRedisTemplate.opsForValue().setIfAbsent(key,
@@ -366,6 +369,9 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
                 .last("limit 8");
         //获取销量前 8 的销量信息
         List<ProductInfo> productInfos = this.baseMapper.selectList(queryWrapper);
+        if(productInfos == null){
+            return null;
+        }
 
         //缓存无数据，将查询存入缓存
         stringRedisTemplate.opsForValue().setIfAbsent(key,
