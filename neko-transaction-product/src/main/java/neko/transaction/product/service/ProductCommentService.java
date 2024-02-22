@@ -1,10 +1,11 @@
 package neko.transaction.product.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.ProductComment;
-import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.NewProductCommentVo;
+import neko.transaction.product.vo.ProductScoreVo;
 
 /**
  * <p>
@@ -27,4 +28,11 @@ public interface ProductCommentService extends IService<ProductComment> {
      * @return 查询结果
      */
     Page<ProductComment> productCommentPageQuery(QueryVo vo);
+
+    /**
+     * 根据商品id获取商品评分信息
+     * @param productId 商品id
+     * @return 商品评分信息
+     */
+    ProductScoreVo getProductScoreByProductId(String productId);
 }

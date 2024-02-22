@@ -5,11 +5,9 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.product.entity.ProductComment;
 import neko.transaction.product.service.ProductCommentService;
+import neko.transaction.product.vo.ProductScoreVo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -35,5 +33,15 @@ public class ProductCommentController {
     @PostMapping("product_comment_page_query")
     public ResultObject<Page<ProductComment>> productCommentPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(productCommentService.productCommentPageQuery(vo));
+    }
+
+    /**
+     * 根据商品id获取商品评分信息
+     * @param productId 商品id
+     * @return 商品评分信息
+     */
+    @GetMapping("score_by_product_id")
+    public ResultObject<ProductScoreVo> scoreByProductId(@RequestParam String productId){
+        return ResultObject.ok(productCommentService.getProductScoreByProductId(productId));
     }
 }

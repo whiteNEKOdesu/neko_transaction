@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.MemberServiceException;
@@ -11,11 +12,10 @@ import neko.transaction.product.entity.ProductComment;
 import neko.transaction.product.feign.member.MemberInfoFeignService;
 import neko.transaction.product.mapper.ProductCommentMapper;
 import neko.transaction.product.service.ProductCommentService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.to.MemberInfoTo;
 import neko.transaction.product.vo.NewProductCommentVo;
+import neko.transaction.product.vo.ProductScoreVo;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
@@ -80,5 +80,15 @@ public class ProductCommentServiceImpl extends ServiceImpl<ProductCommentMapper,
         this.baseMapper.selectPage(page, queryWrapper);
 
         return page;
+    }
+
+    /**
+     * 根据商品id获取商品评分信息
+     * @param productId 商品id
+     * @return 商品评分信息
+     */
+    @Override
+    public ProductScoreVo getProductScoreByProductId(String productId) {
+        return this.baseMapper.getProductScoreByProductId(productId);
     }
 }

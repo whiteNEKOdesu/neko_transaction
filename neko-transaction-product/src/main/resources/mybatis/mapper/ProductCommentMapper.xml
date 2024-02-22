@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.product.mapper.ProductCommentMapper">
-
+    <select id="getProductScoreByProductId" resultType="neko.transaction.product.vo.ProductScoreVo">
+        select ifnull(round(avg(product_comment.score), 2), 0) score, (case
+                when ifnull(round(avg(product_comment.score), 2), 0) = 0 then 0
+                else count(product_info.product_id) end
+            ) number from product_info
+        left join product_comment
+        on product_info.product_id = product_comment.product_id
+        where product_info.product_id = #{productId}
+        group by product_info.product_id
+    </select>
 </mapper>
