@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -31,11 +32,13 @@ public class UpdateProductInfoVo implements Serializable {
     /**
      * 商品名
      */
+    @Size(min = 1, max = 20)
     private String productName;
 
     /**
      * 商品描述
      */
+    @Size(min = 1, max = 500)
     private String description;
 
     /**
