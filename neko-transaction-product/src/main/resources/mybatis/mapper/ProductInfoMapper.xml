@@ -3,7 +3,7 @@
 <mapper namespace="neko.transaction.product.mapper.ProductInfoMapper">
     <select id="userSelfPageQuery" resultType="neko.transaction.product.vo.ProductInfoVo">
         select product_info.*,
-               concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+               concat_ws('-', parent.category_name, category_info.category_name) full_category_name from product_info
         join category_info
         on product_info.category_id = category_info.category_id
         join category_info parent
@@ -44,7 +44,7 @@
 
     <select id="getUserSelfProductInfoById" resultType="neko.transaction.product.vo.ProductInfoVo">
         select product_info.*,
-        concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+        concat_ws('-', parent.category_name, category_info.category_name) full_category_name from product_info
         join category_info
         on product_info.category_id = category_info.category_id
         join category_info parent
@@ -64,7 +64,7 @@
 
     <select id="getUpProductDetailInfo" resultType="neko.transaction.product.vo.ProductDetailInfoVo">
         select product_info.*,
-            concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+            concat_ws('-', parent.category_name, category_info.category_name) full_category_name from product_info
         join category_info
         on product_info.category_id = category_info.category_id
         join category_info parent
@@ -76,7 +76,7 @@
 
     <select id="getProductDetailInfoByIds" resultType="neko.transaction.product.vo.ProductDetailInfoVo">
         select product_info.*,
-            concat_ws('-', category_info.category_name, parent.category_name) full_category_name from product_info
+            concat_ws('-', parent.category_name, category_info.category_name) full_category_name from product_info
         join category_info
         on product_info.category_id = category_info.category_id
         join category_info parent
