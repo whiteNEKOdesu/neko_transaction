@@ -1,18 +1,16 @@
 package neko.transaction.ware.aop;
 
 import lombok.extern.slf4j.Slf4j;
-import neko.transaction.commonbase.utils.entity.ProfilesActive;
+import neko.transaction.ware.config.ActiveValue;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -22,18 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 @Slf4j
 public class PerformanceAop {
-    @Value("${spring.profiles.active}")
-    private String active;
-
-    private Boolean isDebug = true;
-
-    @PostConstruct
-    public void init(){
-        if(ProfilesActive.PROP.equals(active)){
-            isDebug = false;
-        }
-    }
-
     //aop增强范围为被RestController注解修饰方法
     @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void pointcut(){
@@ -49,7 +35,7 @@ public class PerformanceAop {
         Object proceed = joinPoint.proceed();
         long cost = System.currentTimeMillis() - start;
 
-        if(isDebug){
+        if(ActiveValue.isDebug){
             logExecute(cost, joinPoint, false);
         }else if(cost > 100){
             logExecute(cost, joinPoint, true);

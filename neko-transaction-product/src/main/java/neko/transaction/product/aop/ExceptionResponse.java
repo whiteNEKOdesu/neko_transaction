@@ -4,11 +4,10 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import lombok.extern.slf4j.Slf4j;
-import neko.transaction.commonbase.utils.entity.ProfilesActive;
 import neko.transaction.commonbase.utils.entity.Response;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.*;
-import org.springframework.beans.factory.annotation.Value;
+import neko.transaction.product.config.ActiveValue;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,28 +22,15 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 
 @RestControllerAdvice
 @Slf4j
 public class ExceptionResponse {
-    @Value("${spring.profiles.active}")
-    private String active;
-
-    private Boolean isDebug = true;
-
-    @PostConstruct
-    public void init(){
-        if(ProfilesActive.PROP.equals(active)){
-            isDebug = false;
-        }
-    }
-
     //日志方法
     public void exceptionLogger(Exception e){
-        if(isDebug){
+        if(ActiveValue.isDebug){
             debugExceptionLogger(e);
         }else{
             ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

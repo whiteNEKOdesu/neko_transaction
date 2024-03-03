@@ -9,6 +9,7 @@ import co.elastic.clients.json.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.commonbase.utils.exception.ElasticSearchUpdateException;
+import neko.transaction.product.config.ActiveValue;
 import neko.transaction.product.elasticsearch.entity.ProductInfoES;
 import neko.transaction.product.elasticsearch.service.ProductInfoESService;
 import neko.transaction.product.vo.ProductInfoESQueryVo;
@@ -43,7 +44,9 @@ public class ProductInfoESServiceImpl implements ProductInfoESService {
     public ProductInfoESVo productInfoPageQuery(ProductInfoESQueryVo vo) throws IOException {
         //构建查询请求
         SearchRequest request = buildSearchRequest(vo);
-        log.info("elasticsearch语句: " + request.toString());
+        if(ActiveValue.isDebug){
+            log.info("elasticsearch语句: " + request.toString());
+        }
 
         //获取查询结果
         SearchResponse<ProductInfoES> response = elasticsearchClient.search(buildSearchRequest(vo), ProductInfoES.class);
