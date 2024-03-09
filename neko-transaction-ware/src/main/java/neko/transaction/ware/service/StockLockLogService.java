@@ -2,6 +2,9 @@ package neko.transaction.ware.service;
 
 import neko.transaction.ware.entity.StockLockLog;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.ware.vo.LockStockVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -23,4 +26,12 @@ public interface StockLockLogService extends IService<StockLockLog> {
      * @param orderId 订单号
      */
     void updateStatusToPaid(String orderId);
+
+    /**
+     * 批量添加库存锁定记录
+     * @param orderId 订单号
+     * @param lockProductInfos 锁定的库存信息
+     */
+    void insertBatch(String orderId,
+                     List<LockStockVo.LockProductInfo> lockProductInfos);
 }

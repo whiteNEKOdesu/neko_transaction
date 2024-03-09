@@ -12,4 +12,18 @@
         set status = ${@neko.transaction.commonbase.utils.entity.StockStatus@PAID}
         where order_id = #{orderId} and status != ${@neko.transaction.commonbase.utils.entity.StockStatus@PAID}
     </update>
+
+    <insert id="insertBatch">
+        insert into stock_lock_log(order_id, ware_id, lock_number) values
+        <foreach collection="lockProductInfos" item="info" separator=",">
+            (
+                #{orderId},
+                (
+                    select ware_id from ware_info
+                    where product_id = #{info.productId}
+                ),
+                #{info.lockNumber}
+            )
+        </foreach>
+    </insert>
 </mapper>
