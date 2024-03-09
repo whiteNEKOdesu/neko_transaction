@@ -1,9 +1,11 @@
 package neko.transaction.ware.mapper;
 
+import neko.transaction.ware.vo.LockStockVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 @SpringBootTest
 public class WareInfoMapperTest {
@@ -23,6 +25,16 @@ public class WareInfoMapperTest {
     @Test
     public void lockStock(){
         System.out.println(wareInfoMapper.lockStock(1L, 5));
+    }
+
+    @Test
+    public void lockStocks(){
+        System.out.println(wareInfoMapper.lockStocks(Arrays.asList(new LockStockVo.LockProductInfo()
+                        .setProductId("1750067945863770113")
+                        .setLockNumber(5),
+                new LockStockVo.LockProductInfo()
+                        .setProductId("1750068049572130817")
+                        .setLockNumber(5))));
     }
 
     @Test

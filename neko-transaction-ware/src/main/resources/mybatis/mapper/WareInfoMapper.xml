@@ -20,6 +20,21 @@
         where ware_id = #{wareId} and stock >= lock_number + #{lockNumber}
     </update>
 
+    <update id="lockStocks">
+        update ware_info
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="lock_number = case" suffix="end,">
+                <foreach collection="lockProductInfos" item="info">
+                    when product_id = #{info.productId} then lock_number + #{info.lockNumber}
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="lockProductInfos" item="info" separator="or">
+            product_id = #{info.productId} and stock >= lock_number + #{info.lockNumber}
+        </foreach>
+    </update>
+
     <update id="unlockStock">
         update ware_info
         set lock_number = lock_number - (select lock_number from stock_lock_log

@@ -2,8 +2,11 @@ package neko.transaction.ware.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import neko.transaction.ware.entity.WareInfo;
+import neko.transaction.ware.vo.LockStockVo;
 import neko.transaction.ware.vo.WareInfoVo;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,6 +39,12 @@ public interface WareInfoMapper extends BaseMapper<WareInfo> {
      */
     int lockStock(Long wareId,
                   Integer lockNumber);
+
+    /**
+     * 批量锁定库存
+     * @param lockProductInfos 锁定的库存信息
+     */
+    int lockStocks(List<LockStockVo.LockProductInfo> lockProductInfos);
 
     /**
      * 解锁指定库存id，库存锁定记录id的库存
