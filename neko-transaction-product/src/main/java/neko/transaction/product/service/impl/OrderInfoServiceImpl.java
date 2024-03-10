@@ -200,27 +200,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return null;
         });
 
-        //step3.1.1.1 -> 异步记录订单信息到订单表
-        CompletableFuture<Void> orderLogTask = calculateCostTask.thenAcceptAsync(cost -> {
-            if (cost == null) {
-                return;
-            }
-
-            OrderInfo orderInfo = new OrderInfo();
-            orderInfo.setOrderId(orderId)
-                    .setUid(uid)
-                    .setCost(cost)
-                    .setActualCost(cost);
-
-            //记录订单信息到订单表
-            this.baseMapper.insert(orderInfo);
-        }, threadPool).exceptionally(e -> {
-            isException.set(true);
-            e.printStackTrace();
-
-            return null;
-        });
-
         //step3.1.2 -> 异步将商品信息记录到 redis 中
         CompletableFuture<Void> redisLogTask = getProductInfoTask.thenAcceptAsync((productInfoMap -> {
             if (productInfoMap == null || productInfoMap.isEmpty()) {
@@ -291,11 +270,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return null;
         });
 
-        CompletableFuture.allOf(orderLogTask, redisLogTask, lockStockTask).get();
+        CompletableFuture.allOf(calculateCostTask, redisLogTask, lockStockTask).get();
 
         if(isException.get()){
             throw new StockNotEnoughException("库存不足");
         }
+
+        BigDecimal cost = calculateCostTask.get();
+        if (cost == null) {
+            throw new StockNotEnoughException("库存不足");
+        }
+
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderId(orderId)
+                .setUid(uid)
+                .setCost(cost)
+                .setActualCost(cost);
+
+        //记录订单信息到订单表
+        this.baseMapper.insert(orderInfo);
 
         return orderId;
     }
