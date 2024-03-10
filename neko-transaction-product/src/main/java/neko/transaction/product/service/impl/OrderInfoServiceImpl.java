@@ -132,21 +132,23 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String orderId = IdWorker.getTimeId();
 
         //step2 -> 向延迟队列发送订单号，用于超时解锁库存
-        RabbitMQMessageTo<String> rabbitMQMessageTo = RabbitMQMessageTo.generateMessage(orderId, MQMessageType.ORDER_STATUS_CHECK_TYPE);
-        //在CorrelationData中设置回退消息
-        CorrelationData correlationData = new CorrelationData(MQMessageType.ORDER_STATUS_CHECK_TYPE.toString());
-        String jsonMessage = JSONUtil.toJsonStr(rabbitMQMessageTo);
-        String notAvailable = "not available";
-        correlationData.setReturned(new ReturnedMessage(new Message(jsonMessage.getBytes(StandardCharsets.UTF_8)),
-                0,
-                notAvailable,
-                notAvailable,
-                notAvailable));
-        //向延迟队列发送订单号，用于超时解锁库存
-        rabbitTemplate.convertAndSend(RabbitMqConstant.ORDER_EXCHANGE_NAME,
-                RabbitMqConstant.ORDER_DEAD_LETTER_ROUTING_KEY_NAME,
-                jsonMessage,
-                correlationData);
+        CompletableFuture.runAsync(() -> {
+            RabbitMQMessageTo<String> rabbitMQMessageTo = RabbitMQMessageTo.generateMessage(orderId, MQMessageType.ORDER_STATUS_CHECK_TYPE);
+            //在CorrelationData中设置回退消息
+            CorrelationData correlationData = new CorrelationData(MQMessageType.ORDER_STATUS_CHECK_TYPE.toString());
+            String jsonMessage = JSONUtil.toJsonStr(rabbitMQMessageTo);
+            String notAvailable = "not available";
+            correlationData.setReturned(new ReturnedMessage(new Message(jsonMessage.getBytes(StandardCharsets.UTF_8)),
+                    0,
+                    notAvailable,
+                    notAvailable,
+                    notAvailable));
+            //向延迟队列发送订单号，用于超时解锁库存
+            rabbitTemplate.convertAndSend(RabbitMqConstant.ORDER_EXCHANGE_NAME,
+                    RabbitMqConstant.ORDER_DEAD_LETTER_ROUTING_KEY_NAME,
+                    jsonMessage,
+                    correlationData);
+        }, threadPool);
 
         //原子类标记是否在多线程中出现异常
         AtomicBoolean isException = new AtomicBoolean(false);
@@ -198,36 +200,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return null;
         });
 
-        //step3.1.1.1 -> 异步生成支付宝支付页面
-        CompletableFuture<Void> alipayTask = calculateCostTask.thenAcceptAsync(cost -> {
-            if (cost == null) {
-                return;
-            }
-
-            AliPayTo aliPayTo = new AliPayTo();
-            aliPayTo.setOut_trade_no(orderId)
-                    .setSubject("NEKO_TRANSACTION")
-                    //设置折扣价格
-                    .setTotal_amount(cost.toString())
-                    .setBody("NEKO_TRANSACTION");
-            String alipayPageKey = Constant.PRODUCT_REDIS_PREFIX + "order:" + uid + orderId + ":pay_page";
-            //将支付宝支付页面信息存入 redis
-            try {
-                stringRedisTemplate.opsForValue().setIfAbsent(alipayPageKey,
-                        aliPayTemplate.pay(aliPayTo),
-                        1000 * 60 * 4,
-                        TimeUnit.MILLISECONDS);
-            }catch (AlipayApiException e){
-                e.printStackTrace();
-            }
-        }, threadPool).exceptionally(e -> {
-            isException.set(true);
-            e.printStackTrace();
-
-            return null;
-        });
-
-        //step3.1.1.2 -> 异步记录订单信息到订单表
+        //step3.1.1.1 -> 异步记录订单信息到订单表
         CompletableFuture<Void> orderLogTask = calculateCostTask.thenAcceptAsync(cost -> {
             if (cost == null) {
                 return;
@@ -318,7 +291,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             return null;
         });
 
-        CompletableFuture.allOf(alipayTask, orderLogTask, redisLogTask, lockStockTask).get();
+        CompletableFuture.allOf(orderLogTask, redisLogTask, lockStockTask).get();
 
         if(isException.get()){
             throw new StockNotEnoughException("库存不足");
@@ -335,18 +308,42 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public String getAlipayPage(String orderId, String token) {
+        String key = Constant.PRODUCT_REDIS_PREFIX + "order:" + StpUtil.getLoginIdByToken(token) + orderId + ":pay_page";
+        //获取 redis 缓存
+        String cache = stringRedisTemplate.opsForValue().get(key);
+
+        //缓存有数据
+        if(cache != null){
+            return cache;
+        }
+
         OrderInfo orderInfo = this.baseMapper.selectById(orderId);
         if(orderInfo == null || !orderInfo.getStatus().equals(OrderStatus.UNPAID)){
             throw new OrderOverTimeException("订单超时");
         }
 
-        String key = Constant.PRODUCT_REDIS_PREFIX + "order:" + StpUtil.getLoginIdByToken(token) + orderId + ":pay_page";
-        String alipayPayPage = stringRedisTemplate.opsForValue().get(key);
-        if(!StringUtils.hasText(alipayPayPage)){
-            throw new OrderOverTimeException("订单超时");
+        AliPayTo aliPayTo = new AliPayTo();
+        aliPayTo.setOut_trade_no(orderId)
+                .setSubject("NEKO_TRANSACTION")
+                //设置折扣价格
+                .setTotal_amount(orderInfo.getActualCost().toString())
+                .setBody("NEKO_TRANSACTION");
+        String page;
+        //将支付宝支付页面信息存入 redis
+        try {
+            page = aliPayTemplate.pay(aliPayTo);
+
+            stringRedisTemplate.opsForValue().setIfAbsent(key,
+                    page,
+                    1000 * 60 * 4,
+                    TimeUnit.MILLISECONDS);
+        }catch (AlipayApiException e){
+            e.printStackTrace();
+
+            return null;
         }
 
-        return alipayPayPage;
+        return page;
     }
 
     /**
