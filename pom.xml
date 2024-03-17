@@ -27,9 +27,10 @@
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <mysql.version>5.1.47</mysql.version>
         <mybatis.plus.version>3.5.5</mybatis.plus.version>
-        <hutool.version>5.8.16</hutool.version>
+        <hutool.version>5.8.26</hutool.version>
         <sa.token.version>1.34.0</sa.token.version>
         <seata.version>2.0.0</seata.version>
+        <poi.ooxml.version>5.2.5</poi.ooxml.version>
     </properties>
     <dependencyManagement>
         <dependencies>

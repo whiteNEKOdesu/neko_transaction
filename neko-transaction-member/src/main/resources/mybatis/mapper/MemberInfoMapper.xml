@@ -69,4 +69,12 @@
         set balance = balance + #{addNumber}
         where uid = #{uid}
     </update>
+
+    <insert id="insertBatch">
+        insert into member_info(uid, class_id, user_password, salt, gender, real_name, id_card_number) values
+        <foreach collection="memberInfos" item="info" separator=",">
+            (#{info.uid}, #{info.classId}, #{info.userPassword},#{info.salt},
+             #{info.gender}, #{info.realName}, #{info.idCardNumber})
+        </foreach>
+    </insert>
 </mapper>

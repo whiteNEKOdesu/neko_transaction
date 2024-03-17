@@ -60,4 +60,11 @@ public interface MemberInfoMapper extends BaseMapper<MemberInfo> {
      * @param addNumber 要添加的余额
      */
     void addBalance(String uid, BigDecimal addNumber);
+
+    /**
+     * 批量添加用户账号
+     * @param memberInfos 用户信息 List
+     * @return 更新影响行数
+     */
+    int insertBatch(List<MemberInfo> memberInfos);
 }

@@ -98,6 +98,19 @@ public class MemberInfoController {
     }
 
     /**
+     * 通过 excel 批量添加用户
+     * @param file excel 文件
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PutMapping("new_member_info_by_excel")
+    public ResultObject<Object> newMemberInfoByExcel(@RequestParam MultipartFile file){
+        memberInfoService.newMemberInfoByExcel(file);
+
+        return ResultObject.ok();
+    }
+
+    /**
      * 管理员根据学号删除用户
      * @param uid 学号
      * @return 响应结果

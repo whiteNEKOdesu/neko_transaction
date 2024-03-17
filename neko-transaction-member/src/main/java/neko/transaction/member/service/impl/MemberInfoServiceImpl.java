@@ -11,6 +11,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -40,9 +41,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -316,6 +318,86 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
         //为用户设置普通用户以及普通会员角色
         userRoleRelationService.newRelations(vo.getUid(),
                 Collections.singletonList(1));
+    }
+
+    /**
+     * 通过 excel 批量添加用户
+     * @param file excel 文件
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void newMemberInfoByExcel(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        //文件名为空
+        if(!StringUtils.hasText(filename)){
+            return;
+        }
+        String[] split = filename.split("\\.");
+        int length = split.length;
+        //非 excel 文件
+        if(!"xlsx".equals(split[length - 1]) && !"xls".equals(split[length - 1])){
+            return;
+        }
+
+        //字段名 -> 列数 的索引 Map
+        Map<String,Integer> fieldMap = new HashMap<>();
+        List<String> fieldList = Arrays.asList("学号", "班级", "性别", "姓名", "身份证号");
+        //校验字段名合法性的 HashSet
+        Set<String> validFieldSet = new HashSet<>(fieldList);
+        List<MemberInfo> todoAdds = new ArrayList<>();
+        try(InputStream inputStream = file.getInputStream()) {
+            ExcelUtil.readBySax(inputStream, 0, (sheetIndex, rowIndex, rowlist) -> {
+                //第 0 行为excel的标题字段行
+                if(rowIndex == 0){
+                    int size = rowlist.size();
+                    for (int i = 0; i < size; i++) {
+                        Object value = rowlist.get(i);
+                        if(value == null){
+                            throw new IllegalArgumentException("excel字段不能为空");
+                        }
+                        String field = value.toString();
+                        //校验excel字段是否合法
+                        if(!validFieldSet.contains(field)){
+                            throw new IllegalArgumentException("不支持的excel字段: " + field);
+                        }
+                        fieldMap.put(field, i);
+                    }
+                }else{
+                    MemberInfo memberInfo = new MemberInfo();
+                    //读取 excel 中的用户信息
+                    memberInfo.setUid(rowlist.get(fieldMap.get(fieldList.get(0))).toString())
+                            .setClassId(rowlist.get(fieldMap.get(fieldList.get(1))).toString())
+                            .setGender("男".equals(rowlist.get(fieldMap.get(fieldList.get(2))).toString()))
+                            .setRealName(rowlist.get(fieldMap.get(fieldList.get(3))).toString());
+
+                    //身份证
+                    String idCardNumber = rowlist.get(fieldMap.get(fieldList.get(4))).toString();
+                    int idLength = idCardNumber.length();
+                    //默认密码为 学号 + 身份证后 4 位
+                    String userPassword = memberInfo.getUid() + idCardNumber.substring(idLength - 4, idLength);
+                    //生成盐
+                    String salt = Arrays.toString(RandomUtil.randomBytes(10));
+                    //设置 MD5 hash 后的密码
+                    memberInfo.setUserPassword(DigestUtils.md5DigestAsHex((userPassword + salt).getBytes()))
+                            .setSalt(salt);
+
+                    todoAdds.add(memberInfo);
+                }
+            });
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (NullPointerException e){
+            throw new IllegalArgumentException("excel字段不能为空");
+        }
+
+        int size = todoAdds.size();
+        if(size == 0){
+            return;
+        }
+        //添加用户账号
+        if(size != this.baseMapper.insertBatch(todoAdds)){
+            throw new IllegalArgumentException("不支持的excel数据");
+        }
     }
 
     /**

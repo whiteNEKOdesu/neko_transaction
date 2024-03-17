@@ -64,6 +64,12 @@ public interface MemberInfoService extends IService<MemberInfo> {
     void newMemberInfo(NewMemberInfoVo vo);
 
     /**
+     * 通过 excel 批量添加用户
+     * @param file excel 文件
+     */
+    void newMemberInfoByExcel(MultipartFile file);
+
+    /**
      * 根据学号删除用户
      * @param uid 学号
      */
