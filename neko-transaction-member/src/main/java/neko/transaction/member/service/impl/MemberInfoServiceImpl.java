@@ -379,7 +379,8 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoMapper, MemberI
                     String salt = Arrays.toString(RandomUtil.randomBytes(10));
                     //设置 MD5 hash 后的密码
                     memberInfo.setUserPassword(DigestUtils.md5DigestAsHex((userPassword + salt).getBytes()))
-                            .setSalt(salt);
+                            .setSalt(salt)
+                            .setIdCardNumber(idCardNumber);
 
                     todoAdds.add(memberInfo);
                 }
