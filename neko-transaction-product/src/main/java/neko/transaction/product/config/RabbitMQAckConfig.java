@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.MQMessageType;
 import neko.transaction.commonbase.utils.exception.RabbitMQSendException;
+import neko.transaction.product.service.MqReturnMessageService;
 import neko.transaction.product.to.RabbitMQMessageTo;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,9 @@ import java.nio.charset.StandardCharsets;
 public class RabbitMQAckConfig {
     @Resource
     private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private MqReturnMessageService mqReturnMessageService;
 
     @PostConstruct
     public void init(){
@@ -41,7 +45,7 @@ public class RabbitMQAckConfig {
                     }
 
                     //记录发送失败消息
-//                    mqReturnMessageService.logReturnMessage(rabbitMQMessageTo, message);
+                    mqReturnMessageService.logReturnMessage(rabbitMQMessageTo, message);
                 }
                 throw new RabbitMQSendException("消息发送失败");
             }
@@ -68,7 +72,7 @@ public class RabbitMQAckConfig {
             }
 
             //记录发送失败消息
-//            mqReturnMessageService.logReturnMessage(rabbitMQMessageTo, message);
+            mqReturnMessageService.logReturnMessage(rabbitMQMessageTo, message);
         });
     }
 }
