@@ -1,7 +1,11 @@
 package neko.transaction.member.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.UserWeight;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,29 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-01-15
  */
 public interface UserWeightService extends IService<UserWeight> {
+    /**
+     * 添加权限
+     * @param weightType 权限名
+     */
+    void newUserWeight(String weightType);
 
+    /**
+     * 分页查询权限信息
+     * @param vo 分页查询vo
+     * @return 分页查询结果
+     */
+    Page<UserWeight> getUserWeightByQueryLimitedPage(QueryVo vo);
+
+    /**
+     * 查询指定 角色id 未绑定的权限
+     * @param roleId 角色id
+     * @return 角色id 未绑定的权限
+     */
+    List<UserWeight> getUnbindWeightByRoleId(Integer roleId);
+
+    /**
+     * 根据 权限id 删除权限
+     * @param weightId 权限id
+     */
+    void deleteUserWeight(Integer weightId);
 }
