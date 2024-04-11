@@ -112,6 +112,25 @@ public class OSSServiceImpl implements OSSService {
     }
 
     /**
+     * oss图片批量上传
+     */
+    @Override
+    public List<String> uploadImages(List<MultipartFile> files) throws IOException {
+        if(files == null || files.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        for(MultipartFile file : files){
+            String fileName = file.getOriginalFilename();
+            if(!StringUtils.hasText(fileName) || !imageType.contains(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase(Locale.ROOT))){
+                throw new FileTypeNotSupportException("图片类型错误");
+            }
+        }
+
+        return uploadFiles(files);
+    }
+
+    /**
      * 删除oss文件
      */
     @Override
@@ -175,5 +194,32 @@ public class OSSServiceImpl implements OSSService {
         }
 
         return url;
+    }
+
+    private List<String> uploadFiles(List<MultipartFile> files) throws IOException {
+        List<String> urls = new ArrayList<>();
+        if(files == null || files.isEmpty()){
+            return urls;
+        }
+
+        for(MultipartFile file : files){
+            // 填写Bucket名称，例如examplebucket。
+            String bucket = ossConfigProperties.getBucket();
+            String filePath = ossConfigProperties.getDir() + "/" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE) +
+                    "/" + IdUtil.randomUUID() + "_" + file.getOriginalFilename();
+            String url = "https://" + bucket + "." + endpoint + "/" + filePath;
+
+            try(InputStream inputStream = file.getInputStream()) {
+                // 创建PutObjectRequest对象。
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, filePath, inputStream);
+                // 创建PutObject请求。
+                PutObjectResult result = ossClient.putObject(putObjectRequest);
+                log.info("文件上传成功，url: " + url + "，eTag: " + result.getETag());
+
+                urls.add(url);
+            }
+        }
+
+        return urls;
     }
 }

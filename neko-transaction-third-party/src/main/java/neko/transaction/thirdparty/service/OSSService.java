@@ -14,6 +14,8 @@ public interface OSSService {
 
     String uploadImage(MultipartFile file) throws IOException;
 
+    List<String> uploadImages(List<MultipartFile> files) throws IOException;
+
     void deleteFile(String ossFilePath);
 
     String uploadVideo(MultipartFile file) throws IOException;

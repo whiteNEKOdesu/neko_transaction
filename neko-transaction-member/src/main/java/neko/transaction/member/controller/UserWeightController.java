@@ -29,7 +29,7 @@ public class UserWeightController {
     private UserWeightService userWeightService;
 
     /**
-     * 管理员天机权限
+     * 管理员添加权限
      * @param weightType 权限名
      * @return 响应结果
      */

@@ -47,6 +47,14 @@ public class OOSController {
     }
 
     /**
+     * oss图片批量上传，建议只提供给微服务远程调用
+     */
+    @PostMapping("upload_images")
+    public ResultObject<List<String>> uploadImages(@RequestPart List<MultipartFile> files) throws IOException {
+        return ResultObject.ok(ossService.uploadImages(files));
+    }
+
+    /**
      * 删除oss文件，建议只提供给微服务远程调用
      */
     @DeleteMapping("delete_file")
