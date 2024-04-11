@@ -23,6 +23,14 @@ public interface OSSFeignService {
     ResultObject<String> uploadImage(@RequestPart MultipartFile file);
 
     /**
+     * oss图片批量上传
+     * @param files 图片数组
+     * @return 图片url
+     */
+    @PostMapping(value = "oss/upload_images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResultObject<List<String>> uploadImages(@RequestPart List<MultipartFile> files);
+
+    /**
      * 删除oss文件
      * @param ossFilePath 文件url
      * @return 响应结果
