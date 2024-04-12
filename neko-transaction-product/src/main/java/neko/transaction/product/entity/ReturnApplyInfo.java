@@ -58,7 +58,7 @@ public class ReturnApplyInfo implements Serializable {
     private String operateAdminId;
 
     /**
-     * 退款审核状态，0->店家审核中，1->管理员审核中，2->退款成功，3->驳回
+     * 退款审核状态，0->店家审核中，1->管理员审核中，2->货物退还中，3->退款成功，4->驳回
      */
     private Byte status;
 
