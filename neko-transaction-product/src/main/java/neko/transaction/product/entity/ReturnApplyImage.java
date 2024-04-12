@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 退回申请图片表
+ * 退货申请图片表
  * </p>
  *
  * @author NEKO

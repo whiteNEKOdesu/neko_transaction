@@ -67,6 +67,6 @@ public class ReturnApplyInfoServiceImpl extends ServiceImpl<ReturnApplyInfoMappe
             returnApplyImages.add(returnApplyImage);
         }
 
-        returnApplyImageService.saveBatch(returnApplyImages);
+        returnApplyImageService.insertBatch(returnApplyImages);
     }
 }

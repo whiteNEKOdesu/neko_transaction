@@ -4,9 +4,11 @@ import neko.transaction.product.entity.ReturnApplyImage;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * <p>
- * 退回申请图片表 Mapper 接口
+ * 退货申请图片表 Mapper 接口
  * </p>
  *
  * @author NEKO
@@ -14,5 +16,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ReturnApplyImageMapper extends BaseMapper<ReturnApplyImage> {
-
+    /**
+     * 批量添加退回申请图片
+     * @param returnApplyImages 退货申请图片信息
+     */
+    void insertBatch(List<ReturnApplyImage> returnApplyImages);
 }
