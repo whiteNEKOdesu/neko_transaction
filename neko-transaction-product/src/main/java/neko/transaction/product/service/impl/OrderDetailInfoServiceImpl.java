@@ -14,10 +14,13 @@ import neko.transaction.product.entity.OrderDetailInfo;
 import neko.transaction.product.feign.member.MemberInfoFeignService;
 import neko.transaction.product.mapper.OrderDetailInfoMapper;
 import neko.transaction.product.service.OrderDetailInfoService;
+import neko.transaction.product.service.ReturnApplyInfoService;
 import neko.transaction.product.to.AddMemberBalanceTo;
+import neko.transaction.product.vo.NewReturnApplyVo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
 import neko.transaction.product.vo.OrderDetailStatusAggVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -34,6 +37,9 @@ import java.util.List;
 public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMapper, OrderDetailInfo> implements OrderDetailInfoService {
     @Resource
     private MemberInfoFeignService memberInfoFeignService;
+
+    @Resource
+    ReturnApplyInfoService returnApplyInfoService;
 
     /**
      * 学生确认收货
@@ -113,5 +119,28 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
     @Override
     public List<OrderDetailStatusAggVo> statusAggCount() {
         return this.baseMapper.statusAggCount();
+    }
+
+    /**
+     * 添加退货申请
+     * @param vo 添加退货申请vo
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void newReturnApplyInfo(NewReturnApplyVo vo) {
+        if(vo == null){
+            return;
+        }
+
+        //step1 -> 修改订单详情状态为 申请退货中
+        OrderDetailInfo todoUpdate = new OrderDetailInfo();
+        todoUpdate.setStatus(OrderDetailInfoStatus.APPLYING_SEND_BACK);
+
+        this.baseMapper.update(todoUpdate, new QueryWrapper<OrderDetailInfo>().lambda()
+                .eq(OrderDetailInfo::getOrderDetailId, vo.getOrderDetailId())
+                .ne(OrderDetailInfo::getStatus, OrderDetailInfoStatus.SENT_BACK));
+
+        //step2 -> 添加退货申请
+        returnApplyInfoService.newReturnApplyInfo(vo);
     }
 }

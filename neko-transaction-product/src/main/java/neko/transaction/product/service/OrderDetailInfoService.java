@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.OrderDetailInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.product.vo.NewReturnApplyVo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
 import neko.transaction.product.vo.OrderDetailStatusAggVo;
 
@@ -45,4 +46,10 @@ public interface OrderDetailInfoService extends IService<OrderDetailInfo> {
      * @return 订单详情按照状态聚合信息
      */
     List<OrderDetailStatusAggVo> statusAggCount();
+
+    /**
+     * 添加退货申请
+     * @param vo 添加退货申请vo
+     */
+    void newReturnApplyInfo(NewReturnApplyVo vo);
 }

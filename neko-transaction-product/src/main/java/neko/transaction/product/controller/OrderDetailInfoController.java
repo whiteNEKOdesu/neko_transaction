@@ -7,6 +7,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.service.OrderDetailInfoService;
+import neko.transaction.product.vo.NewReturnApplyVo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
 import neko.transaction.product.vo.OrderDetailStatusAggVo;
 import org.springframework.validation.annotation.Validated;
@@ -61,5 +62,17 @@ public class OrderDetailInfoController {
     @GetMapping("status_agg")
     public ResultObject<List<OrderDetailStatusAggVo>> statusAgg(){
         return ResultObject.ok(orderDetailInfoService.statusAggCount());
+    }
+
+    /**
+     * 添加退货申请
+     * @param vo 添加退货申请vo
+     * @return 响应结果
+     */
+    @PostMapping("new_return_apply")
+    public ResultObject<Object> newReturnApply(@Validated NewReturnApplyVo vo){
+        orderDetailInfoService.newReturnApplyInfo(vo);
+
+        return ResultObject.ok();
     }
 }
