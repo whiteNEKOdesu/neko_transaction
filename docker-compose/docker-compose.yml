@@ -1,0 +1,174 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:7.0.5
+    container_name: neko-transaction-redis
+    networks:
+      - neko_transaction
+
+  mysql:
+    image: neko-transaction-mysql:1.0
+    container_name: neko-transaction-mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - /usr/local/neko_transaction/backend/docker_data/mysql/data:/var/lib/mysql
+    networks:
+      - neko_transaction
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ALLOW_EMPTY_PASSWORD: no
+
+  rabbitmq:
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-rabbitmq:1.0
+    container_name: neko-transaction-rabbitmq
+    networks:
+      - neko_transaction
+
+  elasticsearch:
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-elasticsearch:1.0
+    container_name: neko-transaction-elasticsearch
+    networks:
+      - neko_transaction
+    environment:
+      - ES_JAVA_OPTS=-Xms256m -Xmx512m
+      - discovery.type=single-node
+
+  nginx:
+    image: neko-transaction-nginx:1.0
+    container_name: neko-transaction-nginx
+    ports:
+      - "80:80"
+      - "81:81"
+    networks:
+      - neko_transaction
+
+  nacos:
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-nacos:1.0
+    container_name: neko-transaction-nacos
+    ports:
+      - "8848:8848"
+    networks:
+      - neko_transaction
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_URL: jdbc:mysql://mysql:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 123456
+
+  gateway-service:
+    image: neko-transaction-gateway:1.0
+    container_name: neko-transaction-gateway
+    ports:
+      - "8004:8004"
+    networks:
+      - neko_transaction
+    depends_on:
+      - nacos
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
+      SENTINEL_PORT: 8719
+
+  member-service:
+    image: neko-transaction-member:1.0
+    container_name: neko-transaction-member
+    ports:
+      - "8003:8003"
+    networks:
+      - neko_transaction
+    depends_on:
+      - mysql
+      - nacos
+      - redis
+      - rabbitmq
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
+      SENTINEL_PORT: 8719
+      MYSQL_URL: mysql:3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 123456
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+
+  product-service:
+    image: neko-transaction-product:1.0
+    container_name: neko-transaction-product
+    ports:
+      - "8008:8008"
+    networks:
+      - neko_transaction
+    depends_on:
+      - mysql
+      - nacos
+      - redis
+      - rabbitmq
+      - elasticsearch
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
+      SENTINEL_PORT: 8719
+      MYSQL_URL: mysql:3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 123456
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      ELASTIC_SEARCH_HOSTS: elasticsearch:9200
+
+  ware-service:
+    image: neko-transaction-ware:1.0
+    container_name: neko-transaction-ware
+    ports:
+      - "8007:8007"
+    networks:
+      - neko_transaction
+    depends_on:
+      - mysql
+      - nacos
+      - redis
+      - rabbitmq
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
+      SENTINEL_PORT: 8719
+      MYSQL_URL: mysql:3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 123456
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+
+  third-party-service:
+    image: neko-transaction-third-party:1.0
+    container_name: neko-transaction-third-party
+    ports:
+      - "8006:8006"
+    networks:
+      - neko_transaction
+    depends_on:
+      - mysql
+      - nacos
+      - redis
+    environment:
+      NACOS_SERVER_ADDR: nacos:8848
+      SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
+      SENTINEL_PORT: 8719
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+networks:
+  neko_transaction:
