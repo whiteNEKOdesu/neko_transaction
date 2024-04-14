@@ -13,7 +13,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /usr/local/neko_transaction/backend/docker_data/mysql/data:/var/lib/mysql
+      - /neko_transaction/mysql/data:/var/lib/mysql
     networks:
       - neko_transaction
     environment:
@@ -59,10 +59,12 @@ services:
       MYSQL_PASSWORD: 123456
 
   gateway-service:
-    image: neko-transaction-gateway:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-gateway
     ports:
       - "8004:8004"
+    volumes:
+      - /neko_transaction/gateway/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -73,10 +75,12 @@ services:
       SENTINEL_PORT: 8719
 
   member-service:
-    image: neko-transaction-member:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-member
     ports:
       - "8003:8003"
+    volumes:
+      - /neko_transaction/member/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -99,10 +103,12 @@ services:
       RABBITMQ_PASSWORD: guest
 
   product-service:
-    image: neko-transaction-product:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-product
     ports:
-      - "8008:8008"
+      - "8005:8005"
+    volumes:
+      - /neko_transaction/product/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -127,10 +133,12 @@ services:
       ELASTIC_SEARCH_HOSTS: elasticsearch:9200
 
   ware-service:
-    image: neko-transaction-ware:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-ware
     ports:
       - "8007:8007"
+    volumes:
+      - /neko_transaction/ware/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -153,10 +161,12 @@ services:
       RABBITMQ_PASSWORD: guest
 
   third-party-service:
-    image: neko-transaction-third-party:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-third-party
     ports:
       - "8006:8006"
+    volumes:
+      - /neko_transaction/third_party/app:/app
     networks:
       - neko_transaction
     depends_on:
