@@ -48,9 +48,19 @@ public class ReturnApplyInfo implements Serializable {
     private String sellerResponse;
 
     /**
+     * 卖家是否通过
+     */
+    private Boolean isSellerPass;
+
+    /**
      * 管理员回应
      */
     private String adminResponse;
+
+    /**
+     * 管理员是否通过
+     */
+    private Boolean isAdminPass;
 
     /**
      * 操作的管理员id
