@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.product.mapper.ReturnApplyInfoMapper">
-
+    <select id="getReturnApplyInfoByOrderDetailId" resultType="neko.transaction.product.vo.ReturnApplyInfoVo">
+        select return_apply_info.*, order_detail_info.product_id,
+            order_detail_info.product_name, order_detail_info.display_image,
+            order_detail_info.full_category_name, order_detail_info.cost,
+            order_detail_info.actual_cost, order_detail_info.number from return_apply_info
+        join order_detail_info
+        on return_apply_info.order_detail_id = order_detail_info.order_detail_id
+        where return_apply_info.order_detail_id = #{orderDetailId}
+    </select>
 </mapper>

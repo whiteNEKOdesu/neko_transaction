@@ -2,18 +2,25 @@ package neko.transaction.product.vo;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import neko.transaction.product.entity.ReturnApplyImage;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * 订单详情vo
+ * 退货申请信息vo
  */
 @Data
 @Accessors(chain = true)
-public class OrderDetailInfoVo implements Serializable {
+public class ReturnApplyInfoVo implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 退款申请id
+     */
+    private Long applyId;
 
     /**
      * 订单详情id
@@ -21,9 +28,29 @@ public class OrderDetailInfoVo implements Serializable {
     private String orderDetailId;
 
     /**
-     * 订单id
+     * 退款原因
      */
-    private String orderId;
+    private String reason;
+
+    /**
+     * 卖家回应
+     */
+    private String sellerResponse;
+
+    /**
+     * 管理员回应
+     */
+    private String adminResponse;
+
+    /**
+     * 操作的管理员id
+     */
+    private String operateAdminId;
+
+    /**
+     * 退款审核状态，0->店家审核中，1->管理员审核中，2->货物退还中，3->退款成功，4->驳回
+     */
+    private Byte status;
 
     /**
      * 商品id
@@ -46,11 +73,6 @@ public class OrderDetailInfoVo implements Serializable {
     private String fullCategoryName;
 
     /**
-     * 卖家学号
-     */
-    private String sellerUid;
-
-    /**
      * 商品价格
      */
     private BigDecimal cost;
@@ -66,21 +88,6 @@ public class OrderDetailInfoVo implements Serializable {
     private Integer number;
 
     /**
-     * 订单商品状态，0->待收货，1->已确认收货，2->申请退货中，3->已退货
-     */
-    private Byte status;
-
-    /**
-     * 买家学号
-     */
-    private String uid;
-
-    /**
-     * 退款审核状态，0->店家审核中，1->管理员审核中，2->货物退还中，3->退款成功，4->驳回
-     */
-    private Byte returnApplyStatus;
-
-    /**
      * 创建时间
      */
     private LocalDateTime createTime;
@@ -89,4 +96,9 @@ public class OrderDetailInfoVo implements Serializable {
      * 修改时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 退货申请图片
+     */
+    private List<ReturnApplyImage> returnApplyImages;
 }

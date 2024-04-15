@@ -1,6 +1,7 @@
 package neko.transaction.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
 import neko.transaction.product.entity.ReturnApplyImage;
@@ -11,6 +12,7 @@ import neko.transaction.product.service.ReturnApplyImageService;
 import neko.transaction.product.service.ReturnApplyInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.vo.NewReturnApplyVo;
+import neko.transaction.product.vo.ReturnApplyInfoVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,5 +70,21 @@ public class ReturnApplyInfoServiceImpl extends ServiceImpl<ReturnApplyInfoMappe
         }
 
         returnApplyImageService.insertBatch(returnApplyImages);
+    }
+
+    /**
+     * 根据 订单详情id 获取申请退货信息
+     * @param orderDetailId 订单详情id
+     * @return 申请退货信息
+     */
+    @Override
+    public ReturnApplyInfoVo getReturnApplyInfoByOrderDetailId(String orderDetailId) {
+        ReturnApplyInfoVo returnApplyInfo = this.baseMapper.getReturnApplyInfoByOrderDetailId(orderDetailId);
+        if(returnApplyInfo == null){
+            return null;
+        }
+
+        return returnApplyInfo.setReturnApplyImages(returnApplyImageService.list(new QueryWrapper<ReturnApplyImage>().lambda()
+                .eq(ReturnApplyImage::getApplyId, returnApplyInfo.getApplyId())));
     }
 }

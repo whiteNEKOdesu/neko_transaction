@@ -3,6 +3,7 @@ package neko.transaction.product.service;
 import neko.transaction.product.entity.ReturnApplyInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.NewReturnApplyVo;
+import neko.transaction.product.vo.ReturnApplyInfoVo;
 
 /**
  * <p>
@@ -18,4 +19,11 @@ public interface ReturnApplyInfoService extends IService<ReturnApplyInfo> {
      * @param vo 添加退货申请vo
      */
     void newReturnApplyInfo(NewReturnApplyVo vo);
+
+    /**
+     * 根据 订单详情id 获取申请退货信息
+     * @param orderDetailId 订单详情id
+     * @return 申请退货信息
+     */
+    ReturnApplyInfoVo getReturnApplyInfoByOrderDetailId(String orderDetailId);
 }

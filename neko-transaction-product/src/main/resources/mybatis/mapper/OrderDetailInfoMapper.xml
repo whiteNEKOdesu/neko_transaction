@@ -9,9 +9,11 @@
     </select>
 
     <select id="sellerSelfPageQuery" resultType="neko.transaction.product.vo.OrderDetailInfoVo">
-        select order_detail_info.*, order_info.uid from order_detail_info
+        select order_detail_info.*, order_info.uid, return_apply_info.status return_apply_status from order_detail_info
         join order_info
         on order_detail_info.order_id = order_info.order_id
+        left join return_apply_info
+        on order_detail_info.order_detail_id = return_apply_info.order_detail_id
         <where>
             order_detail_info.seller_uid = #{sellerUid}
             <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
