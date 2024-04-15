@@ -73,6 +73,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
+      PROFILES_ACTIVE: prop
 
   member-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -92,7 +93,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
-      MYSQL_URL: mysql:3306
+      MYSQL_URL: jdbc:mysql://mysql:3306/neko_transaction_member?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       REDIS_HOST: redis
@@ -101,6 +102,7 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
+      PROFILES_ACTIVE: prop
 
   product-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -121,7 +123,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
-      MYSQL_URL: mysql:3306
+      MYSQL_URL: jdbc:mysql://mysql:3306/neko_transaction_product?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       REDIS_HOST: redis
@@ -131,6 +133,7 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
       ELASTIC_SEARCH_HOSTS: elasticsearch:9200
+      PROFILES_ACTIVE: prop
 
   ware-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -150,7 +153,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
-      MYSQL_URL: mysql:3306
+      MYSQL_URL: jdbc:mysql://mysql:3306/neko_transaction_ware?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       REDIS_HOST: redis
@@ -159,6 +162,7 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
+      PROFILES_ACTIVE: prop
 
   third-party-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -179,6 +183,7 @@ services:
       SENTINEL_PORT: 8719
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      PROFILES_ACTIVE: prop
 
 networks:
   neko_transaction:
