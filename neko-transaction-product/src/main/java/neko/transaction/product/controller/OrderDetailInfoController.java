@@ -102,4 +102,17 @@ public class OrderDetailInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 卖家确认退货货物送达
+     * @param applyId 申请id
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("confirm_return_cargo_sent_back")
+    public ResultObject<Object> confirmReturnCargoSentBack(@RequestParam Long applyId){
+        orderDetailInfoService.confirmReturnCargoSentBack(applyId);
+
+        return ResultObject.ok();
+    }
 }

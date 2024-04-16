@@ -27,6 +27,5 @@ public class AddMemberBalanceVo implements Serializable {
      * 添加的余额
      */
     @NotNull
-    @Min(value = 0)
     private BigDecimal addNumber;
 }

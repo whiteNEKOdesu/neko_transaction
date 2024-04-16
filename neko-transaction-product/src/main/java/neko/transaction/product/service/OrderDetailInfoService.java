@@ -65,4 +65,10 @@ public interface OrderDetailInfoService extends IService<OrderDetailInfo> {
      * @param vo 提交审核退货申请vo
      */
     void adminCensorReturnApply(CensorReturnApplyVo vo);
+
+    /**
+     * 确认退货货物送达
+     * @param applyId 申请id
+     */
+    void confirmReturnCargoSentBack(Long applyId);
 }

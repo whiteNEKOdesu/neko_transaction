@@ -19,10 +19,7 @@ import neko.transaction.product.mapper.OrderDetailInfoMapper;
 import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.service.ReturnApplyInfoService;
 import neko.transaction.product.to.AddMemberBalanceTo;
-import neko.transaction.product.vo.CensorReturnApplyVo;
-import neko.transaction.product.vo.NewReturnApplyVo;
-import neko.transaction.product.vo.OrderDetailInfoVo;
-import neko.transaction.product.vo.OrderDetailStatusAggVo;
+import neko.transaction.product.vo.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -220,5 +217,62 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
                 .eq(ReturnApplyInfo::getStatus, ReturnApplyStatus.ADMIN_CENSORING)
                 //判断是否已经审核
                 .isNull(ReturnApplyInfo::getIsAdminPass));
+    }
+
+    /**
+     * 确认退货货物送达
+     * @param applyId 申请id
+     */
+    @Override
+    @GlobalTransactional(rollbackFor = Exception.class)
+    public void confirmReturnCargoSentBack(Long applyId) {
+        ReturnApplyInfo returnApplyInfo = returnApplyInfoService.getById(applyId);
+        if(returnApplyInfo == null){
+            throw new NoSuchResultException("无此退货申请信息");
+        }
+        String orderDetailId = returnApplyInfo.getOrderDetailId();
+        if(!this.baseMapper.isOrderDetailInfoProductBelongsToSellerUid(orderDetailId, StpUtil.getLoginId().toString())){
+            throw new NotPermissionException("商品卖家不属于此用户");
+        }
+        //状态不为货物退还中，直接返回
+        if(!returnApplyInfo.getStatus().equals(ReturnApplyStatus.CARGO_RETURNING)){
+            return;
+        }
+
+        //step1 -> 修改申请状态为 退款成功
+        ReturnApplyInfo todoUpdate = new ReturnApplyInfo();
+        todoUpdate.setStatus(ReturnApplyStatus.RETURN_COMPLETED);
+
+        returnApplyInfoService.update(todoUpdate, new QueryWrapper<ReturnApplyInfo>().lambda()
+                .eq(ReturnApplyInfo::getApplyId, applyId)
+                .eq(ReturnApplyInfo::getStatus, ReturnApplyStatus.CARGO_RETURNING));
+
+        //step2 -> 修改订单详情状态为 已退货
+        OrderDetailInfo orderDetailInfo = new OrderDetailInfo();
+        orderDetailInfo.setOrderDetailId(orderDetailId)
+                .setStatus(OrderDetailInfoStatus.SENT_BACK);
+
+        this.baseMapper.updateById(orderDetailInfo);
+
+        //step3 -> 远程调用用户微服务退款
+        ReturnApplyInfoVo returnApplyInfoVo = returnApplyInfoService.getReturnApplyInfoByOrderDetailId(orderDetailId);
+        AddMemberBalanceTo addTo = new AddMemberBalanceTo();
+        addTo.setUid(returnApplyInfoVo.getUid())
+                .setAddNumber(returnApplyInfoVo.getActualCost());
+
+        ResultObject<Object> addResult = memberInfoFeignService.addBalance(addTo);
+        if(!addResult.getResponseCode().equals(200)){
+            throw new MemberServiceException("member微服务远程调用异常");
+        }
+
+        //step4 -> 远程调用用户微服务扣除卖家余额
+        AddMemberBalanceTo decreaseTo = new AddMemberBalanceTo();
+        decreaseTo.setUid(StpUtil.getLoginId().toString())
+                .setAddNumber(returnApplyInfoVo.getActualCost().negate());
+
+        ResultObject<Object> decreaseResult = memberInfoFeignService.addBalance(decreaseTo);
+        if(!decreaseResult.getResponseCode().equals(200)){
+            throw new MemberServiceException("member微服务远程调用异常");
+        }
     }
 }
