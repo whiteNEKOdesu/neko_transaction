@@ -66,4 +66,12 @@ public interface OrderDetailInfoMapper extends BaseMapper<OrderDetailInfo> {
      * @return 订单详情按照状态聚合信息
      */
     List<OrderDetailStatusAggVo> statusAggCount();
+
+    /**
+     * 判断订单详情信息对应的商品的卖家是否为指定的学号的卖家
+     * @param orderDetailId 订单详情id
+     * @param uid 学号
+     * @return 是否为指定的学号的卖家
+     */
+    Boolean isOrderDetailInfoProductBelongsToSellerUid(String orderDetailId, String uid);
 }

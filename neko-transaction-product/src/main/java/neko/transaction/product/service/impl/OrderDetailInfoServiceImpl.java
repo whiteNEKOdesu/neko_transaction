@@ -1,5 +1,6 @@
 package neko.transaction.product.service.impl;
 
+import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,14 +9,17 @@ import io.seata.spring.annotation.GlobalTransactional;
 import neko.transaction.commonbase.utils.entity.OrderDetailInfoStatus;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.ReturnApplyStatus;
 import neko.transaction.commonbase.utils.exception.MemberServiceException;
 import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.product.entity.OrderDetailInfo;
+import neko.transaction.product.entity.ReturnApplyInfo;
 import neko.transaction.product.feign.member.MemberInfoFeignService;
 import neko.transaction.product.mapper.OrderDetailInfoMapper;
 import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.service.ReturnApplyInfoService;
 import neko.transaction.product.to.AddMemberBalanceTo;
+import neko.transaction.product.vo.CensorReturnApplyVo;
 import neko.transaction.product.vo.NewReturnApplyVo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
 import neko.transaction.product.vo.OrderDetailStatusAggVo;
@@ -142,5 +146,43 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
 
         //step2 -> 添加退货申请
         returnApplyInfoService.newReturnApplyInfo(vo);
+    }
+
+    /**
+     * 卖家审核退货申请
+     * @param vo 提交审核退货申请vo
+     */
+    @Override
+    public void sellerCensorReturnApply(CensorReturnApplyVo vo) {
+        Long applyId = vo.getApplyId();
+        ReturnApplyInfo returnApplyInfo = returnApplyInfoService.getById(applyId);
+        if(returnApplyInfo == null){
+            throw new NoSuchResultException("无此退货申请信息");
+        }
+        String orderDetailId = returnApplyInfo.getOrderDetailId();
+        if(!this.baseMapper.isOrderDetailInfoProductBelongsToSellerUid(orderDetailId, StpUtil.getLoginId().toString())){
+            throw new NotPermissionException("商品卖家不属于此用户");
+        }
+        //已经审核，直接返回
+        if(returnApplyInfo.getIsSellerPass() != null){
+            return;
+        }
+
+        ReturnApplyInfo todoUpdate = new ReturnApplyInfo();
+        todoUpdate.setSellerResponse(vo.getResponse())
+                .setIsSellerPass(vo.getIsPass());
+        if(vo.getIsPass()){
+            //卖家通过退货申请，则进入商品退还流程
+            todoUpdate.setStatus(ReturnApplyStatus.CARGO_RETURNING);
+        }else{
+            //卖家未通过退货申请，则进入管理员审核流程
+            todoUpdate.setStatus(ReturnApplyStatus.ADMIN_CENSORING);
+        }
+
+        //记录卖家审核记录
+        returnApplyInfoService.update(todoUpdate, new QueryWrapper<ReturnApplyInfo>().lambda()
+                .eq(ReturnApplyInfo::getApplyId, applyId)
+                //判断是否已经审核
+                .isNull(ReturnApplyInfo::getIsSellerPass));
     }
 }

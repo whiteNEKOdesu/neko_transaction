@@ -43,4 +43,9 @@ public class OrderDetailInfoMapperTest {
     public void statusAggCount(){
         System.out.println(orderDetailInfoMapper.statusAggCount());
     }
+
+    @Test
+    public void isOrderDetailInfoProductBelongsToSellerUid(){
+        System.out.println(orderDetailInfoMapper.isOrderDetailInfoProductBelongsToSellerUid("1768149097477259265", "2022220187"));
+    }
 }

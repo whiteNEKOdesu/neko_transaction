@@ -7,6 +7,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.service.OrderDetailInfoService;
+import neko.transaction.product.vo.CensorReturnApplyVo;
 import neko.transaction.product.vo.NewReturnApplyVo;
 import neko.transaction.product.vo.OrderDetailInfoVo;
 import neko.transaction.product.vo.OrderDetailStatusAggVo;
@@ -72,6 +73,19 @@ public class OrderDetailInfoController {
     @PostMapping("new_return_apply")
     public ResultObject<Object> newReturnApply(@Validated NewReturnApplyVo vo){
         orderDetailInfoService.newReturnApplyInfo(vo);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 卖家审核退货申请
+     * @param vo 提交审核退货申请vo
+     * @return 响应结果
+     */
+    @SaCheckLogin
+    @PostMapping("seller_censor_return_appply")
+    public ResultObject<Object> sellerCensorReturnApply(@Validated @RequestBody CensorReturnApplyVo vo){
+        orderDetailInfoService.sellerCensorReturnApply(vo);
 
         return ResultObject.ok();
     }

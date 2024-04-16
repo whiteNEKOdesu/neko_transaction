@@ -57,4 +57,11 @@
         ) status, count(status) number from order_detail_info
         group by status
     </select>
+
+    <select id="isOrderDetailInfoProductBelongsToSellerUid" resultType="Boolean">
+        select product_info.uid = #{uid} from order_detail_info
+        join product_info
+        on order_detail_info.product_id = product_info.product_id
+        where order_detail_info.order_detail_id = #{orderDetailId}
+    </select>
 </mapper>
