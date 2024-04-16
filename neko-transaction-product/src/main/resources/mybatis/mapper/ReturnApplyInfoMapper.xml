@@ -10,4 +10,37 @@
         on return_apply_info.order_detail_id = order_detail_info.order_detail_id
         where return_apply_info.order_detail_id = #{orderDetailId}
     </select>
+
+    <select id="returnApplyInfoPageQuery" resultType="neko.transaction.product.vo.ReturnApplyInfoVo">
+        select return_apply_info.*, order_detail_info.product_id,
+            order_detail_info.product_name, order_detail_info.display_image,
+            order_detail_info.full_category_name, order_detail_info.cost,
+            order_detail_info.actual_cost, order_detail_info.number from return_apply_info
+        join order_detail_info
+        on return_apply_info.order_detail_id = order_detail_info.order_detail_id
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                order_detail_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and return_apply_info.status = #{status}
+            </if>
+        </where>
+        order by return_apply_info.apply_id desc
+        limit #{start}, #{limited}
+    </select>
+
+    <select id="returnApplyInfoPageQueryNumber" resultType="int">
+        select count(return_apply_info.apply_id) from return_apply_info
+        join order_detail_info
+        on return_apply_info.order_detail_id = order_detail_info.order_detail_id
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                order_detail_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(status)">
+                and return_apply_info.status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>

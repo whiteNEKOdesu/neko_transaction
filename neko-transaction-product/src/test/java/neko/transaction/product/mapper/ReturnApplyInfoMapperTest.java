@@ -14,4 +14,18 @@ public class ReturnApplyInfoMapperTest {
     public void getReturnApplyInfoByOrderDetailId(){
         System.out.println(returnApplyInfoMapper.getReturnApplyInfoByOrderDetailId("1768149097477259265"));
     }
+
+    @Test
+    public void returnApplyInfoPageQuery(){
+        System.out.println(returnApplyInfoMapper.returnApplyInfoPageQuery(8,
+                0,
+                "插画",
+                Byte.valueOf("0")));
+    }
+
+    @Test
+    public void returnApplyInfoPageQueryNumber(){
+        System.out.println(returnApplyInfoMapper.returnApplyInfoPageQueryNumber("插画",
+                Byte.valueOf("0")));
+    }
 }

@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -25,6 +26,7 @@ public class CensorReturnApplyVo implements Serializable {
      * 回应
      */
     @NotBlank
+    @Size(min = 1, max = 500)
     private String response;
 
     /**

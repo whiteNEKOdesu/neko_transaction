@@ -2,6 +2,9 @@ package neko.transaction.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.exception.ThirdPartyServiceException;
 import neko.transaction.product.entity.ReturnApplyImage;
@@ -10,7 +13,6 @@ import neko.transaction.product.feign.thirdparty.OSSFeignService;
 import neko.transaction.product.mapper.ReturnApplyInfoMapper;
 import neko.transaction.product.service.ReturnApplyImageService;
 import neko.transaction.product.service.ReturnApplyInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.vo.NewReturnApplyVo;
 import neko.transaction.product.vo.ReturnApplyInfoVo;
 import org.springframework.stereotype.Service;
@@ -86,5 +88,27 @@ public class ReturnApplyInfoServiceImpl extends ServiceImpl<ReturnApplyInfoMappe
 
         return returnApplyInfo.setReturnApplyImages(returnApplyImageService.list(new QueryWrapper<ReturnApplyImage>().lambda()
                 .eq(ReturnApplyImage::getApplyId, returnApplyInfo.getApplyId())));
+    }
+
+    /**
+     * 分页查询申请退货信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<ReturnApplyInfoVo> returnApplyInfoPageQuery(QueryVo vo) {
+        Page<ReturnApplyInfoVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        Object objectId = vo.getObjectId();
+        Byte status = objectId != null ? Byte.valueOf(objectId.toString()) : null;
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.returnApplyInfoPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords(),
+                status));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.returnApplyInfoPageQueryNumber(vo.getQueryWords(),
+                status));
+
+        return page;
     }
 }
