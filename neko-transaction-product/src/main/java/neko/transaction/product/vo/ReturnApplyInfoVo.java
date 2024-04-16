@@ -98,6 +98,11 @@ public class ReturnApplyInfoVo implements Serializable {
     private Integer number;
 
     /**
+     * 用户id
+     */
+    private String uid;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;

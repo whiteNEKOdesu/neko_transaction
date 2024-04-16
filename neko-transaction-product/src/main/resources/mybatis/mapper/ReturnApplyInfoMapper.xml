@@ -5,9 +5,11 @@
         select return_apply_info.*, order_detail_info.product_id,
             order_detail_info.product_name, order_detail_info.display_image,
             order_detail_info.full_category_name, order_detail_info.cost,
-            order_detail_info.actual_cost, order_detail_info.number from return_apply_info
+            order_detail_info.actual_cost, order_detail_info.number, order_info.uid from return_apply_info
         join order_detail_info
         on return_apply_info.order_detail_id = order_detail_info.order_detail_id
+        join order_info
+        on order_detail_info.order_id = order_info.order_id
         where return_apply_info.order_detail_id = #{orderDetailId}
     </select>
 
@@ -15,9 +17,11 @@
         select return_apply_info.*, order_detail_info.product_id,
             order_detail_info.product_name, order_detail_info.display_image,
             order_detail_info.full_category_name, order_detail_info.cost,
-            order_detail_info.actual_cost, order_detail_info.number from return_apply_info
+            order_detail_info.actual_cost, order_detail_info.number, order_info.uid from return_apply_info
         join order_detail_info
         on return_apply_info.order_detail_id = order_detail_info.order_detail_id
+        join order_info
+        on order_detail_info.order_id = order_info.order_id
         <where>
             <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
                 order_detail_info.product_name like concat(#{queryWords},'%')
