@@ -83,9 +83,22 @@ public class OrderDetailInfoController {
      * @return 响应结果
      */
     @SaCheckLogin
-    @PostMapping("seller_censor_return_appply")
+    @PostMapping("seller_censor_return_apply")
     public ResultObject<Object> sellerCensorReturnApply(@Validated @RequestBody CensorReturnApplyVo vo){
         orderDetailInfoService.sellerCensorReturnApply(vo);
+
+        return ResultObject.ok();
+    }
+
+    /**
+     * 管理员审核退货申请
+     * @param vo 提交审核退货申请vo
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PostMapping("admin_censor_return_apply")
+    public ResultObject<Object> adminCensorReturnApply(@Validated @RequestBody CensorReturnApplyVo vo){
+        orderDetailInfoService.adminCensorReturnApply(vo);
 
         return ResultObject.ok();
     }

@@ -185,4 +185,40 @@ public class OrderDetailInfoServiceImpl extends ServiceImpl<OrderDetailInfoMappe
                 //判断是否已经审核
                 .isNull(ReturnApplyInfo::getIsSellerPass));
     }
+
+    /**
+     * 管理员审核退货申请
+     * @param vo 提交审核退货申请vo
+     */
+    @Override
+    public void adminCensorReturnApply(CensorReturnApplyVo vo) {
+        Long applyId = vo.getApplyId();
+        ReturnApplyInfo returnApplyInfo = returnApplyInfoService.getById(applyId);
+        if(returnApplyInfo == null){
+            throw new NoSuchResultException("无此退货申请信息");
+        }
+        //已经审核，直接返回
+        if(returnApplyInfo.getIsAdminPass() != null){
+            return;
+        }
+
+        ReturnApplyInfo todoUpdate = new ReturnApplyInfo();
+        todoUpdate.setAdminResponse(vo.getResponse())
+                .setIsAdminPass(vo.getIsPass())
+                .setOperateAdminId(StpUtil.getLoginId().toString());
+        if(vo.getIsPass()){
+            //管理员通过退货申请，则进入商品退还流程
+            todoUpdate.setStatus(ReturnApplyStatus.CARGO_RETURNING);
+        }else{
+            //管理员未通过退货申请，则进入驳回退货申请
+            todoUpdate.setStatus(ReturnApplyStatus.REJECTED);
+        }
+
+        //记录管理员审核记录
+        returnApplyInfoService.update(todoUpdate, new QueryWrapper<ReturnApplyInfo>().lambda()
+                .eq(ReturnApplyInfo::getApplyId, applyId)
+                .eq(ReturnApplyInfo::getStatus, ReturnApplyStatus.ADMIN_CENSORING)
+                //判断是否已经审核
+                .isNull(ReturnApplyInfo::getIsAdminPass));
+    }
 }
