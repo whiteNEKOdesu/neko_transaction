@@ -199,6 +199,9 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         if(productInfo == null){
             throw new NoSuchResultException("无此productId商品信息");
         }
+        if(productInfo.getIsBan()){
+            throw new NotPermissionException("商品被封禁，无法上架");
+        }
 
         //step2 -> 修改商品信息状态为上架状态
         ProductInfo todoUpdate = new ProductInfo();

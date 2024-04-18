@@ -71,7 +71,8 @@
         on category_info.parent_id = parent.category_id
         where product_info.product_id = #{productId} and
 --         过滤已删除商品信息
-            status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@UP}
+            status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@UP} and
+            product_info.is_ban = 0
     </select>
 
     <select id="getProductDetailInfoByIds" resultType="neko.transaction.product.vo.ProductDetailInfoVo">
