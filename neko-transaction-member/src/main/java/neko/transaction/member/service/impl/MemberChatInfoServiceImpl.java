@@ -6,18 +6,27 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.commonbase.utils.entity.ChatWebSocketMessageType;
+import neko.transaction.commonbase.utils.entity.MQMessageType;
 import neko.transaction.commonbase.utils.entity.QueryVo;
+import neko.transaction.commonbase.utils.entity.RabbitMqConstant;
 import neko.transaction.member.config.WebSocket;
 import neko.transaction.member.entity.MemberChatInfo;
 import neko.transaction.member.mapper.MemberChatInfoMapper;
 import neko.transaction.member.service.MemberChatInfoReadLogService;
 import neko.transaction.member.service.MemberChatInfoService;
+import neko.transaction.member.to.RabbitMQChatPubTo;
+import neko.transaction.member.to.RabbitMQMessageTo;
 import neko.transaction.member.vo.ChatWebSocketVo;
 import neko.transaction.member.vo.MemberChatInfoLogVo;
 import neko.transaction.member.vo.NewMemberChatVo;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.ReturnedMessage;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -39,6 +48,9 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
     @Resource
     private WebSocket webSocket;
 
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
     @Resource(name = "threadPoolExecutor")
     private Executor threadPool;
 
@@ -59,7 +71,7 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
         //向聊天消息信息表添加聊天消息
         this.baseMapper.insert(memberChatInfo);
 
-        //异步 WebSocket 向在线用户发送聊天消息
+        //异步向聊天消息发布队列发送聊天消息，用于聊天消息同步发送
         CompletableFuture.runAsync(() -> {
             //构造消息
             ChatWebSocketVo chatWebSocketVo = new ChatWebSocketVo();
@@ -69,13 +81,28 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
             chatWebSocketVo.setType(ChatWebSocketMessageType.CHAT)
                     .setMessage(JSONUtil.toJsonStr(memberChatInfo));
 
-            //WebSocket 向在线用户发送聊天消息
-            if(webSocket.sendOneMessage(vo.getToId(), JSONUtil.toJsonStr(chatWebSocketVo))){
-                //获取未读消息id
-                List<Long> chatIds = this.baseMapper.getUnreadChatIdByFromIdToId(uid, toId);
-                //将消息标记为已读
-                memberChatInfoReadLogService.newMemberChatInfoReadLog(chatIds, uid, toId);
-            }
+            //构造 rabbitmq 聊天消息发布to
+            RabbitMQChatPubTo rabbitMQChatPubTo = new RabbitMQChatPubTo();
+            rabbitMQChatPubTo.setChatId(memberChatInfo.getChatId())
+                    .setFromId(uid)
+                    .setToId(vo.getToId())
+                    .setMessage(JSONUtil.toJsonStr(chatWebSocketVo));
+
+            RabbitMQMessageTo<RabbitMQChatPubTo> rabbitMQMessageTo = RabbitMQMessageTo.generateMessage(rabbitMQChatPubTo, MQMessageType.CHAT_PUB_TYPE);
+            //在CorrelationData中设置回退消息
+            CorrelationData correlationData = new CorrelationData(MQMessageType.CHAT_PUB_TYPE.toString());
+            String jsonMessage = JSONUtil.toJsonStr(rabbitMQMessageTo);
+            String notAvailable = "not available";
+            correlationData.setReturned(new ReturnedMessage(new Message(jsonMessage.getBytes(StandardCharsets.UTF_8)),
+                    0,
+                    notAvailable,
+                    notAvailable,
+                    notAvailable));
+            //向聊天消息发布队列发送聊天消息，用于聊天消息同步发送
+            rabbitTemplate.convertAndSend(RabbitMqConstant.CHAT_PUB_EXCHANGE_NAME,
+                    "",
+                    jsonMessage,
+                    correlationData);
         }, threadPool).exceptionallyAsync(e -> {
             e.printStackTrace();
 
@@ -141,5 +168,16 @@ public class MemberChatInfoServiceImpl extends ServiceImpl<MemberChatInfoMapper,
         page.setTotal(this.baseMapper.memberChattingWithPageQueryNumber(uid));
 
         return page;
+    }
+
+    /**
+     * 根据发送人学号，接收人学号获取未读聊天id
+     * @param fromId 送人学号
+     * @param toId 接收人学号
+     * @return 未读聊天id
+     */
+    @Override
+    public List<Long> getUnreadChatIdByFromIdToId(String fromId, String toId) {
+        return this.baseMapper.getUnreadChatIdByFromIdToId(fromId, toId);
     }
 }

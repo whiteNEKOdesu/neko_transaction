@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.member.vo.MemberChatInfoLogVo;
 import neko.transaction.member.vo.NewMemberChatVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 聊天消息信息表 服务类
@@ -35,4 +37,12 @@ public interface MemberChatInfoService extends IService<MemberChatInfo> {
      * @return 查询结果
      */
     Page<MemberChatInfoLogVo> memberChattingWithPageQuery(QueryVo vo);
+
+    /**
+     * 根据发送人学号，接收人学号获取未读聊天id
+     * @param fromId 送人学号
+     * @param toId 接收人学号
+     * @return 未读聊天id
+     */
+    List<Long> getUnreadChatIdByFromIdToId(String fromId, String toId);
 }
