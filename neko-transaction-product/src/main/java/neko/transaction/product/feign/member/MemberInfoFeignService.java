@@ -4,11 +4,9 @@ import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.ServiceName;
 import neko.transaction.product.to.AddMemberBalanceTo;
 import neko.transaction.product.to.MemberInfoTo;
+import neko.transaction.product.to.PublicUserInfoTo;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户微服务用户信息远程调用
@@ -22,6 +20,14 @@ public interface MemberInfoFeignService {
      */
     @GetMapping("member_info/user_self_info")
     ResultObject<MemberInfoTo> userSelfInfo(@RequestHeader("neko_transaction") String token);
+
+    /**
+     * 根据学号获取用户公开信息
+     * @param uid 学号
+     * @return 用户公开信息
+     */
+    @GetMapping("member_info/public_member_info")
+    ResultObject<PublicUserInfoTo> publicMemberInfo(@RequestParam String uid);
 
     /**
      * 添加用户余额

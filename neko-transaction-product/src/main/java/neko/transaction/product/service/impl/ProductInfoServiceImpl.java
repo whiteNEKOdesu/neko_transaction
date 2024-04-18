@@ -28,6 +28,7 @@ import neko.transaction.product.service.OrderDetailInfoService;
 import neko.transaction.product.service.ProductCommentService;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.to.MemberInfoTo;
+import neko.transaction.product.to.PublicUserInfoTo;
 import neko.transaction.product.vo.NewProductCommentVo;
 import neko.transaction.product.vo.ProductDetailInfoVo;
 import neko.transaction.product.vo.ProductInfoVo;
@@ -40,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -380,5 +382,40 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
                 TimeUnit.HOURS);
 
         return productInfos;
+    }
+
+    /**
+     * 将商品信息同步到 elasticsearch
+     */
+    @Override
+    public void synchronizeProductInfoToES() {
+        //获取已上架的商品信息
+        List<ProductInfo> productInfos = this.baseMapper.selectList(new QueryWrapper<ProductInfo>().lambda()
+                .eq(ProductInfo::getStatus, ProductStatus.UP)
+                .eq(ProductInfo::getIsBan, false));
+
+        List<ProductInfoES> productInfoESs = new ArrayList<>();
+        for(ProductInfo productInfo : productInfos){
+            //远程调用用户微服务获取用户信息
+            ResultObject<PublicUserInfoTo> r = memberInfoFeignService.publicMemberInfo(productInfo.getUid());
+            if(!r.getResponseCode().equals(200)){
+                throw new MemberServiceException("member微服务远程调用异常，code: " + r.getResponseCode());
+            }
+
+            //获取远程调用用户信息结果
+            PublicUserInfoTo publicUserInfoTo = r.getResult();
+
+            ProductInfoES productInfoES = new ProductInfoES();
+            //将商品信息复制到 elasticsearch 实体类
+            BeanUtil.copyProperties(productInfo, productInfoES);
+            productInfoES.setUserName(publicUserInfoTo.getUserName())
+                    .setRealName(publicUserInfoTo.getRealName())
+                    .setUpTime(productInfo.getUpTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            productInfoESs.add(productInfoES);
+        }
+
+        productInfoESService.newProductInfosToES(productInfoESs);
+        log.info("商品信息同步到 elasticsearch 成功，同步数量: " + productInfos.size());
     }
 }

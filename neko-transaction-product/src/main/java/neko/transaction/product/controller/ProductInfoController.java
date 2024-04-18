@@ -1,9 +1,11 @@
 package neko.transaction.product.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.entity.ProductInfo;
 import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.NewProductCommentVo;
@@ -121,5 +123,17 @@ public class ProductInfoController {
     @GetMapping("top_8_product_infos")
     public ResultObject<List<ProductInfo>> top8ProductInfos(){
         return ResultObject.ok(productInfoService.getTop8SaleNumberProductInfos());
+    }
+
+    /**
+     * 将商品信息同步到 elasticsearch
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ROOT)
+    @PostMapping("synchronize_product_info_to_es")
+    public ResultObject<Object> synchronizeProductInfoToES(){
+        productInfoService.synchronizeProductInfoToES();
+
+        return ResultObject.ok();
     }
 }

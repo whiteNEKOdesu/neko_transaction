@@ -84,4 +84,9 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * @return 销量前 8 的商品信息
      */
     List<ProductInfo> getTop8SaleNumberProductInfos();
+
+    /**
+     * 将商品信息同步到 elasticsearch
+     */
+    void synchronizeProductInfoToES();
 }

@@ -84,6 +84,34 @@ public class ProductInfoESServiceImpl implements ProductInfoESService {
     }
 
     /**
+     * 批量添加商品信息到 elasticsearch中
+     * @param productInfoESs 商品es信息 List
+     */
+    @Override
+    public void newProductInfosToES(List<ProductInfoES> productInfoESs) {
+        BulkRequest.Builder builder = new BulkRequest.Builder();
+        for(ProductInfoES productInfoES : productInfoESs){
+            //设置 elasticsearch 索引
+            builder.operations(operation->operation.index(idx->idx.index(Constant.ELASTIC_SEARCH_INDEX)
+                    //设置文档id
+                    .id(productInfoES.getProductId())
+                    //设置文档数据
+                    .document(productInfoES)));
+        }
+
+        BulkResponse bulkResponse;
+        try {
+            //添加文档到 elasticsearch
+            bulkResponse = elasticsearchClient.bulk(builder.build());
+        }catch (Exception e){
+            throw new ElasticSearchUpdateException("elasticsearch添加错误");
+        }
+        if(bulkResponse.errors()){
+            throw new ElasticSearchUpdateException("elasticsearch添加错误");
+        }
+    }
+
+    /**
      * 根据商品id删除 elasticsearch 数据
      * @param productId 商品id
      */

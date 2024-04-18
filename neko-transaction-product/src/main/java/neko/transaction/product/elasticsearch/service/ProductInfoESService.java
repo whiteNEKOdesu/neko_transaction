@@ -5,6 +5,7 @@ import neko.transaction.product.vo.ProductInfoESQueryVo;
 import neko.transaction.product.vo.ProductInfoESVo;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 商品信息 elasticsearch 查询服务类
@@ -19,8 +20,15 @@ public interface ProductInfoESService {
 
     /**
      * 添加商品信息到 elasticsearch中
+     * @param productInfoES 商品es信息
      */
     void newProductInfoToES(ProductInfoES productInfoES);
+
+    /**
+     * 批量添加商品信息到 elasticsearch中
+     * @param productInfoESs 商品es信息 List
+     */
+    void newProductInfosToES(List<ProductInfoES> productInfoESs);
 
     /**
      * 根据商品id删除 elasticsearch 数据
