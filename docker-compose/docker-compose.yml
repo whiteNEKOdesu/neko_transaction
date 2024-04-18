@@ -6,6 +6,9 @@ services:
     container_name: neko-transaction-redis
     networks:
       - neko_transaction
+    depends_on:
+      - nacos
+    restart: always
 
   mysql:
     image: neko-transaction-mysql:1.0
@@ -19,21 +22,28 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_ALLOW_EMPTY_PASSWORD: no
+    restart: always
 
   rabbitmq:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-rabbitmq:1.0
     container_name: neko-transaction-rabbitmq
     networks:
       - neko_transaction
+    depends_on:
+      - redis
+    restart: always
 
   elasticsearch:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-elasticsearch:1.0
     container_name: neko-transaction-elasticsearch
     networks:
       - neko_transaction
+    depends_on:
+      - rabbitmq
     environment:
       - ES_JAVA_OPTS=-Xms256m -Xmx512m
       - discovery.type=single-node
+    restart: always
 
   nginx:
     image: neko-transaction-nginx:1.0
@@ -43,6 +53,9 @@ services:
       - "81:81"
     networks:
       - neko_transaction
+    depends_on:
+      - gateway-service
+    restart: always
 
   nacos:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-nacos:1.0
@@ -57,6 +70,7 @@ services:
       MYSQL_URL: jdbc:mysql://mysql:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
+    restart: always
 
   gateway-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -69,11 +83,13 @@ services:
       - neko_transaction
     depends_on:
       - nacos
+      - elasticsearch
     environment:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
       PROFILES_ACTIVE: prop
+    restart: always
 
   member-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -89,6 +105,7 @@ services:
       - nacos
       - redis
       - rabbitmq
+      - gateway-service
     environment:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
@@ -103,6 +120,7 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
       PROFILES_ACTIVE: prop
+    restart: always
 
   product-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -119,6 +137,7 @@ services:
       - redis
       - rabbitmq
       - elasticsearch
+      - member-service
     environment:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
@@ -134,6 +153,7 @@ services:
       RABBITMQ_PASSWORD: guest
       ELASTIC_SEARCH_HOSTS: elasticsearch:9200
       PROFILES_ACTIVE: prop
+    restart: always
 
   ware-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -149,6 +169,7 @@ services:
       - nacos
       - redis
       - rabbitmq
+      - product-service
     environment:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
@@ -163,6 +184,7 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
       PROFILES_ACTIVE: prop
+    restart: always
 
   third-party-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
@@ -177,6 +199,7 @@ services:
       - mysql
       - nacos
       - redis
+      - ware-service
     environment:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
@@ -184,6 +207,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       PROFILES_ACTIVE: prop
+    restart: always
 
 networks:
   neko_transaction:
