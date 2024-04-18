@@ -76,7 +76,7 @@ public class ProductInfo implements Serializable {
     /**
      * 商品上架申请id
      */
-    private String productApplyId;
+    private Long productApplyId;
 
     /**
      * 上架时间
