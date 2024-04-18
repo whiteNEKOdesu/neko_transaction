@@ -27,8 +27,8 @@ public class MqReturnMessage implements Serializable {
     /**
      * rabbitmq回退消息id
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String mqReturnId;
+    @TableId(value = "mq_return_id", type = IdType.AUTO)
+    private Long mqReturnId;
 
     /**
      * 消息
@@ -36,7 +36,7 @@ public class MqReturnMessage implements Serializable {
     private String message;
 
     /**
-     * 消息类型，0->订单处理延迟队列消息，1->视频删除延迟队列消息，2->修改会员等级消息，3->会员等级过期插件延迟队列消息
+     * 消息类型，1->聊天消息发布队列消息
      */
     private Byte type;
 
