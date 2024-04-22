@@ -69,4 +69,13 @@ public class AccusationTypeServiceImpl extends ServiceImpl<AccusationTypeMapper,
 
         this.baseMapper.updateById(todoUpdate);
     }
+
+    /**
+     * 删除举报类型
+     * @param accuseTypeId 举报类型id
+     */
+    @Override
+    public void deleteAccusationType(Integer accuseTypeId) {
+        this.baseMapper.deleteById(accuseTypeId);
+    }
 }

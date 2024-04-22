@@ -34,4 +34,10 @@ public interface AccusationTypeService extends IService<AccusationType> {
      * @param vo 修改举报类型信息vo
      */
     void updateAccusationType(UpdateAccusationTypeVo vo);
+
+    /**
+     * 删除举报类型
+     * @param accuseTypeId 举报类型id
+     */
+    void deleteAccusationType(Integer accuseTypeId);
 }

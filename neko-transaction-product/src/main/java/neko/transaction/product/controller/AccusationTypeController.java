@@ -64,4 +64,17 @@ public class AccusationTypeController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 删除举报类型
+     * @param accuseTypeId 举报类型id
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @DeleteMapping("delete_accusation_type")
+    public ResultObject<Object> deleteAccusationType(@RequestParam Integer accuseTypeId){
+        accusationTypeService.deleteAccusationType(accuseTypeId);
+
+        return ResultObject.ok();
+    }
 }
