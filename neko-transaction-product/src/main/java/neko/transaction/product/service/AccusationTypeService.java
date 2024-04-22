@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.NewAccusationTypeVo;
 import neko.transaction.product.vo.UpdateAccusationTypeVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 举报类型信息表 服务类
@@ -40,4 +42,10 @@ public interface AccusationTypeService extends IService<AccusationType> {
      * @param accuseTypeId 举报类型id
      */
     void deleteAccusationType(Integer accuseTypeId);
+
+    /**
+     * 获取全部举报类型信息
+     * @return 全部举报类型信息
+     */
+    List<AccusationType> getAllAccusationType();
 }

@@ -13,6 +13,8 @@ import neko.transaction.product.vo.UpdateAccusationTypeVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * <p>
  * 举报类型信息表 服务实现类
@@ -77,5 +79,16 @@ public class AccusationTypeServiceImpl extends ServiceImpl<AccusationTypeMapper,
     @Override
     public void deleteAccusationType(Integer accuseTypeId) {
         this.baseMapper.deleteById(accuseTypeId);
+    }
+
+    /**
+     * 获取全部举报类型信息
+     * @return 全部举报类型信息
+     */
+    @Override
+    public List<AccusationType> getAllAccusationType() {
+        return this.baseMapper.selectList(new QueryWrapper<AccusationType>().lambda()
+                .orderByDesc(AccusationType::getSort)
+                .orderByDesc(AccusationType::getAccuseTypeId));
     }
 }

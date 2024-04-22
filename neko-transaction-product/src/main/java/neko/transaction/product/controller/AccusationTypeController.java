@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -76,5 +77,14 @@ public class AccusationTypeController {
         accusationTypeService.deleteAccusationType(accuseTypeId);
 
         return ResultObject.ok();
+    }
+
+    /**
+     * 获取全部举报类型信息
+     * @return 全部举报类型信息
+     */
+    @GetMapping("all_accusation_type")
+    public ResultObject<List<AccusationType>> allAccusationType(){
+        return ResultObject.ok(accusationTypeService.getAllAccusationType());
     }
 }
