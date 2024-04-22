@@ -8,6 +8,7 @@ import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.product.entity.AccusationType;
 import neko.transaction.product.service.AccusationTypeService;
 import neko.transaction.product.vo.NewAccusationTypeVo;
+import neko.transaction.product.vo.UpdateAccusationTypeVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,5 +50,18 @@ public class AccusationTypeController {
     @PostMapping("accusation_type_page_query")
     public ResultObject<Page<AccusationType>> accusationTypePageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(accusationTypeService.accusationTypePageQuery(vo));
+    }
+
+    /**
+     * 修改举报类型信息
+     * @param vo 修改举报类型信息vo
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PostMapping("update_accusation_type")
+    public ResultObject<Object> updateAccusationType(@Validated @RequestBody UpdateAccusationTypeVo vo){
+        accusationTypeService.updateAccusationType(vo);
+
+        return ResultObject.ok();
     }
 }

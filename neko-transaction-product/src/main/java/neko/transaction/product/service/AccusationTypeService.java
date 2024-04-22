@@ -5,6 +5,7 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.AccusationType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import neko.transaction.product.vo.NewAccusationTypeVo;
+import neko.transaction.product.vo.UpdateAccusationTypeVo;
 
 /**
  * <p>
@@ -27,4 +28,10 @@ public interface AccusationTypeService extends IService<AccusationType> {
      * @return 查询结果
      */
     Page<AccusationType> accusationTypePageQuery(QueryVo vo);
+
+    /**
+     * 修改举报类型信息
+     * @param vo 修改举报类型信息vo
+     */
+    void updateAccusationType(UpdateAccusationTypeVo vo);
 }

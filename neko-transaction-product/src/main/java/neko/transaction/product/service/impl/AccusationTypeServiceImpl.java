@@ -9,6 +9,7 @@ import neko.transaction.product.mapper.AccusationTypeMapper;
 import neko.transaction.product.service.AccusationTypeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.vo.NewAccusationTypeVo;
+import neko.transaction.product.vo.UpdateAccusationTypeVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -55,5 +56,17 @@ public class AccusationTypeServiceImpl extends ServiceImpl<AccusationTypeMapper,
         this.baseMapper.selectPage(page, queryWrapper);
 
         return page;
+    }
+
+    /**
+     * 修改举报类型信息
+     * @param vo 修改举报类型信息vo
+     */
+    @Override
+    public void updateAccusationType(UpdateAccusationTypeVo vo) {
+        AccusationType todoUpdate = new AccusationType();
+        BeanUtil.copyProperties(vo, todoUpdate);
+
+        this.baseMapper.updateById(todoUpdate);
     }
 }
