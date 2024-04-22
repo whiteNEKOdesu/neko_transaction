@@ -1,12 +1,16 @@
 package neko.transaction.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.AccusationType;
 import neko.transaction.product.mapper.AccusationTypeMapper;
 import neko.transaction.product.service.AccusationTypeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import neko.transaction.product.vo.NewAccusationTypeVo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -29,5 +33,27 @@ public class AccusationTypeServiceImpl extends ServiceImpl<AccusationTypeMapper,
         BeanUtil.copyProperties(vo, todoAdd);
 
         this.baseMapper.insert(todoAdd);
+    }
+
+    /**
+     * 分页查询举报类型信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<AccusationType> accusationTypePageQuery(QueryVo vo) {
+        Page<AccusationType> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        QueryWrapper<AccusationType> queryWrapper = new QueryWrapper<>();
+        if(StringUtils.hasText(vo.getQueryWords())){
+            //拼接查询条件
+            queryWrapper.lambda().like(AccusationType::getAccuseType, vo.getQueryWords());
+        }
+        queryWrapper.lambda().orderByDesc(AccusationType::getSort)
+                .orderByDesc(AccusationType::getAccuseTypeId);
+
+        //分页查询
+        this.baseMapper.selectPage(page, queryWrapper);
+
+        return page;
     }
 }
