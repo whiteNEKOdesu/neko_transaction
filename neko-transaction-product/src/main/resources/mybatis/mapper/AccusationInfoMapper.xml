@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neko.transaction.product.mapper.AccusationInfoMapper">
+    <select id="unhandledAccusationInfoPageQuery" resultType="neko.transaction.product.vo.AccusationInfoVo">
+        select accusation_info.*, accusation_type.accuse_type, product_info.product_name from accusation_info
+        join accusation_type
+        on accusation_info.accuse_type_id = accusation_type.accuse_type_id
+        join product_info
+        on accusation_info.product_id = product_info.product_id
+        <where>
+            accusation_info.status = ${@neko.transaction.commonbase.utils.entity.AccusationStatus@UNHANDLED}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(accuseTypeId)">
+                and accusation_info.accuse_type_id = #{accuseTypeId}
+            </if>
+        </where>
+        order by accusation_info.accuse_id
+        limit #{start}, #{limited}
+    </select>
 
+    <select id="unhandledAccusationInfoPageQueryNumber" resultType="int">
+        select count(accusation_info.accuse_id) from accusation_info
+        join product_info
+        on accusation_info.product_id = product_info.product_id
+        <where>
+            accusation_info.status = ${@neko.transaction.commonbase.utils.entity.AccusationStatus@UNHANDLED}
+            <if test="@org.springframework.util.StringUtils@hasText(queryWords)">
+                and product_info.product_name like concat(#{queryWords},'%')
+            </if>
+            <if test="@cn.hutool.core.util.ObjectUtil@isNotNull(accuseTypeId)">
+                and accusation_info.accuse_type_id = #{accuseTypeId}
+            </if>
+        </where>
+    </select>
 </mapper>
