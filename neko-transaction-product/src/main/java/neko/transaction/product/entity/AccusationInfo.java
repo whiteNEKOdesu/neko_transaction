@@ -48,6 +48,11 @@ public class AccusationInfo implements Serializable {
     private String description;
 
     /**
+     * 举报人用户id
+     */
+    private String informerUid;
+
+    /**
      * 操作的管理员id
      */
     private String operationAdminId;
