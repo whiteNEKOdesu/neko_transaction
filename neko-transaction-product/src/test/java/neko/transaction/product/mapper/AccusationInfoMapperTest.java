@@ -17,4 +17,10 @@ public class AccusationInfoMapperTest {
                 "图解",
                 4));
     }
+
+    @Test
+    public void unhandledAccusationInfoPageQueryNumber(){
+        System.out.println(accusationInfoMapper.unhandledAccusationInfoPageQueryNumber("图解",
+                4));
+    }
 }
