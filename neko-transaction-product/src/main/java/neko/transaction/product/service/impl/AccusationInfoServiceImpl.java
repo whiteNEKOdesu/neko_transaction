@@ -2,10 +2,13 @@ package neko.transaction.product.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.AccusationInfo;
 import neko.transaction.product.mapper.AccusationInfoMapper;
 import neko.transaction.product.service.AccusationInfoService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.product.vo.AccusationInfoVo;
 import neko.transaction.product.vo.NewAccusationInfoVo;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +35,27 @@ public class AccusationInfoServiceImpl extends ServiceImpl<AccusationInfoMapper,
         todoAdd.setInformerUid(uid);
 
         this.baseMapper.insert(todoAdd);
+    }
+
+    /**
+     * 分页查询举报信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<AccusationInfoVo> unhandledAccusationInfoPageQuery(QueryVo vo) {
+        Page<AccusationInfoVo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        Object objectId = vo.getObjectId();
+        Integer accuseTypeId = objectId != null ? Integer.valueOf(objectId.toString()) : null;
+        //设置分页查询结果
+        page.setRecords(this.baseMapper.unhandledAccusationInfoPageQuery(vo.getLimited(),
+                vo.daoPage(),
+                vo.getQueryWords(),
+                accuseTypeId));
+        //设置分页查询总页数
+        page.setTotal(this.baseMapper.unhandledAccusationInfoPageQueryNumber(vo.getQueryWords(),
+                accuseTypeId));
+
+        return page;
     }
 }
