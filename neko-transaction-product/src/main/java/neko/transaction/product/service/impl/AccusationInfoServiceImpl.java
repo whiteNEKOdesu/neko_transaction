@@ -2,8 +2,10 @@ package neko.transaction.product.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.commonbase.utils.entity.AccusationStatus;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.AccusationInfo;
 import neko.transaction.product.mapper.AccusationInfoMapper;
@@ -57,5 +59,22 @@ public class AccusationInfoServiceImpl extends ServiceImpl<AccusationInfoMapper,
                 accuseTypeId));
 
         return page;
+    }
+
+    /**
+     * 驳回举报
+     * @param accuseId 举报id
+     */
+    @Override
+    public void rejectAccusation(Long accuseId) {
+        String uid = StpUtil.getLoginId().toString();
+
+        AccusationInfo todoUpdate = new AccusationInfo();
+        todoUpdate.setStatus(AccusationStatus.UNBANNED)
+                .setOperationAdminId(uid);
+
+        this.baseMapper.update(todoUpdate, new QueryWrapper<AccusationInfo>().lambda()
+                .eq(AccusationInfo::getAccuseId, accuseId)
+                .eq(AccusationInfo::getStatus, AccusationStatus.UNHANDLED));
     }
 }

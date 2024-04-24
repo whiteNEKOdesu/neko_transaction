@@ -28,4 +28,10 @@ public interface AccusationInfoService extends IService<AccusationInfo> {
      * @return 查询结果
      */
     Page<AccusationInfoVo> unhandledAccusationInfoPageQuery(QueryVo vo);
+
+    /**
+     * 驳回举报
+     * @param accuseId 举报id
+     */
+    void rejectAccusation(Long accuseId);
 }

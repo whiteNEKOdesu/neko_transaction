@@ -51,4 +51,17 @@ public class AccusationInfoController {
     public ResultObject<Page<AccusationInfoVo>> unhandledAccusationInfoPageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(accusationInfoService.unhandledAccusationInfoPageQuery(vo));
     }
+
+    /**
+     * 驳回举报
+     * @param accuseId 举报id
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PostMapping("reject_accusation")
+    public ResultObject<Object> rejectAccusation(@RequestParam Long accuseId){
+        accusationInfoService.rejectAccusation(accuseId);
+
+        return ResultObject.ok();
+    }
 }
