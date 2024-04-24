@@ -16,7 +16,7 @@
         on member_chat_info.from_id = sub_query.from_id
         where member_chat_info.to_id = #{uid}
         group by member_chat_info.from_id
-        order by unread_number desc
+        order by unread_number desc, member_chat_info.from_id desc
         limit #{start}, #{limited}
     </select>
 
