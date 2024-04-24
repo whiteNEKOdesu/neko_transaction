@@ -34,4 +34,10 @@ public interface AccusationInfoService extends IService<AccusationInfo> {
      * @param accuseId 举报id
      */
     void rejectAccusation(Long accuseId);
+
+    /**
+     * 通过举报
+     * @param accuseId 举报id
+     */
+    void passAccusation(Long accuseId);
 }

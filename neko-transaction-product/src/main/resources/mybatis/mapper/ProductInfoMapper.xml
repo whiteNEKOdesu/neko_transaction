@@ -93,4 +93,11 @@
         set sale_number = sale_number + #{increase}
         where product_id = #{productId}
     </update>
+
+    <update id="banProduct">
+        update product_info
+        set is_ban = 1, status = ${@neko.transaction.commonbase.utils.entity.ProductStatus@DOWN},
+            up_time = null
+        where product_id = #{productId}
+    </update>
 </mapper>

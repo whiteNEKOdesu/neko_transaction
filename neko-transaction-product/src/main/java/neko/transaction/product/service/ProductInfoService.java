@@ -89,4 +89,10 @@ public interface ProductInfoService extends IService<ProductInfo> {
      * 将商品信息同步到 elasticsearch
      */
     void synchronizeProductInfoToES();
+
+    /**
+     * 封禁商品
+     * @param productId 商品id
+     */
+    void banProduct(String productId);
 }

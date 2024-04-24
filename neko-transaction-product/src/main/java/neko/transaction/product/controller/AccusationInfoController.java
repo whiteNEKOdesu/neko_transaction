@@ -64,4 +64,17 @@ public class AccusationInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 通过举报
+     * @param accuseId 举报id
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ADMIN)
+    @PostMapping("pass_accusation")
+    public ResultObject<Object> passAccusation(@RequestParam Long accuseId){
+        accusationInfoService.passAccusation(accuseId);
+
+        return ResultObject.ok();
+    }
 }

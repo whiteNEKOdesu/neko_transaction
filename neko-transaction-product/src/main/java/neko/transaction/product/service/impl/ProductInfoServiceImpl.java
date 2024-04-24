@@ -420,4 +420,22 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         productInfoESService.newProductInfosToES(productInfoESs);
         log.info("商品信息同步到 elasticsearch 成功，同步数量: " + productInfos.size());
     }
+
+    /**
+     * 封禁商品
+     * @param productId 商品id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void banProduct(String productId) {
+        //step1 -> 修改商品状态为封禁下架状态
+        this.baseMapper.banProduct(productId);
+
+        //step2 -> 删除 elasticsearch 数据
+        productInfoESService.deleteByProductId(productId);
+
+        //step3 -> 删除商品详细信息缓存
+        String key = Constant.PRODUCT_REDIS_PREFIX + "product_detail_info:" + productId;
+        stringRedisTemplate.delete(key);
+    }
 }

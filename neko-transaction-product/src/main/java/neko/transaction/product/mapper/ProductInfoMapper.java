@@ -79,4 +79,10 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
      * @param increase 要添加的数量
      */
     void increaseSaleNumber(String productId, Long increase);
+
+    /**
+     * 封禁商品
+     * @param productId 商品id
+     */
+    void banProduct(String productId);
 }

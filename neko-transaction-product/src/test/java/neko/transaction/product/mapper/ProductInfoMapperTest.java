@@ -53,4 +53,9 @@ public class ProductInfoMapperTest {
     public void increaseSaleNumber(){
         productInfoMapper.increaseSaleNumber("1750067945863770113", 1L);
     }
+
+    @Test
+    public void banProduct(){
+        productInfoMapper.banProduct("1779335044930809857");
+    }
 }

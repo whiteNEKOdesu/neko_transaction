@@ -10,9 +10,13 @@ import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.product.entity.AccusationInfo;
 import neko.transaction.product.mapper.AccusationInfoMapper;
 import neko.transaction.product.service.AccusationInfoService;
+import neko.transaction.product.service.ProductInfoService;
 import neko.transaction.product.vo.AccusationInfoVo;
 import neko.transaction.product.vo.NewAccusationInfoVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -24,6 +28,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AccusationInfoServiceImpl extends ServiceImpl<AccusationInfoMapper, AccusationInfo> implements AccusationInfoService {
+    @Resource
+    private ProductInfoService productInfoService;
 
     /**
      * 添加举报信息
@@ -76,5 +82,32 @@ public class AccusationInfoServiceImpl extends ServiceImpl<AccusationInfoMapper,
         this.baseMapper.update(todoUpdate, new QueryWrapper<AccusationInfo>().lambda()
                 .eq(AccusationInfo::getAccuseId, accuseId)
                 .eq(AccusationInfo::getStatus, AccusationStatus.UNHANDLED));
+    }
+
+    /**
+     * 通过举报
+     * @param accuseId 举报id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void passAccusation(Long accuseId) {
+        AccusationInfo accusationInfo = this.baseMapper.selectById(accuseId);
+        if(accusationInfo == null || !AccusationStatus.UNHANDLED.equals(accusationInfo.getStatus())){
+            return;
+        }
+
+        //step1 -> 修改举报状态为封禁状态
+        String uid = StpUtil.getLoginId().toString();
+
+        AccusationInfo todoUpdate = new AccusationInfo();
+        todoUpdate.setStatus(AccusationStatus.BANNED)
+                .setOperationAdminId(uid);
+
+        this.baseMapper.update(todoUpdate, new QueryWrapper<AccusationInfo>().lambda()
+                .eq(AccusationInfo::getAccuseId, accuseId)
+                .eq(AccusationInfo::getStatus, AccusationStatus.UNHANDLED));
+
+        //step2 -> 封禁商品
+        productInfoService.banProduct(accusationInfo.getProductId());
     }
 }
