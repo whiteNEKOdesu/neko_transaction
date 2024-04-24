@@ -110,4 +110,14 @@ public class AccusationInfoServiceImpl extends ServiceImpl<AccusationInfoMapper,
         //step2 -> 封禁商品
         productInfoService.banProduct(accusationInfo.getProductId());
     }
+
+    /**
+     * 获取封禁原因
+     * @param productId 商品id
+     * @return 封禁原因
+     */
+    @Override
+    public String getBanReason(String productId) {
+        return this.baseMapper.getBanReason(productId);
+    }
 }

@@ -40,4 +40,11 @@ public interface AccusationInfoService extends IService<AccusationInfo> {
      * @param accuseId 举报id
      */
     void passAccusation(Long accuseId);
+
+    /**
+     * 获取封禁原因
+     * @param productId 商品id
+     * @return 封禁原因
+     */
+    String getBanReason(String productId);
 }

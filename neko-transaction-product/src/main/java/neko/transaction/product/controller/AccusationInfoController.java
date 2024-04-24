@@ -77,4 +77,14 @@ public class AccusationInfoController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 获取封禁原因
+     * @param productId 商品id
+     * @return 封禁原因
+     */
+    @GetMapping("ban_reason_by_product_id")
+    public ResultObject<String> banReasonByProductId(@RequestParam String productId){
+        return ResultObject.ok(accusationInfoService.getBanReason(productId));
+    }
 }

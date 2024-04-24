@@ -38,4 +38,11 @@ public interface AccusationInfoMapper extends BaseMapper<AccusationInfo> {
      */
     int unhandledAccusationInfoPageQueryNumber(String queryWords,
                                                Integer accuseTypeId);
+
+    /**
+     * 获取封禁原因
+     * @param productId 商品id
+     * @return 封禁原因
+     */
+    String getBanReason(String productId);
 }

@@ -34,4 +34,14 @@
             </if>
         </where>
     </select>
+
+    <select id="getBanReason" resultType="String">
+        select accusation_type.accuse_type from accusation_info
+        join accusation_type
+        on accusation_info.accuse_type_id = accusation_type.accuse_type_id
+        where accusation_info.product_id = #{productId} and
+              accusation_info.status = ${@neko.transaction.commonbase.utils.entity.AccusationStatus@BANNED}
+        order by accusation_info.accuse_id desc
+        limit 1
+    </select>
 </mapper>

@@ -23,4 +23,9 @@ public class AccusationInfoMapperTest {
         System.out.println(accusationInfoMapper.unhandledAccusationInfoPageQueryNumber("图解",
                 4));
     }
+
+    @Test
+    public void getBanReason(){
+        System.out.println(accusationInfoMapper.getBanReason("1779335044930809857"));
+    }
 }
