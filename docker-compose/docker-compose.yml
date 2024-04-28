@@ -11,7 +11,7 @@ services:
     restart: always
 
   mysql:
-    image: neko-transaction-mysql:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko_transaction_mysql:1.0
     container_name: neko-transaction-mysql
     ports:
       - "3306:3306"
