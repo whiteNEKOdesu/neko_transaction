@@ -46,7 +46,7 @@ services:
     restart: always
 
   nginx:
-    image: neko-transaction-nginx:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-nginx:1.0
     container_name: neko-transaction-nginx
     ports:
       - "80:80"
@@ -55,6 +55,9 @@ services:
       - neko_transaction
     depends_on:
       - gateway-service
+    environment:
+      BACKEND_URL: http://192.168.30.133:8004/
+    command: /bin/bash -c "/init_backend_url.sh && /init_admin_backend_url.sh && /docker-entrypoint.sh nginx -g 'daemon off;'"
     restart: always
 
   nacos:
@@ -72,6 +75,21 @@ services:
       MYSQL_PASSWORD: 123456
     restart: always
 
+  seata:
+    image: seataio/seata-server:2.0.0-slim
+    container_name: neko-transaction-seata
+    ports:
+      - "8091:8091"
+      - "7091:7091"
+    networks:
+      - neko_transaction
+    depends_on:
+      - nacos
+    environment:
+      SEATA_IP: 192.168.30.133
+      SEATA_PORT: 8091
+    restart: always
+
   gateway-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-gateway
@@ -82,7 +100,7 @@ services:
     networks:
       - neko_transaction
     depends_on:
-      - nacos
+      - seata
       - elasticsearch
     environment:
       NACOS_SERVER_ADDR: nacos:8848
