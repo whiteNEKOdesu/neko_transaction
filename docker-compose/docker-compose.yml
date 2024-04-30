@@ -10,7 +10,7 @@ services:
       - nacos
     restart: always
 
-  mysql:
+  mysql-service:
     image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko_transaction_mysql:1.0
     container_name: neko-transaction-mysql
     ports:
@@ -38,11 +38,14 @@ services:
     container_name: neko-transaction-elasticsearch
     networks:
       - neko_transaction
-    depends_on:
-      - rabbitmq
     environment:
       - ES_JAVA_OPTS=-Xms256m -Xmx512m
       - discovery.type=single-node
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: always
 
   nginx:
@@ -68,15 +71,20 @@ services:
     networks:
       - neko_transaction
     depends_on:
-      - mysql
+      - mysql-service
     environment:
-      MYSQL_URL: jdbc:mysql://mysql:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+      MYSQL_URL: jdbc:mysql://mysql-service:3306/nacos_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     restart: always
 
   seata:
-    image: seataio/seata-server:2.0.0-slim
+    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-seata:1.0
     container_name: neko-transaction-seata
     ports:
       - "8091:8091"
@@ -88,6 +96,27 @@ services:
     environment:
       SEATA_IP: 192.168.30.133
       SEATA_PORT: 8091
+      SEATA_USER_NAME: seata
+      SEATA_PASSWORD: seata
+      NACOS_SERVER_ADDR: 192.168.30.133:8848
+      NACOS_NAME_SPACE: 3de83da7-02c3-46e1-8c59-930031b9c30b
+      NACOS_CONFIG_GROUP: NEKO-TRANSACTION-SEATA
+      NACOS_REGISTRY_GROUP: NEKO-TRANSACTION
+      NACOS_USER_NAME: nacos
+      NACOS_PASSWORD: nacos
+      NACOS_CONFIG_DATA_ID: neko-transaction-seata-server.properties
+      NACOS_REGISTRY_NAME: neko-transaction-seata-server
+      NACOS_REGISTRY_CLUSTER: default
+      MYSQL_URL: jdbc:mysql://192.168.30.133:3306/neko_transaction_seata?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 123456
+      DEFAULT_TX_GROUP: default
+      SERVICE_GROUP_LIST: 192.168.30.133:8091
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7091" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     restart: always
 
   gateway-service:
@@ -107,6 +136,11 @@ services:
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
       PROFILES_ACTIVE: prop
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8004" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: always
 
   member-service:
@@ -119,7 +153,7 @@ services:
     networks:
       - neko_transaction
     depends_on:
-      - mysql
+      - mysql-service
       - nacos
       - redis
       - rabbitmq
@@ -128,7 +162,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
-      MYSQL_URL: jdbc:mysql://mysql:3306/neko_transaction_member?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
+      MYSQL_URL: jdbc:mysql://mysql-service:3306/neko_transaction_member?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       REDIS_HOST: redis
@@ -138,6 +172,11 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
       PROFILES_ACTIVE: prop
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8003" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: always
 
   product-service:
@@ -150,7 +189,7 @@ services:
     networks:
       - neko_transaction
     depends_on:
-      - mysql
+      - mysql-service
       - nacos
       - redis
       - rabbitmq
@@ -160,7 +199,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
-      MYSQL_URL: jdbc:mysql://mysql:3306/neko_transaction_product?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
+      MYSQL_URL: jdbc:mysql://mysql-service:3306/neko_transaction_product?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       REDIS_HOST: redis
@@ -171,6 +210,11 @@ services:
       RABBITMQ_PASSWORD: guest
       ELASTIC_SEARCH_HOSTS: elasticsearch:9200
       PROFILES_ACTIVE: prop
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8005" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: always
 
   ware-service:
@@ -183,7 +227,7 @@ services:
     networks:
       - neko_transaction
     depends_on:
-      - mysql
+      - mysql-service
       - nacos
       - redis
       - rabbitmq
@@ -192,7 +236,7 @@ services:
       NACOS_SERVER_ADDR: nacos:8848
       SENTINEL_DASHBOARD_URL: 192.168.30.133:8080
       SENTINEL_PORT: 8719
-      MYSQL_URL: jdbc:mysql://mysql:3306/neko_transaction_ware?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
+      MYSQL_URL: jdbc:mysql://mysql-service:3306/neko_transaction_ware?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       REDIS_HOST: redis
@@ -202,6 +246,11 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
       PROFILES_ACTIVE: prop
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8007" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: always
 
   third-party-service:
@@ -214,7 +263,7 @@ services:
     networks:
       - neko_transaction
     depends_on:
-      - mysql
+      - mysql-service
       - nacos
       - redis
       - ware-service
@@ -225,6 +274,11 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       PROFILES_ACTIVE: prop
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8006" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: always
 
 networks:
