@@ -11,6 +11,7 @@ services:
     restart: always
 
   mysql-service:
+    build: ./image_build/mysql
     image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko_transaction_mysql:1.0
     container_name: neko-transaction-mysql
     ports:
@@ -22,6 +23,11 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_ALLOW_EMPTY_PASSWORD: no
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "-uroot", "-p123456", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     restart: always
 
   rabbitmq:
@@ -42,13 +48,14 @@ services:
       - ES_JAVA_OPTS=-Xms256m -Xmx512m
       - discovery.type=single-node
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
   nginx:
+    build: ./image_build/nginx
     image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-nginx:1.0
     container_name: neko-transaction-nginx
     ports:
@@ -64,6 +71,7 @@ services:
     restart: always
 
   nacos:
+    build: ./image_build/nacos
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-nacos:1.0
     container_name: neko-transaction-nacos
     ports:
@@ -79,11 +87,12 @@ services:
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos" ]
       interval: 5s
-      timeout: 3s
-      retries: 3
+      timeout: 2s
+      retries: 10
     restart: always
 
   seata:
+    build: ./image_build/seata
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-seata:1.0
     container_name: neko-transaction-seata
     ports:
@@ -94,11 +103,11 @@ services:
     depends_on:
       - nacos
     environment:
-      SEATA_IP: 192.168.30.133
+      SEATA_IP: seata
       SEATA_PORT: 8091
       SEATA_USER_NAME: seata
       SEATA_PASSWORD: seata
-      NACOS_SERVER_ADDR: 192.168.30.133:8848
+      NACOS_SERVER_ADDR: nacos:8848
       NACOS_NAME_SPACE: 3de83da7-02c3-46e1-8c59-930031b9c30b
       NACOS_CONFIG_GROUP: NEKO-TRANSACTION-SEATA
       NACOS_REGISTRY_GROUP: NEKO-TRANSACTION
@@ -107,19 +116,20 @@ services:
       NACOS_CONFIG_DATA_ID: neko-transaction-seata-server.properties
       NACOS_REGISTRY_NAME: neko-transaction-seata-server
       NACOS_REGISTRY_CLUSTER: default
-      MYSQL_URL: jdbc:mysql://192.168.30.133:3306/neko_transaction_seata?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
+      MYSQL_URL: jdbc:mysql://mysql-service:3306/neko_transaction_seata?characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true&autoReConnect=true
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: 123456
       DEFAULT_TX_GROUP: default
-      SERVICE_GROUP_LIST: 192.168.30.133:8091
+      SERVICE_GROUP_LIST: seata:8091
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:7091" ]
       interval: 5s
-      timeout: 3s
-      retries: 3
+      timeout: 2s
+      retries: 10
     restart: always
 
   gateway-service:
+    build: ./image_build/backend
     image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
     container_name: neko-transaction-gateway
     ports:
@@ -137,10 +147,10 @@ services:
       SENTINEL_PORT: 8719
       PROFILES_ACTIVE: prop
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8004" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "curl", "-f", "http://localhost:8004/third_party/oss/upload_images" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
   member-service:
@@ -173,10 +183,10 @@ services:
       RABBITMQ_PASSWORD: guest
       PROFILES_ACTIVE: prop
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8003" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "curl", "-f", "http://localhost:8003/major_info/all_full_major_name" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
   product-service:
@@ -211,10 +221,10 @@ services:
       ELASTIC_SEARCH_HOSTS: elasticsearch:9200
       PROFILES_ACTIVE: prop
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8005" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "curl", "-f", "http://localhost:8005/product_info/top_8_product_infos" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
   ware-service:
@@ -247,10 +257,10 @@ services:
       RABBITMQ_PASSWORD: guest
       PROFILES_ACTIVE: prop
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8007" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "curl", "-f", "http://localhost:8007/ware_info/ware_info_by_id?productId=test" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
   third-party-service:
@@ -275,10 +285,10 @@ services:
       REDIS_PORT: 6379
       PROFILES_ACTIVE: prop
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8006" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
+      test: [ "CMD", "curl", "-f", "http://localhost:8006/actuator/mappings" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
 networks:
