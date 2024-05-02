@@ -67,7 +67,11 @@ services:
       - gateway-service
     environment:
       BACKEND_URL: http://192.168.30.133:8004/
-    command: /bin/bash -c "/init_backend_url.sh && /init_admin_backend_url.sh && /docker-entrypoint.sh nginx -g 'daemon off;'"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
     restart: always
 
   nacos:
@@ -129,8 +133,8 @@ services:
     restart: always
 
   gateway-service:
-    build: ./image_build/backend
-    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
+    build: ./image_build/gateway-service
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-gateway:1.0
     container_name: neko-transaction-gateway
     ports:
       - "8004:8004"
@@ -154,7 +158,8 @@ services:
     restart: always
 
   member-service:
-    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
+    build: ./image_build/member-service
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-member:1.0
     container_name: neko-transaction-member
     ports:
       - "8003:8003"
@@ -190,7 +195,8 @@ services:
     restart: always
 
   product-service:
-    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
+    build: ./image_build/product-service
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-product:1.0
     container_name: neko-transaction-product
     ports:
       - "8005:8005"
@@ -228,7 +234,8 @@ services:
     restart: always
 
   ware-service:
-    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
+    build: ./image_build/ware-service
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-ware:1.0
     container_name: neko-transaction-ware
     ports:
       - "8007:8007"
@@ -264,7 +271,8 @@ services:
     restart: always
 
   third-party-service:
-    image: registry.cn-shanghai.aliyuncs.com/neko_base/neko-backend:jre17
+    build: ./image_build/third-party-service
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-third-party:1.0
     container_name: neko-transaction-third-party
     ports:
       - "8006:8006"
