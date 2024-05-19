@@ -1,6 +1,8 @@
 package neko.transaction.member.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import neko.transaction.commonbase.utils.entity.ResultObject;
+import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.service.ApiAuthInfoService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,7 @@ public class ApiAuthInfoController {
      * 将 api 信息同步到数据库
      * @return 响应结果
      */
+    @SaCheckRole(RoleType.ROOT)
     @PostMapping("synchronize_api_info_to_db")
     public ResultObject<Object> synchronizeApiInfoToDB(){
         apiAuthInfoService.synchronizeApiToDB();

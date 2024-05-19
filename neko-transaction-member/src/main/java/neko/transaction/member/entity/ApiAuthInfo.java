@@ -53,9 +53,19 @@ public class ApiAuthInfo implements Serializable {
     private Integer weightId;
 
     /**
+     * 权限名
+     */
+    private String weight;
+
+    /**
      * 访问要求的角色id
      */
     private Integer roleId;
+
+    /**
+     * 角色名
+     */
+    private String role;
 
     /**
      * 创建时间
