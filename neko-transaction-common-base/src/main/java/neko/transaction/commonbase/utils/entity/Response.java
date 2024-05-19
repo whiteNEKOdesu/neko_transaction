@@ -17,7 +17,7 @@ public enum Response {
 
     WEIGHT_NOT_ENOUGH_ERROR(5,"权限不足"),
     USER_NAME_REPEAT_ERROR(6,"用户名重复"),
-    ROLE_NOT_EXIST_ERROR(7, "角色不存在"),
+    ROLE_NOT_EXIST_ERROR(7, "不支持的访问角色"),
     HTTP_REQUEST_METHOD_NOT_SUPPORTED_ERROR(8, "请求类型不支持"),
     USER_LOG_IN_ERROR(9, "登录错误"),
     DUPLICATE_KEY_ERROR(10, "重复key错误"),

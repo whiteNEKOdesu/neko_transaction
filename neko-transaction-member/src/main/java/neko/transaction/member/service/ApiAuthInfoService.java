@@ -25,4 +25,10 @@ public interface ApiAuthInfoService extends IService<ApiAuthInfo> {
      * @return 查询结果
      */
     Page<ApiAuthInfo> pageQuery(QueryVo vo);
+
+    /**
+     * 根据当前请求路径获取 api 鉴权信息
+     * @return api 鉴权信息
+     */
+    ApiAuthInfo getApiAuthInfoByCurrentRequest();
 }

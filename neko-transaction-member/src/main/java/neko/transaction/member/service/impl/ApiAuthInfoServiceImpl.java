@@ -1,22 +1,29 @@
 package neko.transaction.member.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.ApiAuthInfo;
 import neko.transaction.member.mapper.ApiAuthInfoMapper;
 import neko.transaction.member.service.ApiAuthInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +40,9 @@ import java.util.stream.Collectors;
 public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAuthInfo> implements ApiAuthInfoService {
     @Resource
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 将 api 信息同步到数据库
@@ -122,6 +132,10 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
             }
         }
 
+        String key = Constant.MEMBER_REDIS_PREFIX + "api_auth_infos";
+        //删除权限缓存
+        stringRedisTemplate.delete(key);
+
         log.info("api 信息同步成功，添加: " + todoInserts.size() + " 条，修改: " + todoUpdates.size() + " 条，删除: " + deleted + " 条");
     }
 
@@ -146,5 +160,38 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
         this.baseMapper.selectPage(page, queryWrapper);
 
         return page;
+    }
+
+    /**
+     * 根据当前请求路径获取 api 鉴权信息
+     * @return api 鉴权信息
+     */
+    @Override
+    public ApiAuthInfo getApiAuthInfoByCurrentRequest() {
+        String key = Constant.MEMBER_REDIS_PREFIX + "api_auth_infos";
+        BoundHashOperations<String, Object, Object> boundHashOperations = stringRedisTemplate.boundHashOps(key);
+
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        assert servletRequestAttributes != null;
+        HttpServletRequest request = servletRequestAttributes.getRequest();
+        String requestURI = request.getRequestURI();
+
+        //缓存有数据
+        if(Boolean.TRUE.equals(boundHashOperations.hasKey(requestURI))){
+            //获取 redis 缓存
+            String cache = (String) boundHashOperations.get(requestURI);
+
+            return JSONUtil.toBean(cache, ApiAuthInfo.class);
+        }
+
+        ApiAuthInfo apiAuthInfo = this.baseMapper.selectOne(new QueryWrapper<ApiAuthInfo>().lambda()
+                .eq(ApiAuthInfo::getPath, requestURI));
+
+        if(apiAuthInfo != null){
+            //缓存无数据，将查询存入缓存
+            boundHashOperations.put(requestURI, JSONUtil.toJsonStr(apiAuthInfo));
+        }
+
+        return apiAuthInfo;
     }
 }
