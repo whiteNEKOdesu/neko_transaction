@@ -1,5 +1,7 @@
 package neko.transaction.member.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.ApiAuthInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,4 +18,11 @@ public interface ApiAuthInfoService extends IService<ApiAuthInfo> {
      * 将 api 信息同步到数据库
      */
     void synchronizeApiToDB();
+
+    /**
+     * 分页查询 api 鉴权信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    Page<ApiAuthInfo> pageQuery(QueryVo vo);
 }

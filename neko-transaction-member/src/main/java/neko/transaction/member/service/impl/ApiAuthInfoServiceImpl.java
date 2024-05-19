@@ -1,13 +1,16 @@
 package neko.transaction.member.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.ApiAuthInfo;
 import neko.transaction.member.mapper.ApiAuthInfoMapper;
 import neko.transaction.member.service.ApiAuthInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -120,5 +123,28 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
         }
 
         log.info("api 信息同步成功，添加: " + todoInserts.size() + " 条，修改: " + todoUpdates.size() + " 条，删除: " + deleted + " 条");
+    }
+
+    /**
+     * 分页查询 api 鉴权信息
+     * @param vo 分页查询vo
+     * @return 查询结果
+     */
+    @Override
+    public Page<ApiAuthInfo> pageQuery(QueryVo vo) {
+        Page<ApiAuthInfo> page = new Page<>(vo.getCurrentPage(), vo.getLimited());
+        QueryWrapper<ApiAuthInfo> queryWrapper = new QueryWrapper<>();
+        if(StringUtils.hasText(vo.getQueryWords())){
+            //拼接查询条件
+            queryWrapper.lambda().like(ApiAuthInfo::getPath, vo.getQueryWords())
+                    .or()
+                    .like(ApiAuthInfo::getHandlerMethod, vo.getQueryWords());
+        }
+        queryWrapper.lambda().orderByDesc(ApiAuthInfo::getApiId);
+
+        //分页查询
+        this.baseMapper.selectPage(page, queryWrapper);
+
+        return page;
     }
 }
