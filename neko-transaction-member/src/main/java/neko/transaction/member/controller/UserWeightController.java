@@ -76,4 +76,14 @@ public class UserWeightController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 获取全部权限信息
+     * @return 全部权限信息
+     */
+    @SaCheckRole(RoleType.ROOT)
+    @GetMapping("all_weight_infos")
+    public ResultObject<List<UserWeight>> allWeightInfos(){
+        return ResultObject.ok(userWeightService.getAllUserWeight());
+    }
 }

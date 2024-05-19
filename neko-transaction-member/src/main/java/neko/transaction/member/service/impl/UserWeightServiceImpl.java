@@ -81,4 +81,13 @@ public class UserWeightServiceImpl extends ServiceImpl<UserWeightMapper, UserWei
         this.baseMapper.delete(new UpdateWrapper<UserWeight>().lambda()
                 .eq(UserWeight::getWeightId, weightId));
     }
+
+    /**
+     * 获取全部权限信息
+     * @return 全部权限信息
+     */
+    @Override
+    public List<UserWeight> getAllUserWeight() {
+        return this.baseMapper.selectList(null);
+    }
 }

@@ -41,4 +41,10 @@ public interface UserWeightService extends IService<UserWeight> {
      * @param weightId 权限id
      */
     void deleteUserWeight(Integer weightId);
+
+    /**
+     * 获取全部权限信息
+     * @return 全部权限信息
+     */
+    List<UserWeight> getAllUserWeight();
 }
