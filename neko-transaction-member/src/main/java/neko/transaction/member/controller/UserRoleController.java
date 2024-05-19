@@ -74,4 +74,14 @@ public class UserRoleController {
 
         return ResultObject.ok();
     }
+
+    /**
+     * 获取全部角色信息
+     * @return 全部角色信息
+     */
+    @SaCheckRole(RoleType.ROOT)
+    @GetMapping("all_role_infos")
+    public ResultObject<List<UserRole>> allRoleInfos(){
+        return ResultObject.ok(userRoleService.getAllUserRoleInfo());
+    }
 }

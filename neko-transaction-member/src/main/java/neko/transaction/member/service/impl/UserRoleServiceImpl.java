@@ -122,4 +122,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                         .or()
                         .eq(UserRole::getType, RoleSortType.ADMIN_TYPE)));
     }
+
+    /**
+     * 获取全部角色信息
+     * @return 全部角色信息
+     */
+    @Override
+    public List<UserRole> getAllUserRoleInfo() {
+        return this.baseMapper.selectList(null);
+    }
 }

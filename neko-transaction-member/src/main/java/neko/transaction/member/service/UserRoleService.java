@@ -48,4 +48,10 @@ public interface UserRoleService extends IService<UserRole> {
      * @param roleId 角色id
      */
     void deleteUserRole(Integer roleId);
+
+    /**
+     * 获取全部角色信息
+     * @return 全部角色信息
+     */
+    List<UserRole> getAllUserRoleInfo();
 }
