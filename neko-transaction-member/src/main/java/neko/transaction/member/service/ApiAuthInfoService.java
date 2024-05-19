@@ -12,5 +12,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-05-19
  */
 public interface ApiAuthInfoService extends IService<ApiAuthInfo> {
-
+    /**
+     * 将 api 信息同步到数据库
+     */
+    void synchronizeApiToDB();
 }
