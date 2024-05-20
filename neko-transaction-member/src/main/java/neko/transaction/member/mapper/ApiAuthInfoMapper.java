@@ -27,4 +27,18 @@ public interface ApiAuthInfoMapper extends BaseMapper<ApiAuthInfo> {
      * @param apiAuthInfos api 鉴权信息 list
      */
     void insertBatch(List<ApiAuthInfo> apiAuthInfos);
+
+    /**
+     * 修改 api 鉴权信息
+     * @param apiId 后端api id
+     * @param roleId 访问要求的角色id
+     * @param role 角色名
+     * @param weightId 访问要求的权限id
+     * @param weight 权限名
+     */
+    void updateApiAuthInfo(Long apiId,
+                           Integer roleId,
+                           String role,
+                           Integer weightId,
+                           String weight);
 }

@@ -6,10 +6,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import neko.transaction.commonbase.utils.entity.Constant;
 import neko.transaction.commonbase.utils.entity.QueryVo;
+import neko.transaction.commonbase.utils.exception.NoSuchResultException;
 import neko.transaction.member.entity.ApiAuthInfo;
+import neko.transaction.member.entity.UserRole;
+import neko.transaction.member.entity.UserWeight;
 import neko.transaction.member.mapper.ApiAuthInfoMapper;
 import neko.transaction.member.service.ApiAuthInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import neko.transaction.member.service.UserRoleService;
+import neko.transaction.member.service.UserWeightService;
+import neko.transaction.member.vo.UpdateApiAuthInfoVo;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -38,6 +44,12 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAuthInfo> implements ApiAuthInfoService {
+    @Resource
+    private UserRoleService userRoleService;
+
+    @Resource
+    private UserWeightService userWeightService;
+
     @Resource
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
@@ -193,5 +205,41 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
         }
 
         return apiAuthInfo;
+    }
+
+    /**
+     * 修改 api 鉴权信息
+     * @param vo 修改 api 鉴权信息vo
+     */
+    @Override
+    public void updateApiAuthInfo(UpdateApiAuthInfoVo vo) {
+        Integer roleId = vo.getRoleId(), weightId = vo.getWeightId();
+        String role = null, weight = null;
+
+        if(roleId != null){
+            //获取角色信息
+            UserRole userRole = userRoleService.getById(roleId);
+            if(userRole == null){
+                throw new NoSuchResultException("无此 roleId: " + roleId + " 的角色信息");
+            }
+
+            role = userRole.getRoleType();
+        }
+        if(weightId != null){
+            //获取权限信息
+            UserWeight userWeight = userWeightService.getById(weightId);
+            if(userWeight == null){
+                throw new NoSuchResultException("无此 weightId: " + weightId + " 的权限信息");
+            }
+
+            weight = userWeight.getWeightType();
+        }
+
+        //修改 api 鉴权信息
+        this.baseMapper.updateApiAuthInfo(vo.getApiId(),
+                roleId,
+                role,
+                weightId,
+                weight);
     }
 }

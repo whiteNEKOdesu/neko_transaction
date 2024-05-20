@@ -27,4 +27,11 @@
             (#{info.path}, #{info.requestMethod}, #{info.handlerMethod})
         </foreach>
     </insert>
+
+    <update id="updateApiAuthInfo">
+        update api_auth_info
+        set weight_id = #{weightId}, weight = #{weight},
+            role_id = #{roleId}, role = #{role}
+        where api_id = #{apiId}
+    </update>
 </mapper>

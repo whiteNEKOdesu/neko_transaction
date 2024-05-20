@@ -7,6 +7,7 @@ import neko.transaction.commonbase.utils.entity.ResultObject;
 import neko.transaction.commonbase.utils.entity.RoleType;
 import neko.transaction.member.entity.ApiAuthInfo;
 import neko.transaction.member.service.ApiAuthInfoService;
+import neko.transaction.member.vo.UpdateApiAuthInfoVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,5 +51,18 @@ public class ApiAuthInfoController {
     @PostMapping("page_query")
     public ResultObject<Page<ApiAuthInfo>> pageQuery(@Validated @RequestBody QueryVo vo){
         return ResultObject.ok(apiAuthInfoService.pageQuery(vo));
+    }
+
+    /**
+     * 修改 api 鉴权信息
+     * @param vo 修改 api 鉴权信息vo
+     * @return 响应结果
+     */
+    @SaCheckRole(RoleType.ROOT)
+    @PostMapping("update_api_auth_info")
+    public ResultObject<Object> updateApiAuthInfo(@Validated @RequestBody UpdateApiAuthInfoVo vo){
+        apiAuthInfoService.updateApiAuthInfo(vo);
+
+        return ResultObject.ok();
     }
 }

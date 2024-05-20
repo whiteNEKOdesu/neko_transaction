@@ -37,4 +37,13 @@ public class ApiAuthInfoMapperTest {
                         .setRequestMethod("NEKO")
                         .setHandlerMethod("NEKO")));
     }
+
+    @Test
+    public void updateApiAuthInfo(){
+        apiAuthInfoMapper.updateApiAuthInfo(1L,
+                1,
+                "NEKO",
+                1,
+                "NEKO");
+    }
 }

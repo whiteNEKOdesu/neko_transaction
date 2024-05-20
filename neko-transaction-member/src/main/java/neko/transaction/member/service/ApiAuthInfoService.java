@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import neko.transaction.commonbase.utils.entity.QueryVo;
 import neko.transaction.member.entity.ApiAuthInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import neko.transaction.member.vo.UpdateApiAuthInfoVo;
 
 /**
  * <p>
@@ -31,4 +32,10 @@ public interface ApiAuthInfoService extends IService<ApiAuthInfo> {
      * @return api 鉴权信息
      */
     ApiAuthInfo getApiAuthInfoByCurrentRequest();
+
+    /**
+     * 修改 api 鉴权信息
+     * @param vo 修改 api 鉴权信息vo
+     */
+    void updateApiAuthInfo(UpdateApiAuthInfoVo vo);
 }
