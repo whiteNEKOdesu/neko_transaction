@@ -86,4 +86,14 @@ public class UserWeightController {
     public ResultObject<List<UserWeight>> allWeightInfos(){
         return ResultObject.ok(userWeightService.getAllUserWeight());
     }
+
+    /**
+     * 根绝 权限id 获取权限信息
+     * @param weightId 权限id
+     * @return 获取权限信息
+     */
+    @GetMapping("user_weight_by_id")
+    public ResultObject<UserWeight> userWeightById(@RequestParam Integer weightId){
+        return ResultObject.ok(userWeightService.getUserWeightById(weightId));
+    }
 }

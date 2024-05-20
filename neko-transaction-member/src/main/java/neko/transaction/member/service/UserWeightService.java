@@ -47,4 +47,11 @@ public interface UserWeightService extends IService<UserWeight> {
      * @return 全部权限信息
      */
     List<UserWeight> getAllUserWeight();
+
+    /**
+     * 根绝 权限id 获取权限信息
+     * @param weightId 权限id
+     * @return 获取权限信息
+     */
+    UserWeight getUserWeightById(Integer weightId);
 }

@@ -90,4 +90,14 @@ public class UserWeightServiceImpl extends ServiceImpl<UserWeightMapper, UserWei
     public List<UserWeight> getAllUserWeight() {
         return this.baseMapper.selectList(null);
     }
+
+    /**
+     * 根绝 权限id 获取权限信息
+     * @param weightId 权限id
+     * @return 获取权限信息
+     */
+    @Override
+    public UserWeight getUserWeightById(Integer weightId) {
+        return this.baseMapper.selectById(weightId);
+    }
 }
