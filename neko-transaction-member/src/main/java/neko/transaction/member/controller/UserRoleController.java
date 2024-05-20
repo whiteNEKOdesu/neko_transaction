@@ -88,7 +88,7 @@ public class UserRoleController {
     /**
      * 根据 角色id 获取角色信息
      * @param roleId 角色id
-     * @return 获取角色信息
+     * @return 角色信息
      */
     @GetMapping("role_info_by_id")
     public ResultObject<UserRole> roleInfoById(@RequestParam Integer roleId){
