@@ -131,4 +131,14 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     public List<UserRole> getAllUserRoleInfo() {
         return this.baseMapper.selectList(null);
     }
+
+    /**
+     * 根据 角色id 获取角色信息
+     * @param roleId 角色id
+     * @return 获取角色信息
+     */
+    @Override
+    public UserRole getUserRoleById(Integer roleId) {
+        return this.baseMapper.selectById(roleId);
+    }
 }

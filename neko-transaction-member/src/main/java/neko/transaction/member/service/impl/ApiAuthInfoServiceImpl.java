@@ -183,10 +183,8 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
         String key = Constant.MEMBER_REDIS_PREFIX + "api_auth_infos";
         BoundHashOperations<String, Object, Object> boundHashOperations = stringRedisTemplate.boundHashOps(key);
 
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        assert servletRequestAttributes != null;
-        HttpServletRequest request = servletRequestAttributes.getRequest();
-        String requestURI = request.getRequestURI();
+        //获取合法的当前请求路径
+        String requestURI = getValidateRequestUrl();
 
         //缓存有数据
         if(Boolean.TRUE.equals(boundHashOperations.hasKey(requestURI))){
@@ -245,5 +243,25 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
         String key = Constant.MEMBER_REDIS_PREFIX + "api_auth_infos";
         //删除权限缓存
         stringRedisTemplate.delete(key);
+    }
+
+    /**
+     * 获取合法的当前请求路径
+     * @return 合法的当前请求路径
+     */
+    private String getValidateRequestUrl(){
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        assert servletRequestAttributes != null;
+        HttpServletRequest request = servletRequestAttributes.getRequest();
+        String requestURI = request.getRequestURI();
+
+        int index = requestURI.length() - 1;
+        StringBuilder stringBuilder = new StringBuilder(requestURI);
+        //去除请求路径最后的 / 字符
+        while(index >= 0 && stringBuilder.charAt(index) == '/'){
+            stringBuilder.deleteCharAt(index--);
+        }
+
+        return stringBuilder.toString();
     }
 }

@@ -31,6 +31,7 @@ public class SATokenConfig {
                 .addInclude("/member/member_info/add_balance")
                 .addInclude("/third_party/mail/send_log_in_mail")
                 .addInclude("/third_party/oss/upload_images")
+                .addInclude("/member/user_role/role_info_by_id")
                 .setAuth(obj -> {
                     StpUtil.checkRole("*");
                 })

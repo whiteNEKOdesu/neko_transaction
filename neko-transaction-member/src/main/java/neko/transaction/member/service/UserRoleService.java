@@ -54,4 +54,11 @@ public interface UserRoleService extends IService<UserRole> {
      * @return 全部角色信息
      */
     List<UserRole> getAllUserRoleInfo();
+
+    /**
+     * 根据 角色id 获取角色信息
+     * @param roleId 角色id
+     * @return 获取角色信息
+     */
+    UserRole getUserRoleById(Integer roleId);
 }
