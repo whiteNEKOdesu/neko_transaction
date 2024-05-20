@@ -241,5 +241,9 @@ public class ApiAuthInfoServiceImpl extends ServiceImpl<ApiAuthInfoMapper, ApiAu
                 role,
                 weightId,
                 weight);
+
+        String key = Constant.MEMBER_REDIS_PREFIX + "api_auth_infos";
+        //删除权限缓存
+        stringRedisTemplate.delete(key);
     }
 }
