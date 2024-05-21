@@ -18,29 +18,27 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    private static final String TEXT_PREFIX = "<!DOCTYPE html>\n" +
-            "<html lang=\"\">\n" +
-            "  <head>\n" +
-            "    <meta charset=\"utf-8\">\n" +
-            "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" +
-            "    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n" +
-            "    <link rel=\"icon\" href=\"favicon.ico\">\n" +
-            "    <title>发生错误了!!!</title>\n" +
-            "  </head>\n" +
-            "  <body>\n" +
-            "    <noscript><strong>We're sorry but nekocloud doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>\n" +
-            "    <div id=\"app\"></div>\n" +
-            "    <div style=\"text-align: center\">\n" +
-            "      <img style=\"width:15%\" src=\"http://106.15.137.108/static/kokomi4.jpg\">\n" +
-            "      <img style=\"width:15%\" src=\"http://106.15.137.108/static/kamisato1.gif\">\n" +
-            "      <img style=\"width:15%\" src=\"http://106.15.137.108/static/kamisato2.gif\">\n" +
-            "      <img style=\"width:15%\" src=\"http://106.15.137.108/static/kokomi6.gif\">\n" +
-            "      <img style=\"width:15%\" src=\"http://106.15.137.108/static/kusakami1.gif\">\n" +
-            "      <br/>\n";
+    private static final String TEXT_PREFIX = """
+            <!DOCTYPE html>
+            <html lang="">
+              <head>
+                <meta charset="utf-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <link rel="icon" href="favicon.ico">
+                <title>发生错误了!!!</title>
+              </head>
+              <body>
+                <noscript><strong>We're sorry but nekocloud doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
+                <div id="app"></div>
+                <div style="text-align: center">
+            """;
 
-    private static final String TEXT_SUFFIX = "    </div>\n" +
-            "  </body>\n" +
-            "</html>\n";
+    private static final String TEXT_SUFFIX = """
+                </div>
+              </body>
+            </html>
+            """;
 
     /**
      * 发送注册验证码

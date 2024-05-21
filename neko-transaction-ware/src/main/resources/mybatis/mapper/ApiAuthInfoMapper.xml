@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="neko.transaction.ware.mapper.ApiAuthInfoMapper">
+    <update id="updateBatch">
+        update api_auth_info
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="request_method = case" suffix="end,">
+                <foreach collection="apiAuthInfos" item="info">
+                    when api_id = #{info.apiId} then #{info.requestMethod}
+                </foreach>
+            </trim>
+            <trim prefix="handler_method = case" suffix="end,">
+                <foreach collection="apiAuthInfos" item="info">
+                    when api_id = #{info.apiId} then #{info.handlerMethod}
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="apiAuthInfos" item="info" separator="or">
+            api_id = #{info.apiId}
+        </foreach>
+    </update>
+
+    <insert id="insertBatch">
+        insert into api_auth_info(path, request_method, handler_method) values
+        <foreach collection="apiAuthInfos" item="info" separator=",">
+            (#{info.path}, #{info.requestMethod}, #{info.handlerMethod})
+        </foreach>
+    </insert>
+
+    <update id="updateApiAuthInfo">
+        update api_auth_info
+        set weight_id = #{weightId}, weight = #{weight},
+            role_id = #{roleId}, role = #{role}
+        where api_id = #{apiId}
+    </update>
+</mapper>
