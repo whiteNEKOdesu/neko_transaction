@@ -12,7 +12,7 @@ services:
 
   mysql-service:
     build: ./image_build/mysql
-    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko_transaction_mysql:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko_transaction_mysql:2.0
     container_name: neko-transaction-mysql
     ports:
       - "3306:3306"
@@ -56,7 +56,7 @@ services:
 
   nginx:
     build: ./image_build/nginx
-    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-nginx:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-nginx:2.0
     container_name: neko-transaction-nginx
     ports:
       - "80:80"
@@ -67,6 +67,7 @@ services:
       - gateway-service
     environment:
       BACKEND_URL: http://192.168.30.133:8004/
+      USER_FRONTEND_URL: http://192.168.30.133/#/
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost" ]
       interval: 5s
@@ -134,12 +135,10 @@ services:
 
   gateway-service:
     build: ./image_build/gateway-service
-    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-gateway:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-gateway:2.0
     container_name: neko-transaction-gateway
     ports:
       - "8004:8004"
-    volumes:
-      - /neko_transaction/gateway/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -159,12 +158,10 @@ services:
 
   member-service:
     build: ./image_build/member-service
-    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-member:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-member:2.0
     container_name: neko-transaction-member
     ports:
       - "8003:8003"
-    volumes:
-      - /neko_transaction/member/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -196,12 +193,10 @@ services:
 
   product-service:
     build: ./image_build/product-service
-    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-product:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-product:2.0
     container_name: neko-transaction-product
     ports:
       - "8005:8005"
-    volumes:
-      - /neko_transaction/product/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -235,12 +230,10 @@ services:
 
   ware-service:
     build: ./image_build/ware-service
-    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-ware:1.0
+    image: registry.cn-shanghai.aliyuncs.com/neko_dev/neko-transaction-ware:2.0
     container_name: neko-transaction-ware
     ports:
       - "8007:8007"
-    volumes:
-      - /neko_transaction/ware/app:/app
     networks:
       - neko_transaction
     depends_on:
@@ -276,8 +269,6 @@ services:
     container_name: neko-transaction-third-party
     ports:
       - "8006:8006"
-    volumes:
-      - /neko_transaction/third_party/app:/app
     networks:
       - neko_transaction
     depends_on:
