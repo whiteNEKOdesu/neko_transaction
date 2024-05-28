@@ -9,11 +9,13 @@ import neko.transaction.commonbase.utils.entity.StockStatus;
 import neko.transaction.commonbase.utils.exception.ProductServiceException;
 import neko.transaction.commonbase.utils.exception.StockNotEnoughException;
 import neko.transaction.ware.entity.StockLockLog;
+import neko.transaction.ware.entity.StockUpdateLog;
 import neko.transaction.ware.entity.WareInfo;
 import neko.transaction.ware.feign.product.OrderInfoFeignService;
 import neko.transaction.ware.feign.product.ProductInfoFeignService;
 import neko.transaction.ware.mapper.WareInfoMapper;
 import neko.transaction.ware.service.StockLockLogService;
+import neko.transaction.ware.service.StockUpdateLogService;
 import neko.transaction.ware.service.WareInfoService;
 import neko.transaction.ware.to.OrderInfoTo;
 import neko.transaction.ware.to.ProductInfoTo;
@@ -38,6 +40,9 @@ import java.util.List;
 public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> implements WareInfoService {
     @Resource
     private StockLockLogService stockLockLogService;
+
+    @Resource
+    private StockUpdateLogService stockUpdateLogService;
 
     @Resource
     private ProductInfoFeignService productInfoFeignService;
@@ -89,6 +94,13 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoMapper, WareInfo> i
         if(this.baseMapper.updateStockByProductId(productId, offset) != 1){
             throw new StockNotEnoughException("库存修改后小于0");
         }
+
+        StockUpdateLog stockUpdateLog = new StockUpdateLog();
+        stockUpdateLog.setProductId(productId)
+                .setUpdateNumber(offset);
+
+        //添加库存修改记录
+        stockUpdateLogService.save(stockUpdateLog);
     }
 
     /**
